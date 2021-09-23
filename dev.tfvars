@@ -1,0 +1,5 @@
+region      = "us-east-1"
+environment = "dev"
+profile     = "sf_ref_arch"
+namespace   = "refarch"
+name        = "primary"

@@ -1,5 +1,6 @@
 variable "tags" {
   type        = map(string)
+  description = "any tags that are to be added"
   default     = {}
 }
 

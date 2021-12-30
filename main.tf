@@ -64,24 +64,24 @@ resource "random_password" "db_admin_password" {
 }
 
 module "rds_cluster_aurora_postgres" {
-  source            = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
-  engine            = var.engine
-  engine_mode       = var.engine_mode
-  cluster_family    = var.cluster_family
-  cluster_size      = var.cluster_size
-  namespace         = var.namespace
-  stage             = var.environment
-  name              = var.name
-  admin_user        = var.db_admin_username
-  admin_password    = random_password.db_admin_password.result
-  db_name           = var.namespace
-  db_port           = 5432
-  vpc_id            = data.aws_vpc.vpc.id
-  security_groups   = data.aws_security_groups.db_sg.ids
-  subnets           = data.aws_subnet_ids.private.ids
-  storage_encrypted = true
-  instance_type     = var.instance_type
-  tags              = local.tags
+  source                = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
+  engine                = var.engine
+  engine_mode           = var.engine_mode
+  cluster_family        = var.cluster_family
+  cluster_size          = var.cluster_size
+  namespace             = var.namespace
+  stage                 = var.environment
+  name                  = var.name
+  admin_user            = var.db_admin_username
+  admin_password        = random_password.db_admin_password.result
+  db_name               = var.namespace
+  db_port               = 5432
+  vpc_id                = data.aws_vpc.vpc.id
+  security_groups       = data.aws_security_groups.db_sg.ids
+  subnets               = data.aws_subnet_ids.private.ids
+  storage_encrypted     = true
+  instance_type         = var.instance_type
+  tags                  = local.tags
   copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30

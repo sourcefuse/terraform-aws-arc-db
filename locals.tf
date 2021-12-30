@@ -21,7 +21,7 @@ locals {
   ]
   ssm_tags = { Name = "${var.namespace}-${var.environment}-db-cluster-ssm-param" }
 
-  tags = merge( tomap({
+  tags = merge(tomap({
     Creator     = "terraform"
     Environment = var.environment
     Project     = "sf_ref_arch"

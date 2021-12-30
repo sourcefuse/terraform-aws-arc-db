@@ -81,6 +81,8 @@ module "rds_cluster_aurora_postgres" {
   subnets           = data.aws_subnet_ids.private.ids
   storage_encrypted = true
   instance_type     = var.instance_type
+  tags              = local.tags
+  copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30
 

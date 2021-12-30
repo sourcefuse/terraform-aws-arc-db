@@ -1,3 +1,8 @@
+variable "tags" {
+  type        = map(string)
+  default     = {}
+}
+
 variable "db_admin_username" {
   type        = string
   default     = "db_admin"

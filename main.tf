@@ -1,7 +1,7 @@
 resource "aws_kms_key" "aurora_cluster_kms_key" {
   description             = "Aurora cluster KMS key"
   deletion_window_in_days = 10
-
+  enable_key_rotation     = true
   tags = merge(var.tags, tomap({
     Name = "${var.namespace}-${var.environment}-aurora-cluster-key"
   }))
@@ -85,6 +85,8 @@ module "rds_cluster_aurora_postgres" {
   copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30
+  #enable deletion protection
+  deletion_protection = var.rds_deletion_protection
 
   # reference iam role created above
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn

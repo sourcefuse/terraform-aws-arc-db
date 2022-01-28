@@ -68,3 +68,9 @@ variable "instance_type" {
   default     = "db.t3.medium"
   description = "Instance type to use"
 }
+
+variable "rds_deletion_protection" {
+  type        = bool
+  default     = true
+  description = "Enable/Disable deletion protection on RDS instance"
+}

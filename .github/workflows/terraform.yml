@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - 'main'
+  pull_request:
+      branches:
+        - main
 jobs:
   plan:
     runs-on:
@@ -201,6 +204,7 @@ jobs:
         id: apply
         run: terraform apply -var-file=dev.tfvars -no-color -auto-approve
         continue-on-error: true
+        if: github.event_name != 'pull_request'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SF_REF_ARCH_AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SF_REF_ARCH_SECRET_ACCESS_KEY }}

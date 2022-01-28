@@ -1,9 +1,3 @@
-variable "tags" {
-  type        = map(string)
-  description = "any tags that are to be added"
-  default     = {}
-}
-
 variable "db_admin_username" {
   type        = string
   default     = "db_admin"

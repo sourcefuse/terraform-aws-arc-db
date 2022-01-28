@@ -1,20 +1,19 @@
 
 locals {
-  random_password = random_password.db_admin_password.result
 
   ssm_params = [
     {
       name  = "/${var.namespace}/${var.environment}/primary_cluster/cluster_admin_db_password"
-      value = local.random_password
+      value = random_password.db_admin_password.result
       type  = "SecureString"
     },
     {
-      name  = "/${var.namespace}/${var.environment}/nebula/cluster_admin_db_username"
+      name  = "/${var.namespace}/${var.environment}/primary_cluster/cluster_admin_db_username"
       value = var.db_admin_username
       type  = "SecureString"
     },
     {
-      name  = "/${var.namespace}/${var.environment}/nebula/cluster_endpoint"
+      name  = "/${var.namespace}/${var.environment}/primary_cluster/cluster_endpoint"
       value = module.rds_cluster_aurora_postgres.endpoint
       type  = "SecureString"
     }

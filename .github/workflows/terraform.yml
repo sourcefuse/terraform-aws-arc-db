@@ -4,11 +4,7 @@ name: Terraform
 on:
   push:
     branches:
-      - 'main'  # excludes main
-  pull_request:
-    branches:
-      - main
-
+      - 'main'
 jobs:
   plan:
     runs-on:

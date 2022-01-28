@@ -14,7 +14,7 @@ resource "aws_kms_alias" "aurora_cluster_kms_key" {
 
 # create IAM role for monitoring
 resource "aws_iam_role" "enhanced_monitoring" {
-  name               = "${var.namespace}-${var.environment}-enhanced-monitoring-role"
+  name               = "${try(var.namespace, uuid())}-${try(var.environment, uuid())}-enhanced-monitoring-role"
   assume_role_policy = data.aws_iam_policy_document.enhanced_monitoring.json
 }
 

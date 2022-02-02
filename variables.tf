@@ -62,3 +62,21 @@ variable "instance_type" {
   default     = "db.t3.medium"
   description = "Instance type to use"
 }
+
+variable "custom_vpc_id" {
+  type        = string
+  default     = ""
+  description = "by default this module picks the vpc with the name tag refarch-${var.environment}-vpc, if you need to specify a custom vpc, set the vpc id of that vpc in this variable"
+}
+
+variable "custom_subnets" {
+  type        = list(string)
+  default     = []
+  description = "pass a custom list of subnet ids for the database instance to be launched into"
+}
+
+variable "custom_security_groups" {
+  type        = list(sting)
+  default     = []
+  description = "pass a custom list of security group ids to be attaached to the rds instance"
+}

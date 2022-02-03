@@ -1,18 +1,11 @@
 variable "db_admin_username" {
   type        = string
-  default     = "db_admin"
   description = "Name of the default DB admin user role"
 }
 
 variable "region" {
   type        = string
   description = "AWS region"
-}
-
-variable "profile" {
-  type        = string
-  default     = "default"
-  description = "Name of the AWS profile to use"
 }
 
 variable "cluster_family" {
@@ -63,20 +56,17 @@ variable "instance_type" {
   description = "Instance type to use"
 }
 
-variable "custom_vpc_id" {
+variable "vpc_id" {
   type        = string
-  default     = ""
-  description = "by default this module picks the vpc with the name tag refarch-${var.environment}-vpc, if you need to specify a custom vpc, set the vpc id of that vpc in this variable"
+  description = "vpc_id for the VPC to run the cluster."
 }
 
-variable "custom_subnets" {
+variable "subnets" {
   type        = list(string)
-  default     = []
-  description = "pass a custom list of subnet ids for the database instance to be launched into"
+  description = "Subnets for the cluster to run in."
 }
 
-variable "custom_security_groups" {
-  type        = list(sting)
-  default     = []
-  description = "pass a custom list of security group ids to be attaached to the rds instance"
+variable "security_groups" {
+  type        = list(string)
+  description = "Security groups"
 }

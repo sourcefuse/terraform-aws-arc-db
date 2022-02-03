@@ -102,7 +102,6 @@ variable "enabled" {
 
 variable "namespace" {
   type        = string
-  default     = ""
   description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
 }
 
@@ -114,7 +113,6 @@ variable "tenant" {
 
 variable "environment" {
   type        = string
-  default     = ""
   description = "ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT'"
 }
 

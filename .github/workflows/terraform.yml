@@ -25,6 +25,11 @@ jobs:
         with:
           terraform_version: 1.0.5
 
+      - name: Show files
+        id: show-files
+        run: ls -la
+        continue-on-error: true
+
       - name: Setup SSH Keys and known_hosts
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -135,6 +140,11 @@ jobs:
         with:
           terraform_version: 1.0.5
 
+      - name: Show files
+        id: show-files
+        run: ls -la
+        continue-on-error: true
+
       - name: Setup SSH Keys and known_hosts
         env:
           PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -154,10 +164,6 @@ jobs:
 
           eval $(ssh-agent)
           ssh-add "$SSH_PATH/id_rsa"
-      - name: Show files
-        id: show-files
-        run: ls -la
-        continue-on-error: true
 
       - name: Terraform fmt
         id: fmt

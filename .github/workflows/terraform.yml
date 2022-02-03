@@ -150,7 +150,7 @@ jobs:
           eval $(ssh-agent)
           ssh-add "$SSH_PATH/id_rsa"
       - name: Show files
-        id: show files
+        id: show-files
         run: ls -la
         continue-on-error: true
 

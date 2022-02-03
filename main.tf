@@ -1,3 +1,4 @@
+// TODO: add alarms
 resource "aws_kms_key" "aurora_cluster_kms_key" {
   description             = "Aurora cluster KMS key"
   deletion_window_in_days = 10
@@ -43,7 +44,7 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 resource "random_password" "db_admin_password" {
   length           = 32
   special          = true
-  override_special = "_%@"
+  override_special = "!#$&"
 
   lifecycle {
     ignore_changes = [
@@ -76,9 +77,9 @@ module "rds_cluster_aurora_postgres" {
   admin_password        = random_password.db_admin_password.result
   db_name               = var.namespace
   db_port               = 5432
-  vpc_id                = data.aws_vpc.vpc.id
-  security_groups       = data.aws_security_groups.db_sg.ids
-  subnets               = data.aws_subnet_ids.private.ids
+  vpc_id                = var.vpc_id
+  security_groups       = var.security_groups
+  subnets               = var.subnets
   storage_encrypted     = true
   instance_type         = var.instance_type
   tags                  = local.tags
@@ -87,6 +88,7 @@ module "rds_cluster_aurora_postgres" {
   rds_monitoring_interval = 30
 
   # reference iam role created above
+  # TODO: make scaling config variable
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn
   scaling_configuration = [{
     auto_pause               = true
@@ -95,8 +97,6 @@ module "rds_cluster_aurora_postgres" {
     seconds_until_auto_pause = 300
     timeout_action           = "ForceApplyCapacityChange"
   }]
-
-
 }
 
 resource "aws_ssm_parameter" "this" {

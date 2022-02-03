@@ -1,18 +1,11 @@
 variable "db_admin_username" {
   type        = string
-  default     = "db_admin"
   description = "Name of the default DB admin user role"
 }
 
 variable "region" {
   type        = string
   description = "AWS region"
-}
-
-variable "profile" {
-  type        = string
-  default     = "default"
-  description = "Name of the AWS profile to use"
 }
 
 variable "cluster_family" {
@@ -61,4 +54,19 @@ variable "instance_type" {
   type        = string
   default     = "db.t3.medium"
   description = "Instance type to use"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "vpc_id for the VPC to run the cluster."
+}
+
+variable "subnets" {
+  type        = list(string)
+  description = "Subnets for the cluster to run in."
+}
+
+variable "security_groups" {
+  type        = list(string)
+  description = "Security groups"
 }

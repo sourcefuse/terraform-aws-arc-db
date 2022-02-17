@@ -68,5 +68,12 @@ variable "subnets" {
 
 variable "security_groups" {
   type        = list(string)
-  description = "Security groups"
+  default     = []
+  description = "List of security groups to be allowed to connect to the DB instance"
+}
+
+variable "allowed_cidr_blocks" {
+  type        = list(string)
+  default     = []
+  description = "List of CIDR blocks allowed to access the cluster"
 }

@@ -36,3 +36,15 @@ data "aws_security_groups" "db_sg" {
     values = [data.aws_vpc.vpc.id]
   }
 }
+
+data "aws_security_groups" "eks_sg" {
+  filter {
+    name   = "group-name"
+    values = ["${var.namespace}-${var.environment}-eks-sg"]
+  }
+
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.vpc.id]
+  }
+}

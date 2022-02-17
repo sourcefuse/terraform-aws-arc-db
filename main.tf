@@ -79,6 +79,7 @@ module "rds_cluster_aurora_postgres" {
   db_port               = 5432
   vpc_id                = var.vpc_id
   security_groups       = var.security_groups
+  allowed_cidr_blocks   = var.allowed_cidr_blocks
   subnets               = var.subnets
   storage_encrypted     = true
   instance_type         = var.instance_type

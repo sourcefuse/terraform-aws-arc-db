@@ -42,9 +42,9 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 }
 
 resource "random_password" "db_admin_password" {
-  length           = 32
+  length           = 64
   special          = true
-  override_special = "!#$&"
+  override_special = "!#*^"
 
   lifecycle {
     ignore_changes = [

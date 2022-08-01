@@ -33,7 +33,10 @@ jobs:
         run: tflint -f compact
 
   checkov:
-    runs-on: self-hosted
+    runs-on:
+      - self-hosted
+      - refarch
+      - dev
     name: checkov
     steps:
       - uses: actions/checkout@master

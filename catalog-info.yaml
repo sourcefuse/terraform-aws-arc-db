@@ -3,6 +3,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: terraform-aws-ref-arch-db
+  namespace: arc
   description: Terraform Aurora DB Configuration.
   annotations:
     github.com/project-slug: https://github.com/sourcefuse/terraform-aws-ref-arch-db

@@ -3,6 +3,12 @@ variable "db_admin_username" {
   description = "Name of the default DB admin user role"
 }
 
+variable "db_name" {
+  type        = string
+  default     = "auroradb"
+  description = "Database name."
+}
+
 variable "region" {
   type        = string
   description = "AWS region"

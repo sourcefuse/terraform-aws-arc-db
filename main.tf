@@ -75,7 +75,7 @@ module "rds_cluster_aurora_postgres" {
   name                  = var.name
   admin_user            = var.db_admin_username
   admin_password        = random_password.db_admin_password.result
-  db_name               = var.namespace
+  db_name               = var.db_name
   db_port               = 5432
   vpc_id                = var.vpc_id
   security_groups       = var.security_groups

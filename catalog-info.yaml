@@ -11,4 +11,4 @@ metadata:
 spec:
   type: service
   owner: sourcefuse
-  lifecycle: development
+  lifecycle: production

@@ -96,7 +96,7 @@ variable "aurora_allowed_cidr_blocks" {
 }
 
 ################################################################################
-## sql server
+## rds
 ################################################################################
 variable "rds_instance_enabled" {
   type        = bool
@@ -107,6 +107,7 @@ variable "rds_instance_enabled" {
 variable "rds_instance_name" {
   type        = string
   description = "RDS Instance name"
+  default     = ""
 }
 
 variable "rds_instance_dns_zone_id" {
@@ -180,4 +181,112 @@ variable "rds_instance_ca_cert_identifier" {
   type        = string
   description = "The identifier of the CA certificate for the DB instance"
   default     = null
+}
+
+variable "rds_instance_publicly_accessible" {
+  type        = bool
+  description = "Determines if database can be publicly available (NOT recommended)"
+  default     = false
+}
+
+variable "rds_instance_multi_az" {
+  type = bool
+  description = "Set to true if multi AZ deployment must be supported"
+  default = false
+}
+
+variable "rds_instance_storage_type" {
+  type = string
+  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
+  default = "gp2"
+}
+
+variable "rds_instance_instance_class" {
+  type = string
+  description = "Class of RDS instance"
+  default = "db.t2.medium"
+}
+
+variable "rds_instance_allocated_storage" {
+  type = number
+  description = "The allocated storage in GBs. Required unless a snapshot_identifier or replicate_source_db is provided."
+  default = 20
+}
+
+variable "rds_instance_storage_encrypted" {
+  type = bool
+  description = "Specifies whether the DB instance is encrypted. The default is false if not specified"
+  default = true
+}
+
+variable "rds_instance_snapshot_identifier" {
+  type = string
+  description = "Snapshot identifier e.g: rds:production-2019-06-26-06-05. If specified, the module create cluster from the snapshot"
+  default = null
+}
+
+variable "rds_instance_auto_minor_version_upgrade" {
+  type = bool
+  description = "Allow automated minor version upgrade (e.g. from Postgres 9.5.3 to Postgres 9.5.4)"
+  default = true
+}
+
+variable "rds_instance_allow_major_version_upgrade" {
+  type = bool
+  description = "Allow major version upgrade"
+  default = false
+}
+
+variable "rds_instance_apply_immediately" {
+  type = bool
+  description = "Specifies whether any database modifications are applied immediately, or during the next maintenance window"
+  default = true
+}
+
+variable "rds_instance_maintenance_window" {
+  type = string
+  description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi' UTC"
+  default = "Mon:03:00-Mon:04:00"
+}
+
+variable "rds_instance_skip_final_snapshot" {
+  type = bool
+  description = "If true (default), no snapshot will be made before deleting DB"
+  default = true
+}
+
+variable "rds_instance_copy_tags_to_snapshot" {
+  type = bool
+  description = "Copy tags from DB to a snapshot"
+  default = true
+}
+
+variable "rds_instance_backup_retention_period" {
+  type = number
+  description = "Backup retention period in days. Must be > 0 to enable backups"
+  default = 0
+}
+
+variable "rds_instance_backup_window" {
+  type = string
+  description = "When AWS can perform DB snapshots, can't overlap with maintenance window"
+  default = "22:00-03:00"
+}
+
+variable "rds_instance_security_group_ids" {
+  type = list(string)
+  description = "The IDs of the security groups from which to allow ingress traffic to the DB instance"
+  default = []
+}
+
+variable "rds_instance_allowed_cidr_blocks" {
+  type = list(string)
+  description = "The whitelisted CIDRs which to allow ingress traffic to the DB instance"
+  default = []
+}
+
+variable "rds_instance_subnet_ids" {
+  type = list(string)
+  description = "List of subnet IDs for the DB. DB instance will be created in the VPC associated with the DB subnet group provisioned using the subnet IDs. Specify one of subnet_ids, db_subnet_group_name or availability_zone"
+  default = []
 }

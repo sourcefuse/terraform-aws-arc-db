@@ -162,27 +162,27 @@ module "rds_instance" {
   db_parameter_group   = var.rds_instance_db_parameter_group
   option_group_name    = var.rds_instance_option_group_name
   ca_cert_identifier   = var.rds_instance_ca_cert_identifier
+  publicly_accessible  = var.rds_instance_publicly_accessible
 
   vpc_id            = var.vpc_id
-  multi_az          = true
-  storage_type      = "gp2"
-  instance_class    = "db.t2.medium"
-  allocated_storage = 100
-  storage_encrypted = true
+  multi_az          = var.rds_instance_multi_az
+  storage_type      = var.rds_instance_storage_type
+  instance_class    = var.rds_instance_instance_class
+  allocated_storage = var.rds_instance_allocated_storage
+  storage_encrypted = var.rds_instance_storage_encrypted
 
-  publicly_accessible         = false
-  snapshot_identifier         = "rds:production-2015-06-26-06-05"
-  auto_minor_version_upgrade  = true
-  allow_major_version_upgrade = false
-  apply_immediately           = false
-  maintenance_window          = "Mon:03:00-Mon:04:00"
-  skip_final_snapshot         = false
-  copy_tags_to_snapshot       = true
-  backup_retention_period     = 7
-  backup_window               = "22:00-03:00"
+  snapshot_identifier         = var.rds_instance_snapshot_identifier
+  auto_minor_version_upgrade  = var.rds_instance_auto_minor_version_upgrade
+  allow_major_version_upgrade = var.rds_instance_allow_major_version_upgrade
+  apply_immediately           = var.rds_instance_apply_immediately
+  maintenance_window          = var.rds_instance_maintenance_window
+  skip_final_snapshot         = var.rds_instance_skip_final_snapshot
+  copy_tags_to_snapshot       = var.rds_instance_copy_tags_to_snapshot
+  backup_retention_period     = var.rds_instance_backup_retention_period
+  backup_window               = var.rds_instance_backup_window
 
-  security_group_ids  = ["sg-xxxxxxxx"]
-  allowed_cidr_blocks = ["XXX.XXX.XXX.XXX/32"]
+  security_group_ids  = var.rds_instance_security_group_ids
+  allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
   subnet_ids          = var.rds_instance_subnet_ids
 
   db_parameter = [

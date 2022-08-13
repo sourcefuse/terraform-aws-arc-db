@@ -67,7 +67,7 @@ resource "random_password" "rds_db_admin_password" {
 }
 
 resource "random_password" "aurora_db_admin_password" {
-  count  = var.aurora_cluster_enabled == true ? 1 : 0
+  count = var.aurora_cluster_enabled == true ? 1 : 0
 
   length           = 64
   special          = true

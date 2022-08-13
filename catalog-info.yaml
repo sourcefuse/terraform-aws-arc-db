@@ -4,7 +4,7 @@ kind: Component
 metadata:
   name: terraform-aws-ref-arch-db
   namespace: arc
-  description: Terraform Aurora DB Configuration.
+  description: Terraform RDS DB Configuration.
   annotations:
     github.com/project-slug: sourcefuse/terraform-aws-ref-arch-db
     backstage.io/techdocs-ref: dir:.

@@ -8,16 +8,40 @@ Terraform DB module for the SourceFuse AWS reference architecture
 
 ## Usage
 
+To see a full example, check out the [main.tf](./example/main.tf) file in the example folder.  
+
 ```hcl
 module "terraform-aws-ref-arch-db" {
   source = "git::git@github.com:sourcefuse/terraform-aws-ref-arch-db.git"
-  region          = var.region
-  security_groups = data.aws_security_groups.db_sg.ids
-  subnets         = data.aws_subnet_ids.private.ids
-  vpc_id          = data.aws_vpc.vpc.id
-  db_admin_username = var.db_admin_username
-  environment = var.environment
-  namespace = var.namespace
+
+  environment = "dev"
+  namespace   = "arc"
+  region      = "us-east-1"
+  vpc_id      = "vpc-000111222333444"
+
+  aurora_cluster_enabled             = false
+  aurora_cluster_name                = "example"
+  aurora_db_admin_username           = "example_db_admin"
+  aurora_db_name                     = "example"
+  aurora_cluster_family              = "aurora-postgresql10"
+  aurora_engine                      = "aurora-postgresql"
+  aurora_engine_mode                 = "serverless"
+  aurora_engine_version              = "aurora-postgresql13.3"
+  aurora_allow_major_version_upgrade = true
+  aurora_auto_minor_version_upgrade  = true
+  aurora_cluster_size                = 0
+  aurora_instance_type               = "db.t3.small"
+  aurora_subnets = [
+    "subnet-0001112223334441",
+    "subnet-0001112223334442",
+  ]
+  aurora_security_groups = [
+    "sg-0001112223334441",
+    "sg-0001112223334442"
+  ]
+  aurora_allowed_cidr_blocks = [
+    "10.0.0.0/16"
+  ]
 }
 ```
 
@@ -40,7 +64,7 @@ module "terraform-aws-ref-arch-db" {
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_rds_cluster_aurora"></a> [rds\_cluster\_aurora](#module\_rds\_cluster\_aurora) | git::https://github.com/cloudposse/terraform-aws-rds-cluster.git | 0.46.2 |
+| <a name="module_aurora_cluster"></a> [aurora\_cluster](#module\_aurora\_cluster) | git::https://github.com/cloudposse/terraform-aws-rds-cluster.git | 0.46.2 |
 | <a name="module_rds_instance"></a> [rds\_instance](#module\_rds\_instance) | git::https://github.com/cloudposse/terraform-aws-rds | 0.38.8 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
@@ -66,17 +90,19 @@ module "terraform-aws-ref-arch-db" {
 | <a name="input_aurora_allow_major_version_upgrade"></a> [aurora\_allow\_major\_version\_upgrade](#input\_aurora\_allow\_major\_version\_upgrade) | Enable to allow major engine version upgrades when changing engine versions. Defaults to false. | `bool` | `false` | no |
 | <a name="input_aurora_allowed_cidr_blocks"></a> [aurora\_allowed\_cidr\_blocks](#input\_aurora\_allowed\_cidr\_blocks) | List of CIDR blocks allowed to access the cluster | `list(string)` | `[]` | no |
 | <a name="input_aurora_auto_minor_version_upgrade"></a> [aurora\_auto\_minor\_version\_upgrade](#input\_aurora\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window | `bool` | `true` | no |
+| <a name="input_aurora_cluster_enabled"></a> [aurora\_cluster\_enabled](#input\_aurora\_cluster\_enabled) | Enable creation of an Aurora Cluster | `bool` | `false` | no |
 | <a name="input_aurora_cluster_family"></a> [aurora\_cluster\_family](#input\_aurora\_cluster\_family) | The family of the DB cluster parameter group | `string` | `"aurora-postgresql10"` | no |
-| <a name="input_aurora_cluster_name"></a> [aurora\_cluster\_name](#input\_aurora\_cluster\_name) | Database name (default is not to create a database) | `string` | n/a | yes |
+| <a name="input_aurora_cluster_name"></a> [aurora\_cluster\_name](#input\_aurora\_cluster\_name) | Database name (default is not to create a database) | `string` | `""` | no |
 | <a name="input_aurora_cluster_size"></a> [aurora\_cluster\_size](#input\_aurora\_cluster\_size) | Number of DB instances to create in the cluster | `number` | `0` | no |
-| <a name="input_aurora_db_admin_username"></a> [aurora\_db\_admin\_username](#input\_aurora\_db\_admin\_username) | Name of the default DB admin user role | `string` | n/a | yes |
+| <a name="input_aurora_db_admin_password"></a> [aurora\_db\_admin\_password](#input\_aurora\_db\_admin\_password) | Password of the DB admin | `string` | `""` | no |
+| <a name="input_aurora_db_admin_username"></a> [aurora\_db\_admin\_username](#input\_aurora\_db\_admin\_username) | Name of the default DB admin user role | `string` | `""` | no |
 | <a name="input_aurora_db_name"></a> [aurora\_db\_name](#input\_aurora\_db\_name) | Database name. | `string` | `"auroradb"` | no |
 | <a name="input_aurora_engine"></a> [aurora\_engine](#input\_aurora\_engine) | The name of the database engine to be used for this DB cluster. Valid values: `aurora`, `aurora-mysql`, `aurora-postgresql` | `string` | `"aurora-postgresql"` | no |
 | <a name="input_aurora_engine_mode"></a> [aurora\_engine\_mode](#input\_aurora\_engine\_mode) | The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless` | `string` | `"serverless"` | no |
 | <a name="input_aurora_engine_version"></a> [aurora\_engine\_version](#input\_aurora\_engine\_version) | The version of the database engine to use. See `aws rds describe-db-engine-versions` | `string` | `"aurora-postgresql13.3"` | no |
 | <a name="input_aurora_instance_type"></a> [aurora\_instance\_type](#input\_aurora\_instance\_type) | Instance type to use | `string` | `"db.t3.medium"` | no |
-| <a name="input_aurora_security_groups"></a> [aurora\_security\_groups](#input\_aurora\_security\_groups) | List of security groups to be allowed to connect to the DB instance | `list(string)` | `[]` | no |
-| <a name="input_aurora_subnets"></a> [aurora\_subnets](#input\_aurora\_subnets) | Subnets for the cluster to run in. | `list(string)` | n/a | yes |
+| <a name="input_aurora_security_groups"></a> [aurora\_security\_groups](#input\_aurora\_security\_groups) | List of security group IDs to be allowed to connect to the DB instance | `list(string)` | `[]` | no |
+| <a name="input_aurora_subnets"></a> [aurora\_subnets](#input\_aurora\_subnets) | Subnets for the cluster to run in. | `list(string)` | `[]` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br>See description of individual variables for details.<br>Leave string and numeric variables as `null` to use default value.<br>Individual variable settings (non-null) override settings in context object,<br>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": null,<br>  "descriptor_formats": {},<br>  "enabled": true,<br>  "environment": null,<br>  "id_length_limit": null,<br>  "label_key_case": null,<br>  "label_order": [],<br>  "label_value_case": null,<br>  "labels_as_tags": [<br>    "unset"<br>  ],<br>  "name": null,<br>  "namespace": null,<br>  "regex_replace_chars": null,<br>  "stage": null,<br>  "tags": {},<br>  "tenant": null<br>}</pre> | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br>Map of maps. Keys are names of descriptors. Values are maps of the form<br>`{<br>   format = string<br>   labels = list(string)<br>}`<br>(Type is `any` so the map values can later be enhanced to provide additional options.)<br>`format` is a Terraform format string to be passed to the `format()` function.<br>`labels` is a list of labels, in order, to pass to `format()` function.<br>Label values will be normalized before being passed to `format()` so they will be<br>identical to how they appear in `id`.<br>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
@@ -89,20 +115,40 @@ module "terraform-aws-ref-arch-db" {
 | <a name="input_labels_as_tags"></a> [labels\_as\_tags](#input\_labels\_as\_tags) | Set of labels (ID elements) to include as tags in the `tags` output.<br>Default is to include all labels.<br>Tags with empty values will not be included in the `tags` output.<br>Set to `[]` to suppress all generated tags.<br>**Notes:**<br>  The value of the `name` tag, if included, will be the `id`, not the `name`.<br>  Unlike other `null-label` inputs, the initial setting of `labels_as_tags` cannot be<br>  changed in later chained modules. Attempts to change it will be silently ignored. | `set(string)` | <pre>[<br>  "default"<br>]</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | ID element. Usually the component or solution name, e.g. 'app' or 'jenkins'.<br>This is the only ID element not also included as a `tag`.<br>The "name" tag is set to the full `id` string. There is no tag with the value of the `name` input. | `string` | `null` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | n/a | yes |
+| <a name="input_rds_instance_allocated_storage"></a> [rds\_instance\_allocated\_storage](#input\_rds\_instance\_allocated\_storage) | The allocated storage in GBs. Required unless a snapshot\_identifier or replicate\_source\_db is provided. | `number` | `20` | no |
+| <a name="input_rds_instance_allow_major_version_upgrade"></a> [rds\_instance\_allow\_major\_version\_upgrade](#input\_rds\_instance\_allow\_major\_version\_upgrade) | Allow major version upgrade | `bool` | `false` | no |
+| <a name="input_rds_instance_allowed_cidr_blocks"></a> [rds\_instance\_allowed\_cidr\_blocks](#input\_rds\_instance\_allowed\_cidr\_blocks) | The whitelisted CIDRs which to allow ingress traffic to the DB instance | `list(string)` | `[]` | no |
+| <a name="input_rds_instance_apply_immediately"></a> [rds\_instance\_apply\_immediately](#input\_rds\_instance\_apply\_immediately) | Specifies whether any database modifications are applied immediately, or during the next maintenance window | `bool` | `true` | no |
+| <a name="input_rds_instance_auto_minor_version_upgrade"></a> [rds\_instance\_auto\_minor\_version\_upgrade](#input\_rds\_instance\_auto\_minor\_version\_upgrade) | Allow automated minor version upgrade (e.g. from Postgres 9.5.3 to Postgres 9.5.4) | `bool` | `true` | no |
+| <a name="input_rds_instance_backup_retention_period"></a> [rds\_instance\_backup\_retention\_period](#input\_rds\_instance\_backup\_retention\_period) | Backup retention period in days. Must be > 0 to enable backups | `number` | `0` | no |
+| <a name="input_rds_instance_backup_window"></a> [rds\_instance\_backup\_window](#input\_rds\_instance\_backup\_window) | When AWS can perform DB snapshots, can't overlap with maintenance window | `string` | `"22:00-03:00"` | no |
 | <a name="input_rds_instance_ca_cert_identifier"></a> [rds\_instance\_ca\_cert\_identifier](#input\_rds\_instance\_ca\_cert\_identifier) | The identifier of the CA certificate for the DB instance | `string` | `null` | no |
+| <a name="input_rds_instance_copy_tags_to_snapshot"></a> [rds\_instance\_copy\_tags\_to\_snapshot](#input\_rds\_instance\_copy\_tags\_to\_snapshot) | Copy tags from DB to a snapshot | `bool` | `true` | no |
 | <a name="input_rds_instance_database_name"></a> [rds\_instance\_database\_name](#input\_rds\_instance\_database\_name) | The name of the database to create when the DB instance is created | `string` | `null` | no |
 | <a name="input_rds_instance_database_password"></a> [rds\_instance\_database\_password](#input\_rds\_instance\_database\_password) | Password for the primary DB user. Required unless a snapshot\_identifier or replicate\_source\_db is provided. | `string` | `""` | no |
 | <a name="input_rds_instance_database_port"></a> [rds\_instance\_database\_port](#input\_rds\_instance\_database\_port) | Database port (\_e.g.\_ 3306 for MySQL). Used in the DB Security Group to allow access to the DB instance from the provided security\_group\_ids | `number` | `5432` | no |
 | <a name="input_rds_instance_database_user"></a> [rds\_instance\_database\_user](#input\_rds\_instance\_database\_user) | The name of the database to create when the DB instance is created | `string` | `"admin"` | no |
+| <a name="input_rds_instance_db_options"></a> [rds\_instance\_db\_options](#input\_rds\_instance\_db\_options) | A list of DB options to apply with an option group. Depends on DB engine | <pre>list(object({<br>    db_security_group_memberships  = list(string)<br>    option_name                    = string<br>    port                           = number<br>    version                        = string<br>    vpc_security_group_memberships = list(string)<br><br>    option_settings = list(object({<br>      name  = string<br>      value = string<br>    }))<br>  }))</pre> | `[]` | no |
+| <a name="input_rds_instance_db_parameter"></a> [rds\_instance\_db\_parameter](#input\_rds\_instance\_db\_parameter) | A list of DB parameters to apply. Note that parameters may differ from a DB family to another | <pre>list(object({<br>    apply_method = string<br>    name         = string<br>    value        = string<br>  }))</pre> | `[]` | no |
 | <a name="input_rds_instance_db_parameter_group"></a> [rds\_instance\_db\_parameter\_group](#input\_rds\_instance\_db\_parameter\_group) | The DB parameter group family name. The value depends on DB engine used. See DBParameterGroupFamily for instructions on how to retrieve applicable value. | `string` | `"postgres14"` | no |
 | <a name="input_rds_instance_dns_zone_id"></a> [rds\_instance\_dns\_zone\_id](#input\_rds\_instance\_dns\_zone\_id) | The ID of the DNS Zone in Route53 where a new DNS record will be created for the DB host name | `string` | `""` | no |
 | <a name="input_rds_instance_enabled"></a> [rds\_instance\_enabled](#input\_rds\_instance\_enabled) | Enable creation of an RDS instance | `bool` | `false` | no |
-| <a name="input_rds_instance_engine"></a> [rds\_instance\_engine](#input\_rds\_instance\_engine) | Database engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. | `string` | `"postgres"` | no |
+| <a name="input_rds_instance_engine"></a> [rds\_instance\_engine](#input\_rds\_instance\_engine) | Database engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. For supported values, see the Engine parameter in API action CreateDBInstance. | `string` | `"postgres"` | no |
 | <a name="input_rds_instance_engine_version"></a> [rds\_instance\_engine\_version](#input\_rds\_instance\_engine\_version) | Database engine version, depends on engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. | `string` | `"14.3"` | no |
 | <a name="input_rds_instance_host_name"></a> [rds\_instance\_host\_name](#input\_rds\_instance\_host\_name) | The DB host name created in Route53 | `string` | `"db"` | no |
+| <a name="input_rds_instance_instance_class"></a> [rds\_instance\_instance\_class](#input\_rds\_instance\_instance\_class) | Class of RDS instance | `string` | `"db.t2.medium"` | no |
+| <a name="input_rds_instance_maintenance_window"></a> [rds\_instance\_maintenance\_window](#input\_rds\_instance\_maintenance\_window) | The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi' UTC | `string` | `"Mon:03:00-Mon:04:00"` | no |
 | <a name="input_rds_instance_major_engine_version"></a> [rds\_instance\_major\_engine\_version](#input\_rds\_instance\_major\_engine\_version) | major\_engine\_version	Database MAJOR engine version, depends on engine type | `string` | `"14"` | no |
-| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | RDS Instance name | `string` | n/a | yes |
+| <a name="input_rds_instance_multi_az"></a> [rds\_instance\_multi\_az](#input\_rds\_instance\_multi\_az) | Set to true if multi AZ deployment must be supported | `bool` | `false` | no |
+| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | RDS Instance name | `string` | `""` | no |
 | <a name="input_rds_instance_option_group_name"></a> [rds\_instance\_option\_group\_name](#input\_rds\_instance\_option\_group\_name) | Name of the DB option group to associate | `string` | `""` | no |
+| <a name="input_rds_instance_publicly_accessible"></a> [rds\_instance\_publicly\_accessible](#input\_rds\_instance\_publicly\_accessible) | Determines if database can be publicly available (NOT recommended) | `bool` | `false` | no |
+| <a name="input_rds_instance_security_group_ids"></a> [rds\_instance\_security\_group\_ids](#input\_rds\_instance\_security\_group\_ids) | The IDs of the security groups from which to allow ingress traffic to the DB instance | `list(string)` | `[]` | no |
+| <a name="input_rds_instance_skip_final_snapshot"></a> [rds\_instance\_skip\_final\_snapshot](#input\_rds\_instance\_skip\_final\_snapshot) | If true (default), no snapshot will be made before deleting DB | `bool` | `true` | no |
+| <a name="input_rds_instance_snapshot_identifier"></a> [rds\_instance\_snapshot\_identifier](#input\_rds\_instance\_snapshot\_identifier) | Snapshot identifier e.g: rds:production-2019-06-26-06-05. If specified, the module create cluster from the snapshot | `string` | `null` | no |
+| <a name="input_rds_instance_storage_encrypted"></a> [rds\_instance\_storage\_encrypted](#input\_rds\_instance\_storage\_encrypted) | Specifies whether the DB instance is encrypted. The default is false if not specified | `bool` | `true` | no |
+| <a name="input_rds_instance_storage_type"></a> [rds\_instance\_storage\_type](#input\_rds\_instance\_storage\_type) | One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD) | `string` | `"gp2"` | no |
+| <a name="input_rds_instance_subnet_ids"></a> [rds\_instance\_subnet\_ids](#input\_rds\_instance\_subnet\_ids) | List of subnet IDs for the DB. DB instance will be created in the VPC associated with the DB subnet group provisioned using the subnet IDs. Specify one of subnet\_ids, db\_subnet\_group\_name or availability\_zone | `list(string)` | `[]` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br>Characters matching the regex will be removed from the ID elements.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | n/a | yes |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |

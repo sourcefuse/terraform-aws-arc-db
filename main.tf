@@ -53,16 +53,13 @@ resource "random_password" "rds_db_admin_password" {
 
   lifecycle {
     ignore_changes = [
-      id,
       length,
       lower,
       min_lower,
       min_numeric,
       min_special,
       min_upper,
-      number,
       override_special,
-      result,
       special,
       upper
     ]
@@ -70,22 +67,21 @@ resource "random_password" "rds_db_admin_password" {
 }
 
 resource "random_password" "aurora_db_admin_password" {
+  count  = var.aurora_cluster_enabled == true ? 1 : 0
+
   length           = 64
   special          = true
   override_special = "!#*^"
 
   lifecycle {
     ignore_changes = [
-      id,
       length,
       lower,
       min_lower,
       min_numeric,
       min_special,
       min_upper,
-      number,
       override_special,
-      result,
       special,
       upper
     ]
@@ -95,8 +91,8 @@ resource "random_password" "aurora_db_admin_password" {
 ################################################################################
 ## aurora rds cluster
 ################################################################################
-module "rds_cluster_aurora" {
-  count  = 1 // TODO - make this a variable condition
+module "aurora_cluster" {
+  count  = var.aurora_cluster_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
 
   name      = var.aurora_cluster_name
@@ -109,7 +105,7 @@ module "rds_cluster_aurora" {
   cluster_size   = var.aurora_cluster_size
 
   admin_user     = var.aurora_db_admin_username
-  admin_password = random_password.aurora_db_admin_password.result
+  admin_password = random_password.aurora_db_admin_password[0].result // var.aurora_db_admin_password ? var.aurora_db_admin_password != "" : random_password.aurora_db_admin_password[0].result
   db_name        = var.aurora_db_name
   instance_type  = var.aurora_instance_type
   db_port        = 5432
@@ -147,30 +143,33 @@ module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.38.8"
 
-  stage             = var.environment
-  name              = var.rds_instance_name
-  dns_zone_id       = var.rds_instance_dns_zone_id
-  host_name         = var.rds_instance_host_name
-  database_name     = var.rds_instance_database_name
-  database_user     = var.rds_instance_database_user
-  database_password = try(var.rds_instance_database_password, random_password.rds_db_admin_password.result)
-  database_port     = var.rds_instance_database_port
+  stage               = var.environment
+  name                = var.rds_instance_name
+  dns_zone_id         = var.rds_instance_dns_zone_id
+  host_name           = var.rds_instance_host_name
+  vpc_id              = var.vpc_id
+  multi_az            = var.rds_instance_multi_az
+  storage_type        = var.rds_instance_storage_type
+  instance_class      = var.rds_instance_instance_class
+  allocated_storage   = var.rds_instance_allocated_storage
+  storage_encrypted   = var.rds_instance_storage_encrypted
+  security_group_ids  = var.rds_instance_security_group_ids
+  allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
+  subnet_ids          = var.rds_instance_subnet_ids
 
-  engine               = var.rds_instance_engine
-  engine_version       = var.rds_instance_engine_version
-  major_engine_version = var.rds_instance_major_engine_version
-  db_parameter_group   = var.rds_instance_db_parameter_group
-  option_group_name    = var.rds_instance_option_group_name
-  ca_cert_identifier   = var.rds_instance_ca_cert_identifier
-  publicly_accessible  = var.rds_instance_publicly_accessible
-
-  vpc_id            = var.vpc_id
-  multi_az          = var.rds_instance_multi_az
-  storage_type      = var.rds_instance_storage_type
-  instance_class    = var.rds_instance_instance_class
-  allocated_storage = var.rds_instance_allocated_storage
-  storage_encrypted = var.rds_instance_storage_encrypted
-
+  database_name               = var.rds_instance_database_name
+  database_user               = var.rds_instance_database_user
+  database_password           = random_password.rds_db_admin_password[0].result // var.rds_instance_database_password ? var.rds_instance_database_password != "" : random_password.rds_db_admin_password[0].result
+  database_port               = var.rds_instance_database_port
+  engine                      = var.rds_instance_engine
+  engine_version              = var.rds_instance_engine_version
+  major_engine_version        = var.rds_instance_major_engine_version
+  db_parameter_group          = var.rds_instance_db_parameter_group
+  db_parameter                = var.rds_instance_db_parameter
+  db_options                  = var.rds_instance_db_options
+  option_group_name           = var.rds_instance_option_group_name
+  ca_cert_identifier          = var.rds_instance_ca_cert_identifier
+  publicly_accessible         = var.rds_instance_publicly_accessible
   snapshot_identifier         = var.rds_instance_snapshot_identifier
   auto_minor_version_upgrade  = var.rds_instance_auto_minor_version_upgrade
   allow_major_version_upgrade = var.rds_instance_allow_major_version_upgrade
@@ -180,37 +179,6 @@ module "rds_instance" {
   copy_tags_to_snapshot       = var.rds_instance_copy_tags_to_snapshot
   backup_retention_period     = var.rds_instance_backup_retention_period
   backup_window               = var.rds_instance_backup_window
-
-  security_group_ids  = var.rds_instance_security_group_ids
-  allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
-  subnet_ids          = var.rds_instance_subnet_ids
-
-  db_parameter = [
-    {
-      name  = "myisam_sort_buffer_size",
-      value = "1048576"
-    },
-    {
-      name  = "sort_buffer_size",
-      value = "2097152"
-    }
-  ]
-
-  db_options = [
-    {
-      option_name = "MARIADB_AUDIT_PLUGIN",
-      option_settings = [
-        {
-          name  = "SERVER_AUDIT_EVENTS",
-          value = "CONNECT"
-        },
-        {
-          name  = "SERVER_AUDIT_FILE_ROTATIONS",
-          value = "37"
-        }
-      ]
-    }
-  ]
 
   tags = merge(var.tags, tomap({
     Name = var.rds_instance_name

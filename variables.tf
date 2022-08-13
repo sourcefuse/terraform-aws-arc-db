@@ -11,6 +11,11 @@ variable "vpc_id" {
   description = "vpc_id for the VPC to run the cluster."
 }
 
+variable "enhanced_monitoring_name" {
+  type        = string
+  description = "Name to assign the enhanced monitoring resources."
+}
+
 ################################################################################
 ## aurora
 ################################################################################

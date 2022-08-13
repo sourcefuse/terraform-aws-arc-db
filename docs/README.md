@@ -11,13 +11,14 @@ Terraform DB module for the SourceFuse AWS reference architecture
 To see a full example, check out the [main.tf](./example/main.tf) file in the example folder.  
 
 ```hcl
-module "terraform-aws-ref-arch-db" {
-  source = "git::git@github.com:sourcefuse/terraform-aws-ref-arch-db.git"
+module "aurora" {
+  source = "git::https://github.com/sourcefuse/terraform-aws-ref-arch-db"
 
-  environment = "dev"
-  namespace   = "arc"
-  region      = "us-east-1"
-  vpc_id      = "vpc-000111222333444"
+  environment              = "dev"
+  namespace                = "arc"
+  region                   = "us-east-1"
+  vpc_id                   = "vpc-000111222333444"
+  enhanced_monitoring_name = "aurora-example-enhanced-monitoring"
 
   aurora_cluster_enabled             = false
   aurora_cluster_name                = "example"

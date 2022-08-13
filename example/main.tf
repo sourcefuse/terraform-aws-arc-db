@@ -22,8 +22,9 @@ module "aurora" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
-  aurora_cluster_enabled             = false
+  aurora_cluster_enabled             = true
   aurora_cluster_name                = "example"
+  enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"
   aurora_db_admin_username           = "example_db_admin"
   aurora_db_name                     = "example"
   aurora_cluster_family              = "aurora-postgresql10"
@@ -39,7 +40,6 @@ module "aurora" {
   aurora_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
 }
 
-/*
 ## sql server rds instance
 module "rds_sql_server" {
   source = "../."
@@ -51,15 +51,16 @@ module "rds_sql_server" {
 
   rds_instance_enabled                     = true
   rds_instance_name                        = "example"
+  enhanced_monitoring_name                 = "sql-server-example-enhanced-monitoring"
   rds_instance_dns_zone_id                 = ""
   rds_instance_host_name                   = ""
-  rds_instance_database_name               = "example"
+  rds_instance_database_name               = null // sql server database name must be null
   rds_instance_database_user               = "example_db_admin"
   rds_instance_database_port               = 1433
   rds_instance_engine                      = "sqlserver-ex" // express edition.
   rds_instance_engine_version              = "15.00.4198.2.v1"
   rds_instance_major_engine_version        = "2019"
-  rds_instance_db_parameter_group          = "default.sqlserver-ex-15.0"
+  rds_instance_db_parameter_group          = "sqlserver-ex-15.0"
   rds_instance_db_parameter                = []
   rds_instance_db_options                  = []
   rds_instance_option_group_name           = "default:sqlserver-ex-15-00"
@@ -67,9 +68,9 @@ module "rds_sql_server" {
   rds_instance_publicly_accessible         = false
   rds_instance_multi_az                    = false
   rds_instance_storage_type                = "gp2"
-  rds_instance_instance_class              = "db.t2.small"
+  rds_instance_instance_class              = "db.t3.small"
   rds_instance_allocated_storage           = 25
-  rds_instance_storage_encrypted           = true
+  rds_instance_storage_encrypted           = false // sql server express doesn't support encryption at rest
   rds_instance_snapshot_identifier         = null
   rds_instance_auto_minor_version_upgrade  = true
   rds_instance_allow_major_version_upgrade = true
@@ -83,4 +84,3 @@ module "rds_sql_server" {
   rds_instance_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
   rds_instance_subnet_ids                  = data.aws_subnets.private.ids
 }
-*/

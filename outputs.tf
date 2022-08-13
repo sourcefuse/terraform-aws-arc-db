@@ -1,3 +1,6 @@
+################################################################################
+## aurora
+################################################################################
 output "name" {
   value       = try(module.aurora_cluster[0].database_name, null)
   description = "Database name"
@@ -37,3 +40,8 @@ output "replicas_host" {
   value       = try(module.aurora_cluster[0].replicas_host, null)
   description = "Replicas hostname"
 }
+
+################################################################################
+## rds
+################################################################################
+// TODO - add rds outputs

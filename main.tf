@@ -1,22 +1,56 @@
+################################################################################
+## kms
+################################################################################
+## aurora
 // TODO: add alarms
 resource "aws_kms_key" "aurora_cluster_kms_key" {
+  count = var.aurora_cluster_enabled == true ? 1 : 0
+
   description             = "Aurora cluster KMS key"
   deletion_window_in_days = 10
 
   tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-aurora-cluster-key"
+    Name = "${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
   }))
 }
 
 resource "aws_kms_alias" "aurora_cluster_kms_key" {
-  target_key_id = aws_kms_key.aurora_cluster_kms_key.id
-  name          = "alias/${var.namespace}-${var.environment}-aurora-cluster-kms-key"
+  count = var.aurora_cluster_enabled == true ? 1 : 0
+
+  name          = "alias/${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
+  target_key_id = aws_kms_key.aurora_cluster_kms_key[0].id
 }
 
+## rds
+resource "aws_kms_key" "rds_db_kms_key" {
+  count = var.rds_instance_enabled == true ? 1 : 0
+
+  description             = "RDS DB KMS key"
+  deletion_window_in_days = 10
+
+  tags = merge(var.tags, tomap({
+    Name = "${var.namespace}-${var.environment}-rds-db-kms-key" // TODO - add support for custom names
+  }))
+}
+
+resource "aws_kms_alias" "rds_db_kms_key" {
+  count = var.rds_instance_enabled == true ? 1 : 0
+
+  name          = "alias/${var.namespace}-${var.environment}-rds-db-kms-key" // TODO - add support for custom names
+  target_key_id = aws_kms_key.rds_db_kms_key[0].id
+}
+
+################################################################################
+## iam
+################################################################################
 # create IAM role for monitoring
 resource "aws_iam_role" "enhanced_monitoring" {
-  name               = "${var.namespace}-${var.environment}-enhanced-monitoring-role"
+  name               = "${var.enhanced_monitoring_name}-role"
   assume_role_policy = data.aws_iam_policy_document.enhanced_monitoring.json
+
+  tags = merge(var.tags, tomap({
+    Name = "${var.enhanced_monitoring_name}-role"
+  }))
 }
 
 # Attach Amazon's managed policy for RDS enhanced monitoring
@@ -44,28 +78,7 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 ################################################################################
 ## password generation
 ################################################################################
-resource "random_password" "rds_db_admin_password" {
-  count = var.rds_instance_enabled == true ? 1 : 0
-
-  length           = 64
-  special          = true
-  override_special = "!#*^"
-
-  lifecycle {
-    ignore_changes = [
-      length,
-      lower,
-      min_lower,
-      min_numeric,
-      min_special,
-      min_upper,
-      override_special,
-      special,
-      upper
-    ]
-  }
-}
-
+## aurora
 resource "random_password" "aurora_db_admin_password" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
@@ -88,8 +101,31 @@ resource "random_password" "aurora_db_admin_password" {
   }
 }
 
+## rds
+resource "random_password" "rds_db_admin_password" {
+  count = var.rds_instance_enabled == true ? 1 : 0
+
+  length           = 64
+  special          = true
+  override_special = "!#*^"
+
+  lifecycle {
+    ignore_changes = [
+      length,
+      lower,
+      min_lower,
+      min_numeric,
+      min_special,
+      min_upper,
+      override_special,
+      special,
+      upper
+    ]
+  }
+}
+
 ################################################################################
-## aurora rds cluster
+## aurora cluster
 ################################################################################
 module "aurora_cluster" {
   count  = var.aurora_cluster_enabled == true ? 1 : 0
@@ -137,7 +173,7 @@ module "aurora_cluster" {
 }
 
 ################################################################################
-## sql server
+## rds
 ################################################################################
 module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0

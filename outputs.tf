@@ -45,26 +45,26 @@ output "aurora_replicas_host" {
 ## rds
 ################################################################################
 output "rds_instance_arn" {
-  value = try(module.rds_instance[0].instance_arn, null)
+  value       = try(module.rds_instance[0].instance_arn, null)
   description = "The RDS Instance AWS ARN."
 }
 
 output "rds_instance_endpoint" {
-  value = try(module.rds_instance[0].instance_endpoint, null)
+  value       = try(module.rds_instance[0].instance_endpoint, null)
   description = "The DNS address to the RDS Instance."
 }
 
 output "rds_instance_hostname" {
-  value = try(module.rds_instance[0].hostname, null)
+  value       = try(module.rds_instance[0].hostname, null)
   description = "Hostname of the RDS Instance."
 }
 
 output "rds_instance_id" {
-  value = try(module.rds_instance[0].instance_id, null)
+  value       = try(module.rds_instance[0].instance_id, null)
   description = "The RDS Instance AWS ID."
 }
 
 output "rds_instance_resource_id" {
-  value = try(module.rds_instance[0].resource_id, null)
+  value       = try(module.rds_instance[0].resource_id, null)
   description = "The RDS Instance AWS resource ID."
 }

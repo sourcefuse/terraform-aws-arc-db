@@ -164,14 +164,19 @@ module "aurora" {
 
 | Name | Description |
 |------|-------------|
-| <a name="output_arn"></a> [arn](#output\_arn) | Amazon Resource Name (ARN) of cluster |
-| <a name="output_cluster_identifier"></a> [cluster\_identifier](#output\_cluster\_identifier) | Cluster Identifier |
-| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | The DNS address of the RDS instance |
-| <a name="output_master_host"></a> [master\_host](#output\_master\_host) | DB Master hostname |
-| <a name="output_master_username"></a> [master\_username](#output\_master\_username) | Username for the master DB user |
-| <a name="output_name"></a> [name](#output\_name) | Database name |
-| <a name="output_reader_endpoint"></a> [reader\_endpoint](#output\_reader\_endpoint) | A read-only endpoint for the Aurora cluster, automatically load-balanced across replicas |
-| <a name="output_replicas_host"></a> [replicas\_host](#output\_replicas\_host) | Replicas hostname |
+| <a name="output_aurora_arn"></a> [aurora\_arn](#output\_aurora\_arn) | Amazon Resource Name (ARN) of cluster |
+| <a name="output_aurora_cluster_identifier"></a> [aurora\_cluster\_identifier](#output\_aurora\_cluster\_identifier) | Cluster Identifier |
+| <a name="output_aurora_endpoint"></a> [aurora\_endpoint](#output\_aurora\_endpoint) | The DNS address of the RDS instance |
+| <a name="output_aurora_master_host"></a> [aurora\_master\_host](#output\_aurora\_master\_host) | DB Master hostname |
+| <a name="output_aurora_master_username"></a> [aurora\_master\_username](#output\_aurora\_master\_username) | Username for the master DB user |
+| <a name="output_aurora_name"></a> [aurora\_name](#output\_aurora\_name) | Database name |
+| <a name="output_aurora_reader_endpoint"></a> [aurora\_reader\_endpoint](#output\_aurora\_reader\_endpoint) | A read-only endpoint for the Aurora cluster, automatically load-balanced across replicas |
+| <a name="output_aurora_replicas_host"></a> [aurora\_replicas\_host](#output\_aurora\_replicas\_host) | Replicas hostname |
+| <a name="output_rds_instance_arn"></a> [rds\_instance\_arn](#output\_rds\_instance\_arn) | The RDS Instance AWS ARN. |
+| <a name="output_rds_instance_endpoint"></a> [rds\_instance\_endpoint](#output\_rds\_instance\_endpoint) | The DNS address to the RDS Instance. |
+| <a name="output_rds_instance_hostname"></a> [rds\_instance\_hostname](#output\_rds\_instance\_hostname) | Hostname of the RDS Instance. |
+| <a name="output_rds_instance_id"></a> [rds\_instance\_id](#output\_rds\_instance\_id) | The RDS Instance AWS ID. |
+| <a name="output_rds_instance_resource_id"></a> [rds\_instance\_resource\_id](#output\_rds\_instance\_resource\_id) | The RDS Instance AWS resource ID. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 
 ## Development

@@ -23,7 +23,7 @@ module "aurora" {
   vpc_id      = data.aws_vpc.vpc.id
 
   aurora_cluster_enabled             = true
-  aurora_cluster_name                = "example"
+  aurora_cluster_name                = "aurora-example"
   enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"
   aurora_db_admin_username           = "example_db_admin"
   aurora_db_name                     = "example"
@@ -50,7 +50,7 @@ module "rds_sql_server" {
   vpc_id      = data.aws_vpc.vpc.id
 
   rds_instance_enabled                     = true
-  rds_instance_name                        = "example"
+  rds_instance_name                        = "sql-server-example"
   enhanced_monitoring_name                 = "sql-server-example-enhanced-monitoring"
   rds_instance_dns_zone_id                 = ""
   rds_instance_host_name                   = ""

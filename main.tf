@@ -181,6 +181,7 @@ module "rds_instance" {
 
   stage               = var.environment
   name                = var.rds_instance_name
+  namespace           = var.namespace
   dns_zone_id         = var.rds_instance_dns_zone_id
   host_name           = var.rds_instance_host_name
   vpc_id              = var.vpc_id
@@ -217,7 +218,7 @@ module "rds_instance" {
   backup_window               = var.rds_instance_backup_window
 
   tags = merge(var.tags, tomap({
-    Name = var.rds_instance_name
+    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"
   }))
 }
 

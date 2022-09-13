@@ -342,5 +342,5 @@ variable "rds_instance_subnet_ids" {
 variable "rds_instance_license_model" {
   type        = string
   description = "License model for this DB. Optional, but required for some DB Engines. Valid values: license-included | bring-your-own-license | general-public-license"
-  default = ""
+  default     = ""
 }

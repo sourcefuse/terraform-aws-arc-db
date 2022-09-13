@@ -338,3 +338,9 @@ variable "rds_instance_subnet_ids" {
   description = "List of subnet IDs for the DB. DB instance will be created in the VPC associated with the DB subnet group provisioned using the subnet IDs. Specify one of subnet_ids, db_subnet_group_name or availability_zone"
   default     = []
 }
+
+variable "rds_instance_license_model" {
+  type        = string
+  description = "License model for this DB. Optional, but required for some DB Engines. Valid values: license-included | bring-your-own-license | general-public-license"
+  default     = ""
+}

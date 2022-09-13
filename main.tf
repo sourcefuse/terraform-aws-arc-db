@@ -193,6 +193,7 @@ module "rds_instance" {
   security_group_ids  = var.rds_instance_security_group_ids
   allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
   subnet_ids          = var.rds_instance_subnet_ids
+  license_model       = var.rds_instance_license_model
 
   database_name               = var.rds_instance_database_name
   database_user               = var.rds_instance_database_user

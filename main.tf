@@ -56,7 +56,7 @@ resource "aws_iam_role" "enhanced_monitoring" {
 # Attach Amazon's managed policy for RDS enhanced monitoring
 resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
   role       = aws_iam_role.enhanced_monitoring.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+  policy_arn = var.enhanced_monitoring_arn
 }
 
 # allow rds to assume this role

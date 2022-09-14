@@ -16,6 +16,12 @@ variable "enhanced_monitoring_name" {
   description = "Name to assign the enhanced monitoring resources."
 }
 
+variable "enhanced_monitoring_arn" {
+  type        = string
+  description = "ARN to the enhanced monitoring policy"
+  default     = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
 ################################################################################
 ## aurora
 ################################################################################

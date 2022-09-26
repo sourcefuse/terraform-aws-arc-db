@@ -198,6 +198,12 @@ variable "rds_instance_db_parameter_group" {
   default     = "postgres14"
 }
 
+variable "rds_kms_key_arn_override" {
+  type        = string
+  description = "Override the default created KMS key to encrypt storage"
+  default     = ""
+}
+
 variable "rds_instance_db_parameter" {
   type = list(object({
     apply_method = string

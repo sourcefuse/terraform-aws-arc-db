@@ -29,14 +29,14 @@ resource "aws_kms_key" "rds_db_kms_key" {
   deletion_window_in_days = 10
 
   tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-rds-db-kms-key" // TODO - add support for custom names
+    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"
   }))
 }
 
 resource "aws_kms_alias" "rds_db_kms_key" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
-  name          = "alias/${var.namespace}-${var.environment}-rds-db-kms-key" // TODO - add support for custom names
+  name          = "alias/${var.namespace}-${var.environment}-${var.rds_instance_name}"
   target_key_id = aws_kms_key.rds_db_kms_key[0].id
 }
 
@@ -195,6 +195,7 @@ module "rds_instance" {
   subnet_ids          = var.rds_instance_subnet_ids
   license_model       = var.rds_instance_license_model
 
+  kms_key_arn                 = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name               = var.rds_instance_database_name
   database_user               = var.rds_instance_database_user
   database_password           = random_password.rds_db_admin_password[0].result // var.rds_instance_database_password ? var.rds_instance_database_password != "" : random_password.rds_db_admin_password[0].result

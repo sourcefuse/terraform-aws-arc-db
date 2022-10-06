@@ -128,6 +128,7 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
+  region = var.region
   count  = var.aurora_cluster_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
 

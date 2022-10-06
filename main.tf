@@ -84,6 +84,7 @@ module "rds_cluster_aurora_postgres" {
   storage_encrypted     = true
   instance_type         = var.instance_type
   tags                  = local.tags
+  region                = var.region
   copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30

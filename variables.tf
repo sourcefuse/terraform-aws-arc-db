@@ -26,23 +26,23 @@ variable "engine_mode" {
   description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
-variable "engine_version" {
-  type        = string
-  default     = "aurora-postgresql13.3"
-  description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
-}
+# variable "engine_version" {
+#   type        = string
+#   default     = "aurora-postgresql13.3"
+#   description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
+# }
 
-variable "allow_major_version_upgrade" {
-  type        = bool
-  default     = false
-  description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to false."
-}
+# variable "allow_major_version_upgrade" {
+#   type        = bool
+#   default     = false
+#   description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to false."
+# }
 
-variable "auto_minor_version_upgrade" {
-  type        = bool
-  default     = true
-  description = "Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window"
-}
+# variable "auto_minor_version_upgrade" {
+#   type        = bool
+#   default     = true
+#   description = "Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window"
+# }
 
 variable "cluster_size" {
   type        = number

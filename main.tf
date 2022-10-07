@@ -3,6 +3,10 @@
 ################################################################################
 ## aurora
 // TODO: add alarms
+
+provider "aws" {
+  region = var.region
+}
 resource "aws_kms_key" "aurora_cluster_kms_key" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
@@ -128,7 +132,6 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
-  region = var.region
   count  = var.aurora_cluster_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
 
@@ -136,13 +139,16 @@ module "aurora_cluster" {
   namespace = var.namespace
   stage     = var.environment
 
-  engine         = var.aurora_engine
-  engine_mode    = var.aurora_engine_mode
-  cluster_family = var.aurora_cluster_family
-  cluster_size   = var.aurora_cluster_size
+  engine                      = var.aurora_engine
+  engine_mode                 = var.aurora_engine_mode
+  allow_major_version_upgrade = var.aurora_allow_major_version_upgrade
+  auto_minor_version_upgrade  = var.aurora_auto_minor_version_upgrade
+  engine_version              = var.aurora_engine_version
+  cluster_family              = var.aurora_cluster_family
+  cluster_size                = var.aurora_cluster_size
 
   admin_user     = var.aurora_db_admin_username
-  admin_password = random_password.aurora_db_admin_password[0].result // var.aurora_db_admin_password ? var.aurora_db_admin_password != "" : random_password.aurora_db_admin_password[0].result
+  admin_password = var.aurora_db_admin_password ? var.aurora_db_admin_password != "" : random_password.aurora_db_admin_password[0].result
   db_name        = var.aurora_db_name
   instance_type  = var.aurora_instance_type
   db_port        = 5432
@@ -199,7 +205,7 @@ module "rds_instance" {
   kms_key_arn                 = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name               = var.rds_instance_database_name
   database_user               = var.rds_instance_database_user
-  database_password           = random_password.rds_db_admin_password[0].result // var.rds_instance_database_password ? var.rds_instance_database_password != "" : random_password.rds_db_admin_password[0].result
+  database_password           = var.rds_instance_database_password ? var.rds_instance_database_password != "" : random_password.rds_db_admin_password[0].result
   database_port               = var.rds_instance_database_port
   engine                      = var.rds_instance_engine
   engine_version              = var.rds_instance_engine_version

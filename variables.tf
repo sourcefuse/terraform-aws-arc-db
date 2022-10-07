@@ -43,12 +43,12 @@ variable "aurora_db_admin_username" {
   default     = ""
 }
 
-# variable "aurora_db_admin_password" {
-#   type        = string
-#   description = "Password of the DB admin"
-#   sensitive   = true
-#   default     = ""
-# }
+variable "aurora_db_admin_password" {
+  type        = string
+  description = "Password of the DB admin"
+  sensitive   = true
+  default     = ""
+}
 
 variable "aurora_db_name" {
   type        = string
@@ -74,23 +74,23 @@ variable "aurora_engine_mode" {
   description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
-# variable "aurora_engine_version" {
-#   type        = string
-#   default     = "aurora-postgresql13.3"
-#   description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
-# }
+variable "aurora_engine_version" {
+  type        = string
+  default     = "aurora-postgresql13.3"
+  description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
+}
 
-# variable "aurora_allow_major_version_upgrade" {
-#   type        = bool
-#   default     = false
-#   description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to false."
-# }
+variable "aurora_allow_major_version_upgrade" {
+  type        = bool
+  default     = false
+  description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to false."
+}
 
-# variable "aurora_auto_minor_version_upgrade" {
-#   type        = bool
-#   default     = true
-#   description = "Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window"
-# }
+variable "aurora_auto_minor_version_upgrade" {
+  type        = bool
+  default     = true
+  description = "Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window"
+}
 
 variable "aurora_cluster_size" {
   type        = number
@@ -161,12 +161,12 @@ variable "rds_instance_database_user" {
   default     = "admin"
 }
 
-# variable "rds_instance_database_password" {
-#   type        = string
-#   description = "Password for the primary DB user. Required unless a snapshot_identifier or replicate_source_db is provided."
-#   sensitive   = true
-#   default     = ""
-# }
+variable "rds_instance_database_password" {
+  type        = string
+  description = "Password for the primary DB user. Required unless a snapshot_identifier or replicate_source_db is provided."
+  sensitive   = true
+  default     = ""
+}
 
 variable "rds_instance_database_port" {
   type        = number

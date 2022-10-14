@@ -11,8 +11,8 @@ resource "aws_kms_key" "aurora_cluster_kms_key" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
   description             = "Aurora cluster KMS key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
+  deletion_window_in_days = var.deletion_window_in_days
+  enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
     Name = "${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
@@ -31,8 +31,8 @@ resource "aws_kms_key" "rds_db_kms_key" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
   description             = "RDS DB KMS key"
-  deletion_window_in_days = 10
-  enable_key_rotation     = true
+  deletion_window_in_days = var.deletion_window_in_days
+  enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
     Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"

@@ -143,6 +143,16 @@ variable "rds_instance_dns_zone_id" {
   default     = ""
 }
 
+variable "deletion_window_in_days" {
+  type    = number
+  default = 10
+}
+
+variable "enable_key_rotation" {
+  type    = bool
+  default = true
+}
+
 variable "rds_instance_host_name" {
   type        = string
   description = "The DB host name created in Route53"

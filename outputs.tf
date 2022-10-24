@@ -68,3 +68,11 @@ output "rds_instance_resource_id" {
   value       = try(module.rds_instance[0].resource_id, null)
   description = "The RDS Instance AWS resource ID."
 }
+
+output "rds_instance_kms_arn" {
+  value = aws_kms_key.rds_db_kms_key.arn
+}
+
+output "rds_instance_kms_id" {
+  value = aws_kms_key.rds_db_kms_key.key_id
+}

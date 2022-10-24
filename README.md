@@ -183,8 +183,8 @@ module "aurora" {
 | <a name="output_rds_instance_endpoint"></a> [rds\_instance\_endpoint](#output\_rds\_instance\_endpoint) | The DNS address to the RDS Instance. |
 | <a name="output_rds_instance_hostname"></a> [rds\_instance\_hostname](#output\_rds\_instance\_hostname) | Hostname of the RDS Instance. |
 | <a name="output_rds_instance_id"></a> [rds\_instance\_id](#output\_rds\_instance\_id) | The RDS Instance AWS ID. |
-| <a name="output_rds_instance_kms_arn"></a> [rds\_instance\_kms\_arn](#output\_rds\_instance\_kms\_arn) | n/a |
-| <a name="output_rds_instance_kms_id"></a> [rds\_instance\_kms\_id](#output\_rds\_instance\_kms\_id) | n/a |
+| <a name="output_rds_instance_kms_arn"></a> [rds\_instance\_kms\_arn](#output\_rds\_instance\_kms\_arn) | RDS KMS Key ARN |
+| <a name="output_rds_instance_kms_id"></a> [rds\_instance\_kms\_id](#output\_rds\_instance\_kms\_id) | Output RDS KMS Key ID if the var.rds\_kms\_key\_arn\_override is "" |
 | <a name="output_rds_instance_resource_id"></a> [rds\_instance\_resource\_id](#output\_rds\_instance\_resource\_id) | The RDS Instance AWS resource ID. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

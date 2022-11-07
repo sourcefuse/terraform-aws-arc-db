@@ -68,3 +68,13 @@ output "rds_instance_resource_id" {
   value       = try(module.rds_instance[0].resource_id, null)
   description = "The RDS Instance AWS resource ID."
 }
+
+output "rds_instance_kms_arn" {
+  value       = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : try(aws_kms_key.rds_db_kms_key[0].arn, null)
+  description = "RDS KMS Key ARN"
+}
+
+output "rds_instance_kms_id" {
+  value       = var.rds_kms_key_arn_override == "" ? aws_kms_key.rds_db_kms_key[0].key_id : null
+  description = "Output RDS KMS Key ID if the var.rds_kms_key_arn_override is \"\""
+}

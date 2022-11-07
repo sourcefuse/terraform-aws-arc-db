@@ -51,8 +51,10 @@ module "aurora" {
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0.8 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.25.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | ~> 3.1.1 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >=3.0.0 |
 
 ## Providers
 
@@ -107,8 +109,10 @@ module "aurora" {
 | <a name="input_aurora_security_groups"></a> [aurora\_security\_groups](#input\_aurora\_security\_groups) | List of security group IDs to be allowed to connect to the DB instance | `list(string)` | `[]` | no |
 | <a name="input_aurora_subnets"></a> [aurora\_subnets](#input\_aurora\_subnets) | Subnets for the cluster to run in. | `list(string)` | `[]` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br>See description of individual variables for details.<br>Leave string and numeric variables as `null` to use default value.<br>Individual variable settings (non-null) override settings in context object,<br>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": null,<br>  "descriptor_formats": {},<br>  "enabled": true,<br>  "environment": null,<br>  "id_length_limit": null,<br>  "label_key_case": null,<br>  "label_order": [],<br>  "label_value_case": null,<br>  "labels_as_tags": [<br>    "unset"<br>  ],<br>  "name": null,<br>  "namespace": null,<br>  "regex_replace_chars": null,<br>  "stage": null,<br>  "tags": {},<br>  "tenant": null<br>}</pre> | no |
+| <a name="input_deletion_window_in_days"></a> [deletion\_window\_in\_days](#input\_deletion\_window\_in\_days) | n/a | `number` | `10` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br>Map of maps. Keys are names of descriptors. Values are maps of the form<br>`{<br>   format = string<br>   labels = list(string)<br>}`<br>(Type is `any` so the map values can later be enhanced to provide additional options.)<br>`format` is a Terraform format string to be passed to the `format()` function.<br>`labels` is a list of labels, in order, to pass to `format()` function.<br>Label values will be normalized before being passed to `format()` so they will be<br>identical to how they appear in `id`.<br>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
+| <a name="input_enable_key_rotation"></a> [enable\_key\_rotation](#input\_enable\_key\_rotation) | n/a | `bool` | `true` | no |
 | <a name="input_enabled"></a> [enabled](#input\_enabled) | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
 | <a name="input_enhanced_monitoring_arn"></a> [enhanced\_monitoring\_arn](#input\_enhanced\_monitoring\_arn) | ARN to the enhanced monitoring policy | `string` | `"arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"` | no |
 | <a name="input_enhanced_monitoring_name"></a> [enhanced\_monitoring\_name](#input\_enhanced\_monitoring\_name) | Name to assign the enhanced monitoring resources. | `string` | n/a | yes |
@@ -179,6 +183,8 @@ module "aurora" {
 | <a name="output_rds_instance_endpoint"></a> [rds\_instance\_endpoint](#output\_rds\_instance\_endpoint) | The DNS address to the RDS Instance. |
 | <a name="output_rds_instance_hostname"></a> [rds\_instance\_hostname](#output\_rds\_instance\_hostname) | Hostname of the RDS Instance. |
 | <a name="output_rds_instance_id"></a> [rds\_instance\_id](#output\_rds\_instance\_id) | The RDS Instance AWS ID. |
+| <a name="output_rds_instance_kms_arn"></a> [rds\_instance\_kms\_arn](#output\_rds\_instance\_kms\_arn) | RDS KMS Key ARN |
+| <a name="output_rds_instance_kms_id"></a> [rds\_instance\_kms\_id](#output\_rds\_instance\_kms\_id) | Output RDS KMS Key ID if the var.rds\_kms\_key\_arn\_override is "" |
 | <a name="output_rds_instance_resource_id"></a> [rds\_instance\_resource\_id](#output\_rds\_instance\_resource\_id) | The RDS Instance AWS resource ID. |
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 

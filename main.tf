@@ -207,7 +207,7 @@ module "rds_instance" {
   kms_key_arn                 = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name               = var.rds_instance_database_name
   database_user               = var.rds_instance_database_user
-  database_password           = var.rds_instance_database_password ? var.rds_instance_database_password != "" : random_password.rds_db_admin_password[0].result
+  database_password           = var.rds_instance_database_password != "" ? var.rds_instance_database_password : random_password.rds_db_admin_password[0].result
   database_port               = var.rds_instance_database_port
   engine                      = var.rds_instance_engine
   engine_version              = var.rds_instance_engine_version

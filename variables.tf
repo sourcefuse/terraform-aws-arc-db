@@ -1,11 +1,6 @@
 ################################################################################
 ## shared
 ################################################################################
-variable "region" {
-  type        = string
-  description = "AWS region"
-}
-
 variable "vpc_id" {
   type        = string
   description = "vpc_id for the VPC to run the cluster."

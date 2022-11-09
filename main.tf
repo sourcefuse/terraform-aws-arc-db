@@ -3,10 +3,6 @@
 ################################################################################
 ## aurora
 // TODO: add alarms
-
-provider "aws" {
-  region = var.region
-}
 resource "aws_kms_key" "aurora_cluster_kms_key" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 

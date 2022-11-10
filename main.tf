@@ -199,6 +199,7 @@ module "rds_instance" {
   allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
   subnet_ids          = var.rds_instance_subnet_ids
   license_model       = var.rds_instance_license_model
+  deletion_protection = var.deletion_protection
 
   kms_key_arn                 = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name               = var.rds_instance_database_name
@@ -235,10 +236,11 @@ module "rds_instance" {
 resource "aws_ssm_parameter" "this" {
   for_each = { for x in local.ssm_params : x.name => x }
 
-  name      = lookup(each.value, "name", null)
-  value     = lookup(each.value, "value", null)
-  type      = lookup(each.value, "type", null)
-  overwrite = true
+  name        = lookup(each.value, "name", null)
+  value       = lookup(each.value, "value", null)
+  description = lookup(each.value, "description", "Managed by Terraform")
+  type        = lookup(each.value, "type", null)
+  overwrite   = lookup(each.value, "overwrite", true)
 
   tags = merge(var.tags, local.ssm_tags)
 }

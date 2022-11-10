@@ -17,6 +17,12 @@ variable "enhanced_monitoring_arn" {
   default     = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
 }
 
+variable "deletion_protection" {
+  description = "Protect the instance from being deleted"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 ## aurora
 ################################################################################

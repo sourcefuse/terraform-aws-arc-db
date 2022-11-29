@@ -146,7 +146,7 @@ module "aurora_cluster" {
   cluster_size                = var.aurora_cluster_size
 
   admin_user     = var.aurora_db_admin_username
-  admin_password = var.aurora_db_admin_password ? var.aurora_db_admin_password != "" : random_password.aurora_db_admin_password[0].result
+  admin_password = var.aurora_db_admin_password != "" ? var.aurora_db_admin_password : random_password.aurora_db_admin_password[0].result
   db_name        = var.aurora_db_name
   instance_type  = var.aurora_instance_type
   db_port        = 5432
@@ -175,6 +175,110 @@ module "aurora_cluster" {
   tags = merge(var.tags, tomap({
     Name = var.aurora_cluster_name
   }))
+}
+
+################################################################################
+## option group
+################################################################################
+resource "aws_iam_role" "option_group" {
+  count = var.enable_custom_option_group == true ? 1 : 0
+
+  name = "${var.namespace}-${var.environment}-backup-restore"
+
+  assume_role_policy = jsonencode(
+    {
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = "sts:AssumeRole",
+          Principal = {
+            Service = "rds.amazonaws.com"
+          },
+        },
+      ]
+    }
+  )
+}
+
+resource "aws_iam_policy" "option_group" {
+  count = var.enable_custom_option_group == true ? 1 : 0
+
+  name_prefix = "${var.namespace}-${var.environment}-backup-restore-"
+
+  policy = jsonencode(
+    {
+      Version = "2012-10-17",
+      Statement = [
+        {
+          Effect = "Allow",
+          Action = [
+            "kms:DescribeKey",
+            "kms:GenerateDataKey",
+            "kms:Encrypt",
+            "kms:Decrypt"
+          ],
+          Resource = local.instance_kms_id
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "kms:DescribeKey",
+            "kms:GenerateDataKey",
+            "kms:Encrypt",
+            "kms:Decrypt"
+          ],
+          Resource = local.s3_kms_alias
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "s3:ListBucket",
+            "s3:GetBucketLocation"
+          ],
+          Resource = "arn:aws:s3:::${var.namespace}-${terraform.workspace}-sql-bak"
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "s3:GetObjectAttributes",
+            "s3:GetObject",
+            "s3:PutObject",
+            "s3:ListMultipartUploadParts",
+            "s3:AbortMultipartUpload"
+          ],
+          Resource = "arn:aws:s3:::${var.namespace}-${var.environment}-sql-bak/*"
+        }
+      ]
+    }
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "option_group" {
+  count = var.enable_custom_option_group == true ? 1 : 0
+
+  role       = aws_iam_role.option_group[0].name
+  policy_arn = aws_iam_policy.option_group[0].arn
+}
+
+resource "aws_db_option_group" "this" {
+  count = var.enable_custom_option_group == true ? 1 : 0
+
+  name_prefix              = "${var.namespace}-${var.environment}-option-group-"
+  option_group_description = "Custom Option Group"
+  engine_name              = var.rds_instance_engine
+  major_engine_version     = "15.00" // TODO - set this in variable
+
+  option {
+    option_name = "SQLSERVER_BACKUP_RESTORE" // TODO - set to variable
+
+    option_settings {
+      name  = "IAM_ROLE_ARN" // TODO - set to variable
+      value = aws_iam_role.option_group[0].arn
+    }
+  }
+
+  tags = var.tags
 }
 
 ################################################################################
@@ -212,7 +316,7 @@ module "rds_instance" {
   db_parameter_group          = var.rds_instance_db_parameter_group
   db_parameter                = var.rds_instance_db_parameter
   db_options                  = var.rds_instance_db_options
-  option_group_name           = var.rds_instance_option_group_name
+  option_group_name           = try(var.rds_instance_option_group_name, aws_db_option_group.this[0].name)
   ca_cert_identifier          = var.rds_instance_ca_cert_identifier
   publicly_accessible         = var.rds_instance_publicly_accessible
   snapshot_identifier         = var.rds_instance_snapshot_identifier

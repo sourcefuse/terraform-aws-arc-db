@@ -1,4 +1,8 @@
 locals {
+  ## option group
+  instance_kms_id = "arn:aws:kms:${var.region}:${var.account_id}:key/${try(aws_kms_key.aurora_cluster_kms_key[0].key_id, aws_kms_key.rds_db_kms_key[0].key_id)}"
+  s3_kms_alias    = try(var.s3_kms_alias_override, "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/s3")
+
   ## aurora
   aurora_ssm_params = var.aurora_cluster_enabled == true ? [
     {

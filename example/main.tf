@@ -18,6 +18,11 @@ provider "aws" {
 }
 
 ################################################################################
+## lookups
+################################################################################
+data "aws_caller_identity" "this" {}
+
+################################################################################
 ## db
 ################################################################################
 ## aurora cluster
@@ -29,6 +34,7 @@ module "aurora" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
+  account_id                         = data.aws_caller_identity.this.id
   aurora_cluster_enabled             = true
   aurora_cluster_name                = "aurora-example"
   enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"
@@ -56,21 +62,23 @@ module "rds_sql_server" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
-  rds_instance_enabled                     = true
-  rds_instance_name                        = "sql-server-example"
-  enhanced_monitoring_name                 = "sql-server-example-enhanced-monitoring"
-  rds_instance_dns_zone_id                 = ""
-  rds_instance_host_name                   = ""
-  rds_instance_database_name               = null // sql server database name must be null
-  rds_instance_database_user               = "example_db_admin"
-  rds_instance_database_port               = 1433
-  rds_instance_engine                      = "sqlserver-ex" // express edition.
-  rds_instance_engine_version              = "15.00.4198.2.v1"
-  rds_instance_major_engine_version        = "2019"
-  rds_instance_db_parameter_group          = "sqlserver-ex-15.0"
-  rds_instance_db_parameter                = []
-  rds_instance_db_options                  = []
-  rds_instance_option_group_name           = "default:sqlserver-ex-15-00"
+  account_id                        = data.aws_caller_identity.this.id
+  rds_instance_enabled              = true
+  rds_instance_name                 = "sql-server-example"
+  enhanced_monitoring_name          = "sql-server-example-enhanced-monitoring"
+  rds_instance_dns_zone_id          = ""
+  rds_instance_host_name            = ""
+  rds_instance_database_name        = null // sql server database name must be null
+  rds_instance_database_user        = "example_db_admin"
+  rds_instance_database_port        = 1433
+  rds_instance_engine               = "sqlserver-ex" // express edition.
+  rds_instance_engine_version       = "15.00.4198.2.v1"
+  rds_instance_major_engine_version = "2019"
+  rds_instance_db_parameter_group   = "sqlserver-ex-15.0"
+  rds_instance_db_parameter         = []
+  rds_instance_db_options           = []
+  enable_custom_option_group        = true
+  #  rds_instance_option_group_name           = "default:sqlserver-ex-15-00"
   rds_instance_ca_cert_identifier          = "rds-ca-2019"
   rds_instance_publicly_accessible         = false
   rds_instance_multi_az                    = false

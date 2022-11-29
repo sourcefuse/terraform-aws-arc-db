@@ -124,6 +124,31 @@ variable "aurora_allowed_cidr_blocks" {
 }
 
 ################################################################################
+## option group
+################################################################################
+variable "enable_custom_option_group" {
+  description = "Enable the custom Option Group for restoring backups via S3"
+  type        = bool
+  default     = false
+}
+
+variable "region" {
+  description = "Region which the resource is deployed to"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "account_id" {
+  description = "Account ID where the resources will be deployed to"
+  type        = string
+}
+
+variable "s3_kms_alias_override" {
+  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
+  type        = string
+  default     = ""
+}
+################################################################################
 ## rds
 ################################################################################
 variable "rds_instance_enabled" {
@@ -212,6 +237,12 @@ variable "rds_instance_db_parameter_group" {
 variable "rds_kms_key_arn_override" {
   type        = string
   description = "Override the default created KMS key to encrypt storage"
+  default     = ""
+}
+
+variable "rds_kms_key_id_override" {
+  type        = string
+  description = "Override the default created KMS key ID to encrypt storage"
   default     = ""
 }
 

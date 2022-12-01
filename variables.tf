@@ -59,7 +59,7 @@ variable "aurora_db_name" {
 
 variable "aurora_cluster_family" {
   type        = string
-  default     = "aurora-postgresql10"
+  default     = "aurora-postgresql14"
   description = "The family of the DB cluster parameter group"
 }
 
@@ -71,14 +71,14 @@ variable "aurora_engine" {
 
 variable "aurora_engine_mode" {
   type        = string
-  default     = "serverless"
+  default     = "provisioned"
   description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
 variable "aurora_engine_version" {
+  description = "The version of the database engine tocl use. See `aws rds describe-db-engine-versions` "
   type        = string
-  default     = "aurora-postgresql13.3"
-  description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
+  default     = "14.5" // "aurora-postgresql14.5"
 }
 
 variable "aurora_allow_major_version_upgrade" {
@@ -101,7 +101,7 @@ variable "aurora_cluster_size" {
 
 variable "aurora_instance_type" {
   type        = string
-  default     = "db.t3.medium"
+  default     = "db.serverless"
   description = "Instance type to use"
 }
 
@@ -143,11 +143,12 @@ variable "account_id" {
   type        = string
 }
 
-variable "s3_kms_alias_override" {
-  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
-  type        = string
-  default     = ""
-}
+// TODO - uncomment when feature is supported (referenced in locals.tf)
+#variable "s3_kms_alias_override" {
+#  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
+#  type        = string
+#  default     = ""
+#}
 ################################################################################
 ## rds
 ################################################################################

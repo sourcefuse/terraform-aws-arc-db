@@ -130,8 +130,8 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
+  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.3.2"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
-  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=0.46.2"
 
   name      = var.aurora_cluster_name
   namespace = var.namespace
@@ -162,19 +162,78 @@ module "aurora_cluster" {
   rds_monitoring_interval = 30
 
   # reference iam role created above
-  # TODO: make scaling config variable
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn
-  scaling_configuration = [{
+  ## TODO: make scaling config variable
+  #  scaling_configuration = [{
+  #    auto_pause               = true
+  #    max_capacity             = 16
+  #    min_capacity             = 2
+  #    seconds_until_auto_pause = 300
+  #    timeout_action           = "ForceApplyCapacityChange"
+  #  }]
+
+  serverlessv2_scaling_configuration = {
     auto_pause               = true
     max_capacity             = 16
     min_capacity             = 2
     seconds_until_auto_pause = 300
     timeout_action           = "ForceApplyCapacityChange"
-  }]
+  }
 
   tags = merge(var.tags, tomap({
     Name = var.aurora_cluster_name
   }))
+}
+
+################################################################################
+## s3 sql .bak
+################################################################################
+module "db_management" {
+  source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
+  count  = var.enable_custom_option_group == true ? 1 : 0
+
+  name      = "db-management"
+  stage     = var.environment
+  namespace = var.namespace
+
+  acl                = "private"
+  enabled            = true
+  user_enabled       = false
+  versioning_enabled = true
+  bucket_key_enabled = true
+  kms_master_key_arn = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/s3"
+  sse_algorithm      = "aws:kms"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:GetObjectAttributes",
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListMultipartUploadParts",
+          "s3:AbortMultipartUpload"
+        ],
+        Resource = [
+          "arn:aws-us-gov:s3:::${var.namespace}-${terraform.workspace}-db-management",
+          "arn:aws-us-gov:s3:::${var.namespace}-${terraform.workspace}-db-management/*"
+        ]
+        Principal = {
+          AWS = "arn:aws:iam::${var.account_id}:root"
+        },
+      }
+    ]
+  })
+
+  privileged_principal_actions = [
+    "s3:GetObject",
+    "s3:ListBucket",
+    "s3:GetBucketLocation"
+  ]
+
+  tags = var.tags
 }
 
 ################################################################################
@@ -218,7 +277,8 @@ resource "aws_iam_policy" "option_group" {
             "kms:Encrypt",
             "kms:Decrypt"
           ],
-          Resource = local.instance_kms_id
+          // TODO - lock this down
+          Resource = "*" //local.instance_kms_id
         },
         {
           Effect = "Allow",
@@ -228,7 +288,8 @@ resource "aws_iam_policy" "option_group" {
             "kms:Encrypt",
             "kms:Decrypt"
           ],
-          Resource = local.s3_kms_alias
+          // TODO - lock this down
+          Resource = "*" //local.s3_kms_alias
         },
         {
           Effect = "Allow",
@@ -236,7 +297,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListBucket",
             "s3:GetBucketLocation"
           ],
-          Resource = "arn:aws:s3:::${var.namespace}-${terraform.workspace}-sql-bak"
+          Resource = "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management"
         },
         {
           Effect = "Allow",
@@ -247,7 +308,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListMultipartUploadParts",
             "s3:AbortMultipartUpload"
           ],
-          Resource = "arn:aws:s3:::${var.namespace}-${var.environment}-sql-bak/*"
+          Resource = "arn:aws:s3:::${var.namespace}-${var.environment}-db-management/*"
         }
       ]
     }
@@ -267,10 +328,11 @@ resource "aws_db_option_group" "this" {
   name_prefix              = "${var.namespace}-${var.environment}-option-group-"
   option_group_description = "Custom Option Group"
   engine_name              = var.rds_instance_engine
-  major_engine_version     = "15.00" // TODO - set this in variable
+  major_engine_version     = var.rds_instance_major_engine_version
 
+  // TODO - make option into dynamic variable
   option {
-    option_name = "SQLSERVER_BACKUP_RESTORE" // TODO - set to variable
+    option_name = "SQLSERVER_BACKUP_RESTORE"
 
     option_settings {
       name  = "IAM_ROLE_ARN" // TODO - set to variable
@@ -286,7 +348,7 @@ resource "aws_db_option_group" "this" {
 ################################################################################
 module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
-  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.38.8"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.40.0"
 
   stage               = var.environment
   name                = var.rds_instance_name
@@ -305,7 +367,7 @@ module "rds_instance" {
   license_model       = var.rds_instance_license_model
   deletion_protection = var.deletion_protection
 
-  kms_key_arn                 = var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
+  kms_key_arn                 = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name               = var.rds_instance_database_name
   database_user               = var.rds_instance_database_user
   database_password           = var.rds_instance_database_password != "" ? var.rds_instance_database_password : random_password.rds_db_admin_password[0].result
@@ -313,6 +375,7 @@ module "rds_instance" {
   engine                      = var.rds_instance_engine
   engine_version              = var.rds_instance_engine_version
   major_engine_version        = var.rds_instance_major_engine_version
+  parameter_group_name        = var.rds_instance_db_parameter_group
   db_parameter_group          = var.rds_instance_db_parameter_group
   db_parameter                = var.rds_instance_db_parameter
   db_options                  = var.rds_instance_db_options

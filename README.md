@@ -61,14 +61,15 @@ module "aurora" {
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | 4.25.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.3.2 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aurora_cluster"></a> [aurora\_cluster](#module\_aurora\_cluster) | git::https://github.com/cloudposse/terraform-aws-rds-cluster.git | 0.46.2 |
-| <a name="module_rds_instance"></a> [rds\_instance](#module\_rds\_instance) | git::https://github.com/cloudposse/terraform-aws-rds | 0.38.8 |
+| <a name="module_aurora_cluster"></a> [aurora\_cluster](#module\_aurora\_cluster) | git::https://github.com/cloudposse/terraform-aws-rds-cluster.git | 1.3.2 |
+| <a name="module_db_management"></a> [db\_management](#module\_db\_management) | git::https://github.com/cloudposse/terraform-aws-s3-bucket | 3.0.0 |
+| <a name="module_rds_instance"></a> [rds\_instance](#module\_rds\_instance) | git::https://github.com/cloudposse/terraform-aws-rds | 0.40.0 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Resources
@@ -101,16 +102,16 @@ module "aurora" {
 | <a name="input_aurora_allowed_cidr_blocks"></a> [aurora\_allowed\_cidr\_blocks](#input\_aurora\_allowed\_cidr\_blocks) | List of CIDR blocks allowed to access the cluster | `list(string)` | `[]` | no |
 | <a name="input_aurora_auto_minor_version_upgrade"></a> [aurora\_auto\_minor\_version\_upgrade](#input\_aurora\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window | `bool` | `true` | no |
 | <a name="input_aurora_cluster_enabled"></a> [aurora\_cluster\_enabled](#input\_aurora\_cluster\_enabled) | Enable creation of an Aurora Cluster | `bool` | `false` | no |
-| <a name="input_aurora_cluster_family"></a> [aurora\_cluster\_family](#input\_aurora\_cluster\_family) | The family of the DB cluster parameter group | `string` | `"aurora-postgresql10"` | no |
+| <a name="input_aurora_cluster_family"></a> [aurora\_cluster\_family](#input\_aurora\_cluster\_family) | The family of the DB cluster parameter group | `string` | `"aurora-postgresql14"` | no |
 | <a name="input_aurora_cluster_name"></a> [aurora\_cluster\_name](#input\_aurora\_cluster\_name) | Database name (default is not to create a database) | `string` | `""` | no |
 | <a name="input_aurora_cluster_size"></a> [aurora\_cluster\_size](#input\_aurora\_cluster\_size) | Number of DB instances to create in the cluster | `number` | `0` | no |
 | <a name="input_aurora_db_admin_password"></a> [aurora\_db\_admin\_password](#input\_aurora\_db\_admin\_password) | Password of the DB admin | `string` | `""` | no |
 | <a name="input_aurora_db_admin_username"></a> [aurora\_db\_admin\_username](#input\_aurora\_db\_admin\_username) | Name of the default DB admin user role | `string` | `""` | no |
 | <a name="input_aurora_db_name"></a> [aurora\_db\_name](#input\_aurora\_db\_name) | Database name. | `string` | `"auroradb"` | no |
 | <a name="input_aurora_engine"></a> [aurora\_engine](#input\_aurora\_engine) | The name of the database engine to be used for this DB cluster. Valid values: `aurora`, `aurora-mysql`, `aurora-postgresql` | `string` | `"aurora-postgresql"` | no |
-| <a name="input_aurora_engine_mode"></a> [aurora\_engine\_mode](#input\_aurora\_engine\_mode) | The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless` | `string` | `"serverless"` | no |
-| <a name="input_aurora_engine_version"></a> [aurora\_engine\_version](#input\_aurora\_engine\_version) | The version of the database engine to use. See `aws rds describe-db-engine-versions` | `string` | `"aurora-postgresql13.3"` | no |
-| <a name="input_aurora_instance_type"></a> [aurora\_instance\_type](#input\_aurora\_instance\_type) | Instance type to use | `string` | `"db.t3.medium"` | no |
+| <a name="input_aurora_engine_mode"></a> [aurora\_engine\_mode](#input\_aurora\_engine\_mode) | The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless` | `string` | `"provisioned"` | no |
+| <a name="input_aurora_engine_version"></a> [aurora\_engine\_version](#input\_aurora\_engine\_version) | The version of the database engine tocl use. See `aws rds describe-db-engine-versions` | `string` | `"14.5"` | no |
+| <a name="input_aurora_instance_type"></a> [aurora\_instance\_type](#input\_aurora\_instance\_type) | Instance type to use | `string` | `"db.serverless"` | no |
 | <a name="input_aurora_security_groups"></a> [aurora\_security\_groups](#input\_aurora\_security\_groups) | List of security group IDs to be allowed to connect to the DB instance | `list(string)` | `[]` | no |
 | <a name="input_aurora_subnets"></a> [aurora\_subnets](#input\_aurora\_subnets) | Subnets for the cluster to run in. | `list(string)` | `[]` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br>See description of individual variables for details.<br>Leave string and numeric variables as `null` to use default value.<br>Individual variable settings (non-null) override settings in context object,<br>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": null,<br>  "descriptor_formats": {},<br>  "enabled": true,<br>  "environment": null,<br>  "id_length_limit": null,<br>  "label_key_case": null,<br>  "label_order": [],<br>  "label_value_case": null,<br>  "labels_as_tags": [<br>    "unset"<br>  ],<br>  "name": null,<br>  "namespace": null,<br>  "regex_replace_chars": null,<br>  "stage": null,<br>  "tags": {},<br>  "tenant": null<br>}</pre> | no |
@@ -170,7 +171,6 @@ module "aurora" {
 | <a name="input_rds_kms_key_id_override"></a> [rds\_kms\_key\_id\_override](#input\_rds\_kms\_key\_id\_override) | Override the default created KMS key ID to encrypt storage | `string` | `""` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br>Characters matching the regex will be removed from the ID elements.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region which the resource is deployed to | `string` | `"us-east-1"` | no |
-| <a name="input_s3_kms_alias_override"></a> [s3\_kms\_alias\_override](#input\_s3\_kms\_alias\_override) | Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias. | `string` | `""` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `""` | no |

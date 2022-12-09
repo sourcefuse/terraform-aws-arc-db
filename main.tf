@@ -163,22 +163,10 @@ module "aurora_cluster" {
 
   # reference iam role created above
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn
-  ## TODO: make scaling config variable
-  #  scaling_configuration = [{
-  #    auto_pause               = true
-  #    max_capacity             = 16
-  #    min_capacity             = 2
-  #    seconds_until_auto_pause = 300
-  #    timeout_action           = "ForceApplyCapacityChange"
-  #  }]
 
-  serverlessv2_scaling_configuration = {
-    auto_pause               = true
-    max_capacity             = 16
-    min_capacity             = 2
-    seconds_until_auto_pause = 300
-    timeout_action           = "ForceApplyCapacityChange"
-  }
+  scaling_configuration = var.aurora_scaling_configuration
+
+  serverlessv2_scaling_configuration = var.aurora_serverlessv2_scaling_configuration
 
   tags = merge(var.tags, tomap({
     Name = var.aurora_cluster_name
@@ -277,8 +265,7 @@ resource "aws_iam_policy" "option_group" {
             "kms:Encrypt",
             "kms:Decrypt"
           ],
-          // TODO - lock this down
-          Resource = "*" //local.instance_kms_id
+          Resource = local.instance_kms_id
         },
         {
           Effect = "Allow",
@@ -288,8 +275,7 @@ resource "aws_iam_policy" "option_group" {
             "kms:Encrypt",
             "kms:Decrypt"
           ],
-          // TODO - lock this down
-          Resource = "*" //local.s3_kms_alias
+          Resource = local.s3_kms_alias
         },
         {
           Effect = "Allow",

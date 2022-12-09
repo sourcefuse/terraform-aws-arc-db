@@ -123,6 +123,27 @@ variable "aurora_allowed_cidr_blocks" {
   description = "List of CIDR blocks allowed to access the cluster"
 }
 
+variable "aurora_scaling_configuration" {
+  description = "List of nested attributes with scaling properties. Only valid when engine_mode is set to serverless"
+  type = list(object({
+    auto_pause               = bool
+    max_capacity             = number
+    min_capacity             = number
+    seconds_until_auto_pause = number
+    timeout_action           = string
+  }))
+  default = []
+}
+
+variable "aurora_serverlessv2_scaling_configuration" {
+  description = "serverlessv2 scaling properties"
+  type = object({
+    min_capacity = number
+    max_capacity = number
+  })
+  default = null
+}
+
 ################################################################################
 ## option group
 ################################################################################
@@ -143,12 +164,12 @@ variable "account_id" {
   type        = string
 }
 
-// TODO - uncomment when feature is supported (referenced in locals.tf)
-#variable "s3_kms_alias_override" {
-#  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
-#  type        = string
-#  default     = ""
-#}
+variable "s3_kms_alias_override" {
+  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
+  type        = string
+  default     = ""
+}
+
 ################################################################################
 ## rds
 ################################################################################

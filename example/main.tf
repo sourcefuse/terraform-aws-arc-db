@@ -47,6 +47,11 @@ module "aurora" {
   aurora_subnets                     = data.aws_subnets.private.ids
   aurora_security_groups             = data.aws_security_groups.db_sg.ids
   aurora_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
+
+  aurora_serverlessv2_scaling_configuration = {
+    max_capacity = 16
+    min_capacity = 2
+  }
 }
 
 ## sql server rds instance

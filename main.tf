@@ -174,11 +174,11 @@ module "aurora_cluster" {
 }
 
 ################################################################################
-## s3 sql .bak
+## s3 db management
 ################################################################################
 module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
-  count  = var.enable_custom_option_group == true ? 1 : 0
+  count  = var.enable_custom_option_group == true && contains(["sqlserver"], var.rds_instance_engine) == true ? 1 : 0
 
   name      = "db-management"
   stage     = var.environment
@@ -204,9 +204,10 @@ module "db_management" {
           "s3:ListMultipartUploadParts",
           "s3:AbortMultipartUpload"
         ],
+        // TODO - add support for us-gov
         Resource = [
-          "arn:aws-us-gov:s3:::${var.namespace}-${terraform.workspace}-db-management",
-          "arn:aws-us-gov:s3:::${var.namespace}-${terraform.workspace}-db-management/*"
+          "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management",
+          "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management/*"
         ]
         Principal = {
           AWS = "arn:aws:iam::${var.account_id}:root"
@@ -230,7 +231,7 @@ module "db_management" {
 resource "aws_iam_role" "option_group" {
   count = var.enable_custom_option_group == true ? 1 : 0
 
-  name = "${var.namespace}-${var.environment}-backup-restore"
+  name = "${var.namespace}-${var.environment}-db"
 
   assume_role_policy = jsonencode(
     {
@@ -251,7 +252,7 @@ resource "aws_iam_role" "option_group" {
 resource "aws_iam_policy" "option_group" {
   count = var.enable_custom_option_group == true ? 1 : 0
 
-  name_prefix = "${var.namespace}-${var.environment}-backup-restore-"
+  name_prefix = "${var.namespace}-${var.environment}-db-"
 
   policy = jsonencode(
     {
@@ -316,13 +317,16 @@ resource "aws_db_option_group" "this" {
   engine_name              = var.rds_instance_engine
   major_engine_version     = var.rds_instance_major_engine_version
 
-  // TODO - make option into dynamic variable
-  option {
-    option_name = "SQLSERVER_BACKUP_RESTORE"
+  dynamic "option" {
+    for_each = contains(["sqlserver"], var.rds_instance_engine) == true ? local.sql_db_management : {}
 
-    option_settings {
-      name  = "IAM_ROLE_ARN" // TODO - set to variable
-      value = aws_iam_role.option_group[0].arn
+    content {
+      option_name = option.value.option_name
+
+      option_settings {
+        name  = option.value.option_settings_name
+        value = option.value.option_settings_value
+      }
     }
   }
 

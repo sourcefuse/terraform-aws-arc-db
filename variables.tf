@@ -160,8 +160,9 @@ variable "region" {
 }
 
 variable "account_id" {
-  description = "Account ID where the resources will be deployed to"
+  description = "Account ID where the resources will be deployed to. This is required if `enable_custom_option_group` is set to `true`."
   type        = string
+  default     = ""
 }
 
 variable "s3_kms_alias_override" {

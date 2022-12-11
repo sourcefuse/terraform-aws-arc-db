@@ -34,7 +34,6 @@ module "aurora" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
-  account_id                         = data.aws_caller_identity.this.id
   aurora_cluster_enabled             = true
   aurora_cluster_name                = "aurora-example"
   enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"

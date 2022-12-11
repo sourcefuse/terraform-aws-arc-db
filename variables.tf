@@ -59,7 +59,7 @@ variable "aurora_db_name" {
 
 variable "aurora_cluster_family" {
   type        = string
-  default     = "aurora-postgresql10"
+  default     = "aurora-postgresql14"
   description = "The family of the DB cluster parameter group"
 }
 
@@ -71,14 +71,14 @@ variable "aurora_engine" {
 
 variable "aurora_engine_mode" {
   type        = string
-  default     = "serverless"
+  default     = "provisioned"
   description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
 variable "aurora_engine_version" {
+  description = "The version of the database engine tocl use. See `aws rds describe-db-engine-versions` "
   type        = string
-  default     = "aurora-postgresql13.3"
-  description = "The version of the database engine to use. See `aws rds describe-db-engine-versions` "
+  default     = "14.5" // "aurora-postgresql14.5"
 }
 
 variable "aurora_allow_major_version_upgrade" {
@@ -101,7 +101,7 @@ variable "aurora_cluster_size" {
 
 variable "aurora_instance_type" {
   type        = string
-  default     = "db.t3.medium"
+  default     = "db.serverless"
   description = "Instance type to use"
 }
 
@@ -121,6 +121,54 @@ variable "aurora_allowed_cidr_blocks" {
   type        = list(string)
   default     = []
   description = "List of CIDR blocks allowed to access the cluster"
+}
+
+variable "aurora_scaling_configuration" {
+  description = "List of nested attributes with scaling properties. Only valid when engine_mode is set to serverless"
+  type = list(object({
+    auto_pause               = bool
+    max_capacity             = number
+    min_capacity             = number
+    seconds_until_auto_pause = number
+    timeout_action           = string
+  }))
+  default = []
+}
+
+variable "aurora_serverlessv2_scaling_configuration" {
+  description = "serverlessv2 scaling properties"
+  type = object({
+    min_capacity = number
+    max_capacity = number
+  })
+  default = null
+}
+
+################################################################################
+## option group
+################################################################################
+variable "enable_custom_option_group" {
+  description = "Enable the custom Option Group for restoring backups via S3"
+  type        = bool
+  default     = false
+}
+
+variable "region" {
+  description = "Region which the resource is deployed to"
+  type        = string
+  default     = "us-east-1"
+}
+
+variable "account_id" {
+  description = "Account ID where the resources will be deployed to. This is required if `enable_custom_option_group` is set to `true`."
+  type        = string
+  default     = ""
+}
+
+variable "s3_kms_alias_override" {
+  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
+  type        = string
+  default     = ""
 }
 
 ################################################################################
@@ -212,6 +260,12 @@ variable "rds_instance_db_parameter_group" {
 variable "rds_kms_key_arn_override" {
   type        = string
   description = "Override the default created KMS key to encrypt storage"
+  default     = ""
+}
+
+variable "rds_kms_key_id_override" {
+  type        = string
+  description = "Override the default created KMS key ID to encrypt storage"
   default     = ""
 }
 

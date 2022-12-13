@@ -4,7 +4,7 @@
 
 ## Overview
 
-Terraform DB module for the SourceFuse AWS reference architecture
+SourceFuse AWS Reference Architecture (ARC) Terraform module for managing Aurora and RDS instances. 
 
 ## Usage
 
@@ -16,22 +16,17 @@ module "aurora" {
 
   environment              = "dev"
   namespace                = "arc"
-  region                   = "us-east-1"
   vpc_id                   = "vpc-000111222333444"
-  enhanced_monitoring_name = "aurora-example-enhanced-monitoring"
 
-  aurora_cluster_enabled             = false
-  aurora_cluster_name                = "example"
+  aurora_cluster_enabled             = true
+  aurora_cluster_name                = "aurora-example"
+  enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"
   aurora_db_admin_username           = "example_db_admin"
   aurora_db_name                     = "example"
-  aurora_cluster_family              = "aurora-postgresql10"
-  aurora_engine                      = "aurora-postgresql"
-  aurora_engine_mode                 = "serverless"
-  aurora_engine_version              = "aurora-postgresql13.3"
   aurora_allow_major_version_upgrade = true
   aurora_auto_minor_version_upgrade  = true
   aurora_cluster_size                = 0
-  aurora_instance_type               = "db.t3.small"
+  aurora_instance_type               = "db.serverless"
   aurora_subnets = [
     "subnet-0001112223334441",
     "subnet-0001112223334442",
@@ -43,6 +38,11 @@ module "aurora" {
   aurora_allowed_cidr_blocks = [
     "10.0.0.0/16"
   ]
+  
+  aurora_serverlessv2_scaling_configuration = {
+    max_capacity = 16
+    min_capacity = 2
+  }
 }
 ```
 

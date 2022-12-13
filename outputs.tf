@@ -75,6 +75,6 @@ output "rds_instance_kms_arn" {
 }
 
 output "rds_instance_kms_id" {
-  value       = var.rds_kms_key_arn_override == "" ? aws_kms_key.rds_db_kms_key[0].key_id : null
+  value       = var.rds_kms_key_id_override != "" ? var.rds_kms_key_id_override : try(aws_kms_key.rds_db_kms_key[0].key_id, null)
   description = "Output RDS KMS Key ID if the var.rds_kms_key_arn_override is \"\""
 }

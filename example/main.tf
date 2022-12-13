@@ -26,7 +26,6 @@ module "aurora" {
 
   environment = var.environment
   namespace   = var.namespace
-  region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
   aurora_cluster_enabled             = true
@@ -53,7 +52,6 @@ module "rds_sql_server" {
 
   environment = var.environment
   namespace   = var.namespace
-  region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
   rds_instance_enabled                     = true

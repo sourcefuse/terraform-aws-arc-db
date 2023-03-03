@@ -1,3 +1,4 @@
+---
 site_name: terraform-aws-ref-arch-db
 site_description: Terraform RDS module.
 plugins:

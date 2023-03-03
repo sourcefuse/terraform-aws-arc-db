@@ -3,5 +3,5 @@ terraform.tfstate
 *.tfstate*
 terraform.tfvars
 *.backup
-.idea 
+.idea
 .external_momdules

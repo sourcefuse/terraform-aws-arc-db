@@ -4,7 +4,7 @@
 
 ## Overview
 
-SourceFuse AWS Reference Architecture (ARC) Terraform module for managing Aurora and RDS instances. 
+SourceFuse AWS Reference Architecture (ARC) Terraform module for managing Aurora and RDS instances.
 
 ## Usage
 
@@ -38,7 +38,7 @@ module "aurora" {
   aurora_allowed_cidr_blocks = [
     "10.0.0.0/16"
   ]
-  
+
   aurora_serverlessv2_scaling_configuration = {
     max_capacity = 16
     min_capacity = 2
@@ -60,7 +60,7 @@ module "aurora" {
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.25.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.57.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
 
 ## Modules

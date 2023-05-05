@@ -174,6 +174,12 @@ variable "s3_kms_alias_override" {
 ################################################################################
 ## rds
 ################################################################################
+variable "rds_random_admin_password_length" {
+  description = "Length of the generated random password."
+  type        = number
+  default     = 64
+}
+
 variable "rds_instance_enabled" {
   type        = bool
   description = "Enable creation of an RDS instance"

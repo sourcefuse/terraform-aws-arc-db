@@ -107,7 +107,7 @@ resource "random_password" "aurora_db_admin_password" {
 resource "random_password" "rds_db_admin_password" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
-  length           = 64
+  length           = var.rds_random_admin_password_length
   special          = true
   override_special = "!#*^"
 

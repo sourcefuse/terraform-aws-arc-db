@@ -23,6 +23,21 @@ variable "deletion_protection" {
   default     = false
 }
 
+
+variable "timeouts" {
+  type = object({
+    create = string
+    update = string
+    delete = string
+  })
+  description = "A list of DB timeouts to apply to the running code while creating, updating, or deleting the DB instance."
+  default = {
+    create = "40m"
+    update = "80m"
+    delete = "60m"
+  }
+}
+
 ################################################################################
 ## aurora
 ################################################################################

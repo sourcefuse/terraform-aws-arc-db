@@ -381,6 +381,7 @@ module "rds_instance" {
   copy_tags_to_snapshot       = var.rds_instance_copy_tags_to_snapshot
   backup_retention_period     = var.rds_instance_backup_retention_period
   backup_window               = var.rds_instance_backup_window
+  timeouts                    = var.timeouts
 
   tags = merge(var.tags, tomap({
     Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"

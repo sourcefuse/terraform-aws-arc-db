@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 resource "random_password" "aurora_db_admin_password" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
-  length           = 64
+  length           = 41
   special          = true
   override_special = "!#*^"
 

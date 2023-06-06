@@ -126,6 +126,10 @@ resource "random_password" "rds_db_admin_password" {
   }
 }
 
+data "aws_kms_alias" "rds" {
+  name = "alias/aws/rds"
+}
+
 ################################################################################
 ## aurora cluster
 ################################################################################
@@ -160,6 +164,14 @@ module "aurora_cluster" {
   copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30
+
+  performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_kms_key_id       = var.performance_insights_enabled ? data.aws_kms_alias.rds.id : ""
+  performance_insights_retention_period = var.performance_insights_retention_period
+
+  vpc_security_group_ids = var.vpc_security_group_ids
+  kms_key_arn            = var.kms_key_arn
+
 
   # reference iam role created above
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn

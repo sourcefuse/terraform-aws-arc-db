@@ -5,7 +5,7 @@
 data "aws_vpc" "vpc" {
   filter {
     name   = "tag:Name"
-    values = ["refarchdevops-${var.environment}-vpc"]
+    values = ["example-dev-vpc*"]
   }
 }
 
@@ -14,8 +14,8 @@ data "aws_subnets" "private" {
   filter {
     name = "tag:Name"
     values = [
-      "refarchdevops-${var.environment}-privatesubnet-private-${var.region}a",
-      "refarchdevops-${var.environment}-privatesubnet-private-${var.region}b"
+      "example-${var.environment}-private-subnet-private-${var.region}a",
+      "example-${var.environment}-private-subnet-private-${var.region}b"
     ]
   }
 }
@@ -24,7 +24,7 @@ data "aws_subnets" "private" {
 data "aws_security_groups" "db_sg" {
   filter {
     name   = "group-name"
-    values = ["refarchdevops-${var.environment}-db-sg"]
+    values = ["example-${var.environment}-db-sg"]
   }
 
   filter {

@@ -13,8 +13,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
-  profile = var.profile
+  region = var.region
 }
 
 ################################################################################
@@ -34,18 +33,20 @@ module "aurora" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
-  aurora_cluster_enabled             = true
-  aurora_cluster_name                = "aurora-example"
-  enhanced_monitoring_name           = "aurora-example-enhanced-monitoring"
-  aurora_db_admin_username           = "example_db_admin"
-  aurora_db_name                     = "example"
-  aurora_allow_major_version_upgrade = true
-  aurora_auto_minor_version_upgrade  = true
-  aurora_cluster_size                = 0
-  aurora_instance_type               = "db.serverless"
-  aurora_subnets                     = data.aws_subnets.private.ids
-  aurora_security_groups             = data.aws_security_groups.db_sg.ids
-  aurora_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
+  aurora_cluster_enabled                = true
+  aurora_cluster_name                   = "aurora-example"
+  enhanced_monitoring_name              = "aurora-example-enhanced-monitoring"
+  aurora_db_admin_username              = "example_db_admin"
+  aurora_db_name                        = "example"
+  aurora_allow_major_version_upgrade    = true
+  aurora_auto_minor_version_upgrade     = true
+  aurora_cluster_size                   = 1
+  aurora_instance_type                  = "db.t3.medium"
+  aurora_subnets                        = data.aws_subnets.private.ids
+  aurora_security_groups                = data.aws_security_groups.db_sg.ids
+  aurora_allowed_cidr_blocks            = [data.aws_vpc.vpc.cidr_block]
+  performance_insights_enabled          = true
+  performance_insights_retention_period = 7
 
   aurora_serverlessv2_scaling_configuration = {
     max_capacity = 16

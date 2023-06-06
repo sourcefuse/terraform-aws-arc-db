@@ -442,3 +442,34 @@ variable "rds_instance_license_model" {
   description = "License model for this DB. Optional, but required for some DB Engines. Valid values: license-included | bring-your-own-license | general-public-license"
   default     = ""
 }
+
+variable "performance_insights_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to enable Performance Insights"
+}
+
+variable "performance_insights_kms_key_id" {
+  type        = string
+  default     = ""
+  description = "The ARN for the KMS key to encrypt Performance Insights data. When specifying `performance_insights_kms_key_id`, `performance_insights_enabled` needs to be set to true"
+}
+
+variable "performance_insights_retention_period" {
+  description = "Amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)"
+  type        = number
+  default     = null
+}
+
+variable "vpc_security_group_ids" {
+  type        = list(string)
+  description = "Additional security group IDs to apply to the cluster, in addition to the provisioned default security group with ingress traffic from existing CIDR blocks and existing security groups"
+
+  default = []
+}
+
+variable "kms_key_arn" {
+  type        = string
+  description = "The ARN for the KMS encryption key. When specifying `kms_key_arn`, `storage_encrypted` needs to be set to `true`"
+  default     = ""
+}

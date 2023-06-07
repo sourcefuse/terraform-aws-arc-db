@@ -47,6 +47,7 @@ module "aurora" {
   aurora_allowed_cidr_blocks            = [data.aws_vpc.vpc.cidr_block]
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
+  iam_database_authentication_enabled   = true
 }
 
 ## sql server rds instance

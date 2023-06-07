@@ -155,10 +155,11 @@ module "aurora_cluster" {
   instance_type  = var.aurora_instance_type
   db_port        = 5432
 
-  vpc_id              = var.vpc_id
-  security_groups     = var.aurora_security_groups
-  allowed_cidr_blocks = var.aurora_allowed_cidr_blocks
-  subnets             = var.aurora_subnets
+  vpc_id                              = var.vpc_id
+  security_groups                     = var.aurora_security_groups
+  allowed_cidr_blocks                 = var.aurora_allowed_cidr_blocks
+  subnets                             = var.aurora_subnets
+  iam_database_authentication_enabled = var.iam_database_authentication_enabled
 
   storage_encrypted     = true
   copy_tags_to_snapshot = true
@@ -369,31 +370,32 @@ module "rds_instance" {
   license_model       = var.rds_instance_license_model
   deletion_protection = var.deletion_protection
 
-  kms_key_arn                 = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
-  database_name               = var.rds_instance_database_name
-  database_user               = var.rds_instance_database_user
-  database_password           = var.rds_instance_database_password != "" ? var.rds_instance_database_password : random_password.rds_db_admin_password[0].result
-  database_port               = var.rds_instance_database_port
-  engine                      = var.rds_instance_engine
-  engine_version              = var.rds_instance_engine_version
-  major_engine_version        = var.rds_instance_major_engine_version
-  parameter_group_name        = var.rds_instance_db_parameter_group
-  db_parameter_group          = var.rds_instance_db_parameter_group
-  db_parameter                = var.rds_instance_db_parameter
-  db_options                  = var.rds_instance_db_options
-  option_group_name           = try(var.rds_instance_option_group_name, aws_db_option_group.this[0].name)
-  ca_cert_identifier          = var.rds_instance_ca_cert_identifier
-  publicly_accessible         = var.rds_instance_publicly_accessible
-  snapshot_identifier         = var.rds_instance_snapshot_identifier
-  auto_minor_version_upgrade  = var.rds_instance_auto_minor_version_upgrade
-  allow_major_version_upgrade = var.rds_instance_allow_major_version_upgrade
-  apply_immediately           = var.rds_instance_apply_immediately
-  maintenance_window          = var.rds_instance_maintenance_window
-  skip_final_snapshot         = var.rds_instance_skip_final_snapshot
-  copy_tags_to_snapshot       = var.rds_instance_copy_tags_to_snapshot
-  backup_retention_period     = var.rds_instance_backup_retention_period
-  backup_window               = var.rds_instance_backup_window
-  timeouts                    = var.timeouts
+  kms_key_arn                         = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
+  database_name                       = var.rds_instance_database_name
+  database_user                       = var.rds_instance_database_user
+  database_password                   = var.rds_instance_database_password != "" ? var.rds_instance_database_password : random_password.rds_db_admin_password[0].result
+  database_port                       = var.rds_instance_database_port
+  engine                              = var.rds_instance_engine
+  engine_version                      = var.rds_instance_engine_version
+  major_engine_version                = var.rds_instance_major_engine_version
+  parameter_group_name                = var.rds_instance_db_parameter_group
+  db_parameter_group                  = var.rds_instance_db_parameter_group
+  db_parameter                        = var.rds_instance_db_parameter
+  db_options                          = var.rds_instance_db_options
+  option_group_name                   = try(var.rds_instance_option_group_name, aws_db_option_group.this[0].name)
+  ca_cert_identifier                  = var.rds_instance_ca_cert_identifier
+  publicly_accessible                 = var.rds_instance_publicly_accessible
+  snapshot_identifier                 = var.rds_instance_snapshot_identifier
+  auto_minor_version_upgrade          = var.rds_instance_auto_minor_version_upgrade
+  allow_major_version_upgrade         = var.rds_instance_allow_major_version_upgrade
+  apply_immediately                   = var.rds_instance_apply_immediately
+  maintenance_window                  = var.rds_instance_maintenance_window
+  skip_final_snapshot                 = var.rds_instance_skip_final_snapshot
+  copy_tags_to_snapshot               = var.rds_instance_copy_tags_to_snapshot
+  backup_retention_period             = var.rds_instance_backup_retention_period
+  backup_window                       = var.rds_instance_backup_window
+  iam_database_authentication_enabled = var.iam_database_authentication_enabled
+  timeouts                            = var.timeouts
 
   tags = merge(var.tags, tomap({
     Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"

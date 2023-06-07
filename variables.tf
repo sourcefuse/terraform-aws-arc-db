@@ -467,3 +467,9 @@ variable "kms_key_arn" {
   description = "The ARN for the KMS encryption key. When specifying `kms_key_arn`, `storage_encrypted` needs to be set to `true`"
   default     = ""
 }
+
+variable "iam_database_authentication_enabled" {
+  type        = bool
+  description = "Specifies whether or mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled"
+  default     = false
+}

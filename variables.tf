@@ -449,12 +449,6 @@ variable "performance_insights_enabled" {
   description = "Whether to enable Performance Insights"
 }
 
-variable "performance_insights_kms_key_id" {
-  type        = string
-  default     = ""
-  description = "The ARN for the KMS key to encrypt Performance Insights data. When specifying `performance_insights_kms_key_id`, `performance_insights_enabled` needs to be set to true"
-}
-
 variable "performance_insights_retention_period" {
   description = "Amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)"
   type        = number

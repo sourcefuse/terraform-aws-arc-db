@@ -47,11 +47,6 @@ module "aurora" {
   aurora_allowed_cidr_blocks            = [data.aws_vpc.vpc.cidr_block]
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
-
-  aurora_serverlessv2_scaling_configuration = {
-    max_capacity = 16
-    min_capacity = 2
-  }
 }
 
 ## sql server rds instance

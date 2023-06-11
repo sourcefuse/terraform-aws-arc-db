@@ -244,7 +244,7 @@ module "db_management" {
 resource "aws_iam_role" "option_group" {
   count = var.enable_custom_option_group == true ? 1 : 0
 
-  name = "${var.namespace}-${var.environment}-db"
+  name_prefix = "${var.namespace}-${var.environment}-db-"
 
   assume_role_policy = jsonencode(
     {

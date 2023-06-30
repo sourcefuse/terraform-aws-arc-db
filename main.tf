@@ -191,7 +191,7 @@ module "aurora_cluster" {
 ################################################################################
 module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
-  count  = var.enable_custom_option_group == true && contains(["sqlserver"], var.rds_instance_engine) == true ? 1 : 0
+  count  = var.enable_custom_option_group == true ? 1 : 0
 
   name      = "db-management"
   stage     = var.environment
@@ -219,8 +219,8 @@ module "db_management" {
         ],
         // TODO - add support for us-gov
         Resource = [
-          "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management",
-          "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management/*"
+          module.db_management[0].bucket_arn,
+          "${module.db_management[0].bucket_arn}/*"
         ]
         Principal = {
           AWS = "arn:aws:iam::${var.account_id}:root"
@@ -331,14 +331,14 @@ resource "aws_db_option_group" "this" {
   major_engine_version     = var.rds_instance_major_engine_version
 
   dynamic "option" {
-    for_each = contains(["sqlserver"], var.rds_instance_engine) == true ? local.sql_db_management : {}
+    for_each = var.enable_custom_option_group == true ? [1] : [0]
 
     content {
-      option_name = option.value.option_name
+      option_name = contains(["sqlserver"], var.rds_instance_engine) == true ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
 
       option_settings {
-        name  = option.value.option_settings_name
-        value = option.value.option_settings_value
+        name  = "IAM_ROLE_ARN"
+        value = try(aws_iam_role.option_group[0].arn, "")
       }
     }
   }

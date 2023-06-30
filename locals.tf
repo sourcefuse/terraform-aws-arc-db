@@ -49,13 +49,6 @@ locals {
     RDSName = "${var.namespace}-${var.environment}-rds-instance-ssm-param"
   } : {}
 
-  ## option group
-  sql_db_management = {
-    option_name           = "SQLSERVER_BACKUP_RESTORE"
-    option_settings_name  = "IAM_ROLE_ARN"
-    option_settings_value = try(aws_iam_role.option_group[0].arn, "")
-  }
-
   ## concat locals
   ssm_params = concat(
     local.aurora_ssm_params,

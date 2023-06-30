@@ -91,6 +91,7 @@ module "aurora" {
 | [random_password.rds_db_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [aws_iam_policy_document.enhanced_monitoring](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_kms_alias.rds](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/kms_alias) | data source |
+| [aws_partition.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 
 ## Inputs
 
@@ -104,11 +105,12 @@ module "aurora" {
 | <a name="input_aurora_auto_minor_version_upgrade"></a> [aurora\_auto\_minor\_version\_upgrade](#input\_aurora\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window | `bool` | `true` | no |
 | <a name="input_aurora_cluster_enabled"></a> [aurora\_cluster\_enabled](#input\_aurora\_cluster\_enabled) | Enable creation of an Aurora Cluster | `bool` | `false` | no |
 | <a name="input_aurora_cluster_family"></a> [aurora\_cluster\_family](#input\_aurora\_cluster\_family) | The family of the DB cluster parameter group | `string` | `"aurora-postgresql14"` | no |
-| <a name="input_aurora_cluster_name"></a> [aurora\_cluster\_name](#input\_aurora\_cluster\_name) | Database name (default is not to create a database) | `string` | `""` | no |
+| <a name="input_aurora_cluster_name"></a> [aurora\_cluster\_name](#input\_aurora\_cluster\_name) | Database name (default is not to create a database) | `string` | `null` | no |
 | <a name="input_aurora_cluster_size"></a> [aurora\_cluster\_size](#input\_aurora\_cluster\_size) | Number of DB instances to create in the cluster | `number` | `0` | no |
 | <a name="input_aurora_db_admin_password"></a> [aurora\_db\_admin\_password](#input\_aurora\_db\_admin\_password) | Password of the DB admin | `string` | `""` | no |
 | <a name="input_aurora_db_admin_username"></a> [aurora\_db\_admin\_username](#input\_aurora\_db\_admin\_username) | Name of the default DB admin user role | `string` | `""` | no |
 | <a name="input_aurora_db_name"></a> [aurora\_db\_name](#input\_aurora\_db\_name) | Database name. | `string` | `"auroradb"` | no |
+| <a name="input_aurora_db_port"></a> [aurora\_db\_port](#input\_aurora\_db\_port) | Port used for the Aurora RDS instance | `number` | `5432` | no |
 | <a name="input_aurora_engine"></a> [aurora\_engine](#input\_aurora\_engine) | The name of the database engine to be used for this DB cluster. Valid values: `aurora`, `aurora-mysql`, `aurora-postgresql` | `string` | `"aurora-postgresql"` | no |
 | <a name="input_aurora_engine_mode"></a> [aurora\_engine\_mode](#input\_aurora\_engine\_mode) | The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless` | `string` | `"provisioned"` | no |
 | <a name="input_aurora_engine_version"></a> [aurora\_engine\_version](#input\_aurora\_engine\_version) | The version of the database engine tocl use. See `aws rds describe-db-engine-versions` | `string` | `"14.5"` | no |
@@ -165,7 +167,7 @@ module "aurora" {
 | <a name="input_rds_instance_maintenance_window"></a> [rds\_instance\_maintenance\_window](#input\_rds\_instance\_maintenance\_window) | The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi' UTC | `string` | `"Mon:03:00-Mon:04:00"` | no |
 | <a name="input_rds_instance_major_engine_version"></a> [rds\_instance\_major\_engine\_version](#input\_rds\_instance\_major\_engine\_version) | major\_engine\_version	Database MAJOR engine version, depends on engine type | `string` | `"14"` | no |
 | <a name="input_rds_instance_multi_az"></a> [rds\_instance\_multi\_az](#input\_rds\_instance\_multi\_az) | Set to true if multi AZ deployment must be supported | `bool` | `false` | no |
-| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | RDS Instance name | `string` | `""` | no |
+| <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | RDS Instance name | `string` | `null` | no |
 | <a name="input_rds_instance_option_group_name"></a> [rds\_instance\_option\_group\_name](#input\_rds\_instance\_option\_group\_name) | Name of the DB option group to associate | `string` | `""` | no |
 | <a name="input_rds_instance_publicly_accessible"></a> [rds\_instance\_publicly\_accessible](#input\_rds\_instance\_publicly\_accessible) | Determines if database can be publicly available (NOT recommended) | `bool` | `false` | no |
 | <a name="input_rds_instance_security_group_ids"></a> [rds\_instance\_security\_group\_ids](#input\_rds\_instance\_security\_group\_ids) | The IDs of the security groups from which to allow ingress traffic to the DB instance | `list(string)` | `[]` | no |
@@ -179,6 +181,7 @@ module "aurora" {
 | <a name="input_rds_random_admin_password_length"></a> [rds\_random\_admin\_password\_length](#input\_rds\_random\_admin\_password\_length) | Length of the generated random password. | `number` | `64` | no |
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br>Characters matching the regex will be removed from the ID elements.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_region"></a> [region](#input\_region) | Region which the resource is deployed to | `string` | `"us-east-1"` | no |
+| <a name="input_s3_db_management_bucket_name"></a> [s3\_db\_management\_bucket\_name](#input\_s3\_db\_management\_bucket\_name) | Name to assign the DB Management bucket. If undefined, name will default to `${var.namespace}-${var.environment}-db-management` | `string` | `null` | no |
 | <a name="input_s3_kms_alias_override"></a> [s3\_kms\_alias\_override](#input\_s3\_kms\_alias\_override) | Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias. | `string` | `""` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |

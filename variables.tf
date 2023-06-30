@@ -23,7 +23,6 @@ variable "deletion_protection" {
   default     = false
 }
 
-
 variable "timeouts" {
   type = object({
     create = string
@@ -39,6 +38,15 @@ variable "timeouts" {
 }
 
 ################################################################################
+## s3
+################################################################################
+variable "s3_db_management_bucket_name" {
+  description = "Name to assign the DB Management bucket. If undefined, name will default to `$${var.namespace}-$${var.environment}-db-management`"
+  type        = string
+  default     = null
+}
+
+################################################################################
 ## aurora
 ################################################################################
 variable "aurora_cluster_enabled" {
@@ -47,10 +55,16 @@ variable "aurora_cluster_enabled" {
   default     = false
 }
 
+variable "aurora_db_port" {
+  type        = number
+  description = "Port used for the Aurora RDS instance"
+  default     = 5432
+}
+
 variable "aurora_cluster_name" {
   type        = string
   description = "Database name (default is not to create a database)"
-  default     = ""
+  default     = null
 }
 
 variable "aurora_db_admin_username" {
@@ -204,7 +218,7 @@ variable "rds_instance_enabled" {
 variable "rds_instance_name" {
   type        = string
   description = "RDS Instance name"
-  default     = ""
+  default     = null
 }
 
 variable "rds_instance_dns_zone_id" {

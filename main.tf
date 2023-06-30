@@ -11,14 +11,14 @@ resource "aws_kms_key" "aurora_cluster_kms_key" {
   enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
+    Name = "${local.aurora_cluster_name}-kms-key"
   }))
 }
 
 resource "aws_kms_alias" "aurora_cluster_kms_key" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
-  name          = "alias/${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
+  name          = "alias/${local.aurora_cluster_name}-kms-key"
   target_key_id = aws_kms_key.aurora_cluster_kms_key[0].id
 }
 
@@ -31,14 +31,14 @@ resource "aws_kms_key" "rds_db_kms_key" {
   enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"
+    Name = local.rds_instance_name
   }))
 }
 
 resource "aws_kms_alias" "rds_db_kms_key" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
-  name          = "alias/${var.namespace}-${var.environment}-${var.rds_instance_name}"
+  name          = "alias/${local.rds_instance_name}"
   target_key_id = aws_kms_key.rds_db_kms_key[0].id
 }
 
@@ -137,9 +137,7 @@ module "aurora_cluster" {
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.3.2"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
-  name      = var.aurora_cluster_name
-  namespace = var.namespace
-  stage     = var.environment
+  name = local.aurora_cluster_name
 
   engine                      = var.aurora_engine
   engine_mode                 = var.aurora_engine_mode
@@ -153,7 +151,7 @@ module "aurora_cluster" {
   admin_password = var.aurora_db_admin_password != "" ? var.aurora_db_admin_password : random_password.aurora_db_admin_password[0].result
   db_name        = var.aurora_db_name
   instance_type  = var.aurora_instance_type
-  db_port        = 5432
+  db_port        = var.aurora_db_port
 
   vpc_id                              = var.vpc_id
   security_groups                     = var.aurora_security_groups
@@ -193,16 +191,14 @@ module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
   count  = var.enable_custom_option_group == true ? 1 : 0
 
-  name      = "db-management"
-  stage     = var.environment
-  namespace = var.namespace
+  name = local.s3_db_management_bucket_name
 
   acl                = "private"
   enabled            = true
   user_enabled       = false
   versioning_enabled = true
   bucket_key_enabled = true
-  kms_master_key_arn = "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/s3"
+  kms_master_key_arn = "arn:${data.aws_partition.this.partition}:kms:${var.region}:${var.account_id}:alias/aws/s3"
   sse_algorithm      = "aws:kms"
 
   policy = jsonencode({
@@ -217,13 +213,12 @@ module "db_management" {
           "s3:ListMultipartUploadParts",
           "s3:AbortMultipartUpload"
         ],
-        // TODO - add support for us-gov
         Resource = [
           module.db_management[0].bucket_arn,
           "${module.db_management[0].bucket_arn}/*"
         ]
         Principal = {
-          AWS = "arn:aws:iam::${var.account_id}:root"
+          AWS = "arn:${data.aws_partition.this.partition}:iam::${var.account_id}:root"
         },
       }
     ]
@@ -297,7 +292,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListBucket",
             "s3:GetBucketLocation"
           ],
-          Resource = "arn:aws:s3:::${var.namespace}-${terraform.workspace}-db-management"
+          Resource = "arn:${data.aws_partition.this.partition}:s3:::${var.namespace}-${var.environment}-db-management"
         },
         {
           Effect = "Allow",
@@ -308,7 +303,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListMultipartUploadParts",
             "s3:AbortMultipartUpload"
           ],
-          Resource = "arn:aws:s3:::${var.namespace}-${var.environment}-db-management/*"
+          Resource = "arn:${data.aws_partition.this.partition}:s3:::${var.namespace}-${var.environment}-db-management/*"
         }
       ]
     }
@@ -353,9 +348,8 @@ module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.40.0"
 
-  stage               = var.environment
-  name                = var.rds_instance_name
-  namespace           = var.namespace
+  name = local.rds_instance_name
+
   dns_zone_id         = var.rds_instance_dns_zone_id
   host_name           = var.rds_instance_host_name
   vpc_id              = var.vpc_id
@@ -397,9 +391,7 @@ module "rds_instance" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   timeouts                            = var.timeouts
 
-  tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"
-  }))
+  tags = var.tags
 }
 
 ################################################################################

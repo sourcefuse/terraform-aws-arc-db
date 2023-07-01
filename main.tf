@@ -209,35 +209,6 @@ module "db_management" {
   kms_master_key_arn = "arn:${data.aws_partition.this.partition}:kms:${var.region}:${var.account_id}:alias/aws/s3"
   sse_algorithm      = "aws:kms"
 
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:GetObjectAttributes",
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:ListMultipartUploadParts",
-          "s3:AbortMultipartUpload"
-        ],
-        Resource = [
-          module.db_management[0].bucket_arn,
-          "${module.db_management[0].bucket_arn}/*"
-        ]
-        Principal = {
-          AWS = "arn:${data.aws_partition.this.partition}:iam::${var.account_id}:root"
-        },
-      }
-    ]
-  })
-
-  privileged_principal_actions = [
-    "s3:GetObject",
-    "s3:ListBucket",
-    "s3:GetBucketLocation"
-  ]
-
   tags = var.tags
 }
 
@@ -247,7 +218,7 @@ module "db_management" {
 resource "aws_iam_role" "option_group" {
   count = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name_prefix = "${var.namespace}-${var.environment}-db-"
+  name_prefix = "${var.namespace}-${var.environment}-${var.rds_instance_name}-"
 
   assume_role_policy = jsonencode(
     {
@@ -268,7 +239,7 @@ resource "aws_iam_role" "option_group" {
 resource "aws_iam_policy" "option_group" {
   count = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name_prefix = "${var.namespace}-${var.environment}-db-"
+  name_prefix = "${var.namespace}-${var.environment}-${var.rds_instance_name}-"
 
   policy = jsonencode(
     {
@@ -308,6 +279,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:GetObjectAttributes",
             "s3:GetObject",
             "s3:PutObject",
+            "s3:PutObjectAcl",
             "s3:ListMultipartUploadParts",
             "s3:AbortMultipartUpload"
           ],
@@ -328,25 +300,40 @@ resource "aws_iam_role_policy_attachment" "option_group" {
 resource "aws_db_option_group" "this" {
   count = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name_prefix              = "${var.namespace}-${var.environment}-option-group-"
-  option_group_description = "Custom Option Group"
+  name                     = "${var.namespace}-${var.environment}-${var.rds_instance_name}-option-group"
+  option_group_description = "${var.namespace}-${var.environment}-${var.rds_instance_name} Custom Option Group"
   engine_name              = var.rds_instance_engine
   major_engine_version     = var.rds_instance_major_engine_version
 
+  // TODO - add loop for more options
   dynamic "option" {
-    for_each = var.rds_enable_custom_option_group == true ? [1] : [0]
+    for_each = var.rds_enable_custom_option_group == true ? [1] : []
 
     content {
-      option_name = contains(["sqlserver"], var.rds_instance_engine) == true ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
+      option_name = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
 
-      option_settings {
-        name  = "IAM_ROLE_ARN"
-        value = try(aws_iam_role.option_group[0].arn, "")
+      dynamic "option_settings" {
+        for_each = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? [1] : []
+
+        content {
+          name  = "IAM_ROLE_ARN"
+          value = try(aws_iam_role.option_group[0].arn, "")
+        }
       }
     }
   }
 
-  tags = var.tags
+  tags = merge(var.tags, tomap({
+    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}-option-group"
+  }))
+}
+
+resource "aws_db_instance_role_association" "this" {
+  count = var.rds_enable_custom_option_group && length(regexall("oracle", var.rds_instance_engine)) > 0 ? 1 : 0 // currently only needed for Oracle instances
+
+  db_instance_identifier = module.rds_instance[0].instance_id
+  feature_name           = "S3_INTEGRATION"
+  role_arn               = aws_iam_role.option_group[0].arn
 }
 
 ################################################################################
@@ -372,6 +359,7 @@ module "rds_instance" {
   subnet_ids          = var.rds_instance_subnet_ids
   license_model       = var.rds_instance_license_model
   deletion_protection = var.deletion_protection
+  #  monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn  // TODO - make this conditional
 
   kms_key_arn                         = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name                       = var.rds_instance_database_name
@@ -385,7 +373,7 @@ module "rds_instance" {
   db_parameter_group                  = var.rds_instance_db_parameter_group
   db_parameter                        = var.rds_instance_db_parameter
   db_options                          = var.rds_instance_db_options
-  option_group_name                   = try(var.rds_instance_option_group_name, aws_db_option_group.this[0].name)
+  option_group_name                   = local.rds_instance_option_group_name
   ca_cert_identifier                  = var.rds_instance_ca_cert_identifier
   publicly_accessible                 = var.rds_instance_publicly_accessible
   snapshot_identifier                 = var.rds_instance_snapshot_identifier

@@ -168,7 +168,7 @@ module "aurora" {
 | <a name="input_rds_instance_major_engine_version"></a> [rds\_instance\_major\_engine\_version](#input\_rds\_instance\_major\_engine\_version) | major\_engine\_version	Database MAJOR engine version, depends on engine type | `string` | `"14"` | no |
 | <a name="input_rds_instance_multi_az"></a> [rds\_instance\_multi\_az](#input\_rds\_instance\_multi\_az) | Set to true if multi AZ deployment must be supported | `bool` | `false` | no |
 | <a name="input_rds_instance_name"></a> [rds\_instance\_name](#input\_rds\_instance\_name) | RDS Instance name | `string` | `null` | no |
-| <a name="input_rds_instance_option_group_name"></a> [rds\_instance\_option\_group\_name](#input\_rds\_instance\_option\_group\_name) | Name of the DB option group to associate | `string` | `""` | no |
+| <a name="input_rds_instance_option_group_name"></a> [rds\_instance\_option\_group\_name](#input\_rds\_instance\_option\_group\_name) | Name of the DB option group to associate | `string` | `null` | no |
 | <a name="input_rds_instance_publicly_accessible"></a> [rds\_instance\_publicly\_accessible](#input\_rds\_instance\_publicly\_accessible) | Determines if database can be publicly available (NOT recommended) | `bool` | `false` | no |
 | <a name="input_rds_instance_security_group_ids"></a> [rds\_instance\_security\_group\_ids](#input\_rds\_instance\_security\_group\_ids) | The IDs of the security groups from which to allow ingress traffic to the DB instance | `list(string)` | `[]` | no |
 | <a name="input_rds_instance_skip_final_snapshot"></a> [rds\_instance\_skip\_final\_snapshot](#input\_rds\_instance\_skip\_final\_snapshot) | If true (default), no snapshot will be made before deleting DB | `bool` | `true` | no |

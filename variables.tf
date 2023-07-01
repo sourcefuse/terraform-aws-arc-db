@@ -334,7 +334,7 @@ variable "rds_instance_db_options" {
 variable "rds_instance_option_group_name" {
   type        = string
   description = "Name of the DB option group to associate"
-  default     = ""
+  default     = null
 }
 
 variable "rds_instance_ca_cert_identifier" {

@@ -72,6 +72,12 @@ variable "aurora_db_name" {
   description = "Database name."
 }
 
+variable "aurora_db_port" {
+  type        = number
+  description = "Port for the Aurora DB instance to use."
+  default     = 5432
+}
+
 variable "aurora_cluster_family" {
   type        = string
   default     = "aurora-postgresql14"

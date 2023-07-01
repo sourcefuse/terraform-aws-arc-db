@@ -110,6 +110,7 @@ module "aurora" {
 | <a name="input_aurora_db_admin_password"></a> [aurora\_db\_admin\_password](#input\_aurora\_db\_admin\_password) | Password of the DB admin | `string` | `""` | no |
 | <a name="input_aurora_db_admin_username"></a> [aurora\_db\_admin\_username](#input\_aurora\_db\_admin\_username) | Name of the default DB admin user role | `string` | `""` | no |
 | <a name="input_aurora_db_name"></a> [aurora\_db\_name](#input\_aurora\_db\_name) | Database name. | `string` | `"auroradb"` | no |
+| <a name="input_aurora_db_port"></a> [aurora\_db\_port](#input\_aurora\_db\_port) | Port for the Aurora DB instance to use. | `number` | `5432` | no |
 | <a name="input_aurora_engine"></a> [aurora\_engine](#input\_aurora\_engine) | The name of the database engine to be used for this DB cluster. Valid values: `aurora`, `aurora-mysql`, `aurora-postgresql` | `string` | `"aurora-postgresql"` | no |
 | <a name="input_aurora_engine_mode"></a> [aurora\_engine\_mode](#input\_aurora\_engine\_mode) | The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless` | `string` | `"provisioned"` | no |
 | <a name="input_aurora_engine_version"></a> [aurora\_engine\_version](#input\_aurora\_engine\_version) | The version of the database engine tocl use. See `aws rds describe-db-engine-versions` | `string` | `"14.5"` | no |

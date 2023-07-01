@@ -385,7 +385,7 @@ module "rds_instance" {
   db_parameter_group                  = var.rds_instance_db_parameter_group
   db_parameter                        = var.rds_instance_db_parameter
   db_options                          = var.rds_instance_db_options
-  option_group_name                   = length(aws_db_option_group.this[0]) > 0 ? aws_db_option_group.this[0].name : var.rds_instance_option_group_name
+  option_group_name                   = try(var.rds_instance_option_group_name, aws_db_option_group.this[0].name)
   ca_cert_identifier                  = var.rds_instance_ca_cert_identifier
   publicly_accessible                 = var.rds_instance_publicly_accessible
   snapshot_identifier                 = var.rds_instance_snapshot_identifier

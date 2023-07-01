@@ -207,6 +207,12 @@ variable "rds_instance_enabled" {
   default     = false
 }
 
+variable "rds_instance_iops" {
+  type        = number
+  description = "RDS instance IOPS"
+  default     = 0
+}
+
 variable "rds_instance_name" {
   type        = string
   description = "RDS Instance name"

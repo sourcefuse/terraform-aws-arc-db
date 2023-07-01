@@ -307,7 +307,7 @@ resource "aws_db_option_group" "this" {
 
   // TODO - add loop for more options
   dynamic "option" {
-    for_each = var.rds_enable_custom_option_group == true ? [1] : []
+    for_each = var.rds_enable_custom_option_group == true && length(regexall("mariadb", var.rds_instance_engine)) == 0 ? [1] : []  // mariadb doesn't support this option
 
     content {
       option_name = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
@@ -333,7 +333,7 @@ resource "aws_db_option_group" "this" {
 }
 
 resource "aws_db_instance_role_association" "this" {
-  count = var.rds_enable_custom_option_group && length(regexall("oracle", var.rds_instance_engine)) > 0 ? 1 : 0 // currently only needed for Oracle instances
+  count = var.rds_enable_custom_option_group && length(regexall("oracle", var.rds_instance_engine)) > 0 ? 1 : 0 // mariadb doesn't support this option
 
   db_instance_identifier = module.rds_instance[0].instance_id
   feature_name           = "S3_INTEGRATION"
@@ -363,6 +363,7 @@ module "rds_instance" {
   subnet_ids          = var.rds_instance_subnet_ids
   license_model       = var.rds_instance_license_model
   deletion_protection = var.deletion_protection
+  iops                = var.rds_instance_iops
   #  monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn  // TODO - make this conditional
 
   kms_key_arn                         = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn

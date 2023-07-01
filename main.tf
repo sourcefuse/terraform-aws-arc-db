@@ -16,14 +16,14 @@ resource "aws_kms_key" "aurora_cluster_kms_key" {
   enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
-    Name = "${local.aurora_cluster_name}-kms-key"
+    Name = "${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
   }))
 }
 
 resource "aws_kms_alias" "aurora_cluster_kms_key" {
   count = var.aurora_cluster_enabled == true ? 1 : 0
 
-  name          = "alias/${local.aurora_cluster_name}-kms-key"
+  name          = "alias/${var.namespace}-${var.environment}-aurora-cluster-kms-key" // TODO - add support for custom names
   target_key_id = aws_kms_key.aurora_cluster_kms_key[0].id
 }
 
@@ -36,14 +36,14 @@ resource "aws_kms_key" "rds_db_kms_key" {
   enable_key_rotation     = var.enable_key_rotation
 
   tags = merge(var.tags, tomap({
-    Name = local.rds_instance_name
+    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}"
   }))
 }
 
 resource "aws_kms_alias" "rds_db_kms_key" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
-  name          = "alias/${local.rds_instance_name}"
+  name          = "alias/${var.namespace}-${var.environment}-${var.rds_instance_name}"
   target_key_id = aws_kms_key.rds_db_kms_key[0].id
 }
 
@@ -142,7 +142,9 @@ module "aurora_cluster" {
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.3.2"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
-  name = local.aurora_cluster_name
+  name      = var.aurora_cluster_name
+  namespace = var.namespace
+  stage     = var.environment
 
   engine                      = var.aurora_engine
   engine_mode                 = var.aurora_engine_mode
@@ -196,7 +198,9 @@ module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
   count  = var.enable_custom_option_group == true ? 1 : 0
 
-  name = local.s3_db_management_bucket_name
+  name      = "db-management"
+  stage     = var.environment
+  namespace = var.namespace
 
   acl                = "private"
   enabled            = true
@@ -353,8 +357,9 @@ module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.40.0"
 
-  name = local.rds_instance_name
-
+  stage               = var.environment
+  name                = var.rds_instance_name
+  namespace           = var.namespace
   dns_zone_id         = var.rds_instance_dns_zone_id
   host_name           = var.rds_instance_host_name
   vpc_id              = var.vpc_id

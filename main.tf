@@ -307,14 +307,14 @@ resource "aws_db_option_group" "this" {
 
   // TODO - add loop for more options
   dynamic "option" {
-    for_each = var.rds_enable_custom_option_group == true && length(regexall("mariadb", var.rds_instance_engine)) == 0 ? [1] : []  // mariadb doesn't support this option
+    for_each = var.rds_enable_custom_option_group == true && length(regexall("mariadb", var.rds_instance_engine)) == 0 ? [1] : [] // mariadb doesn't support this option
 
     content {
-      option_name = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
-      db_security_group_memberships = [] // TODO - make variable
-      vpc_security_group_memberships = [] // TODO - make variable
-      port = 0 // TODO - make variable
-      version = "1.0" // TODO - make variable
+      option_name                    = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
+      db_security_group_memberships  = []    // TODO - make variable
+      vpc_security_group_memberships = []    // TODO - make variable
+      port                           = 0     // TODO - make variable
+      version                        = "1.0" // TODO - make variable
 
       dynamic "option_settings" {
         for_each = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? [1] : []

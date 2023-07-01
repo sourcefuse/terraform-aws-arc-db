@@ -178,7 +178,6 @@ module "aurora_cluster" {
   vpc_security_group_ids = var.vpc_security_group_ids
   kms_key_arn            = var.kms_key_arn
 
-
   # reference iam role created above
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn
 
@@ -196,9 +195,9 @@ module "aurora_cluster" {
 ################################################################################
 module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
-  count  = var.enable_custom_option_group == true ? 1 : 0
+  count  = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name      = "db-management"
+  name      = var.rds_instance_name
   stage     = var.environment
   namespace = var.namespace
 
@@ -246,7 +245,7 @@ module "db_management" {
 ## option group
 ################################################################################
 resource "aws_iam_role" "option_group" {
-  count = var.enable_custom_option_group == true ? 1 : 0
+  count = var.rds_enable_custom_option_group == true ? 1 : 0
 
   name_prefix = "${var.namespace}-${var.environment}-db-"
 
@@ -267,7 +266,7 @@ resource "aws_iam_role" "option_group" {
 }
 
 resource "aws_iam_policy" "option_group" {
-  count = var.enable_custom_option_group == true ? 1 : 0
+  count = var.rds_enable_custom_option_group == true ? 1 : 0
 
   name_prefix = "${var.namespace}-${var.environment}-db-"
 
@@ -301,7 +300,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListBucket",
             "s3:GetBucketLocation"
           ],
-          Resource = "arn:${data.aws_partition.this.partition}:s3:::${var.namespace}-${var.environment}-db-management"
+          Resource = module.db_management[0].bucket_arn
         },
         {
           Effect = "Allow",
@@ -312,7 +311,7 @@ resource "aws_iam_policy" "option_group" {
             "s3:ListMultipartUploadParts",
             "s3:AbortMultipartUpload"
           ],
-          Resource = "arn:${data.aws_partition.this.partition}:s3:::${var.namespace}-${var.environment}-db-management/*"
+          Resource = "${module.db_management[0].bucket_arn}/*"
         }
       ]
     }
@@ -320,14 +319,14 @@ resource "aws_iam_policy" "option_group" {
 }
 
 resource "aws_iam_role_policy_attachment" "option_group" {
-  count = var.enable_custom_option_group == true ? 1 : 0
+  count = var.rds_enable_custom_option_group == true ? 1 : 0
 
   role       = aws_iam_role.option_group[0].name
   policy_arn = aws_iam_policy.option_group[0].arn
 }
 
 resource "aws_db_option_group" "this" {
-  count = var.enable_custom_option_group == true ? 1 : 0
+  count = var.rds_enable_custom_option_group == true ? 1 : 0
 
   name_prefix              = "${var.namespace}-${var.environment}-option-group-"
   option_group_description = "Custom Option Group"
@@ -335,7 +334,7 @@ resource "aws_db_option_group" "this" {
   major_engine_version     = var.rds_instance_major_engine_version
 
   dynamic "option" {
-    for_each = var.enable_custom_option_group == true ? [1] : [0]
+    for_each = var.rds_enable_custom_option_group == true ? [1] : [0]
 
     content {
       option_name = contains(["sqlserver"], var.rds_instance_engine) == true ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
@@ -386,7 +385,7 @@ module "rds_instance" {
   db_parameter_group                  = var.rds_instance_db_parameter_group
   db_parameter                        = var.rds_instance_db_parameter
   db_options                          = var.rds_instance_db_options
-  option_group_name                   = var.enable_custom_option_group == true ? aws_db_option_group.this[0].name : var.rds_instance_option_group_name
+  option_group_name                   = length(aws_db_option_group.this[0]) > 0 ? aws_db_option_group.this[0].name : var.rds_instance_option_group_name
   ca_cert_identifier                  = var.rds_instance_ca_cert_identifier
   publicly_accessible                 = var.rds_instance_publicly_accessible
   snapshot_identifier                 = var.rds_instance_snapshot_identifier

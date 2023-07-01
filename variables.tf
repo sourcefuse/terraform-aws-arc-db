@@ -168,7 +168,7 @@ variable "aurora_serverlessv2_scaling_configuration" {
 ################################################################################
 ## option group
 ################################################################################
-variable "enable_custom_option_group" {
+variable "rds_enable_custom_option_group" {
   description = "Enable the custom Option Group for restoring backups via S3"
   type        = bool
   default     = false
@@ -326,7 +326,7 @@ variable "rds_instance_db_options" {
 variable "rds_instance_option_group_name" {
   type        = string
   description = "Name of the DB option group to associate"
-  default     = null
+  default     = ""
 }
 
 variable "rds_instance_ca_cert_identifier" {

@@ -74,7 +74,7 @@ module "rds_sql_server" {
   rds_instance_db_parameter_group          = "default.sqlserver-ex-15.0"
   rds_instance_db_parameter                = []
   rds_instance_db_options                  = []
-  enable_custom_option_group               = true
+  rds_enable_custom_option_group           = true
   rds_instance_ca_cert_identifier          = "rds-ca-2019"
   rds_instance_publicly_accessible         = false
   rds_instance_multi_az                    = false

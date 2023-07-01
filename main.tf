@@ -197,7 +197,7 @@ module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
   count  = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name      = var.rds_instance_name
+  name      = "${var.rds_instance_name}-db-management"
   stage     = var.environment
   namespace = var.namespace
 

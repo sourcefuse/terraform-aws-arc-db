@@ -7,12 +7,6 @@ variable "region" {
   description = "AWS region"
 }
 
-variable "profile" {
-  type        = string
-  default     = "default"
-  description = "Name of the AWS profile to use"
-}
-
 variable "environment" {
   type        = string
   default     = "dev"

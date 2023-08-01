@@ -72,6 +72,12 @@ variable "aurora_db_name" {
   description = "Database name."
 }
 
+variable "aurora_db_port" {
+  type        = number
+  description = "Port for the Aurora DB instance to use."
+  default     = 5432
+}
+
 variable "aurora_cluster_family" {
   type        = string
   default     = "aurora-postgresql14"
@@ -162,7 +168,7 @@ variable "aurora_serverlessv2_scaling_configuration" {
 ################################################################################
 ## option group
 ################################################################################
-variable "enable_custom_option_group" {
+variable "rds_enable_custom_option_group" {
   description = "Enable the custom Option Group for restoring backups via S3"
   type        = bool
   default     = false
@@ -199,6 +205,12 @@ variable "rds_instance_enabled" {
   type        = bool
   description = "Enable creation of an RDS instance"
   default     = false
+}
+
+variable "rds_instance_iops" {
+  type        = number
+  description = "RDS instance IOPS"
+  default     = 0
 }
 
 variable "rds_instance_name" {

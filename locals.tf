@@ -1,7 +1,8 @@
 locals {
   ## option group
-  instance_kms_id = "arn:aws:kms:${var.region}:${var.account_id}:key/${try(aws_kms_key.aurora_cluster_kms_key[0].key_id, aws_kms_key.rds_db_kms_key[0].key_id)}"
-  s3_kms_alias    = try(var.s3_kms_alias_override ? var.s3_kms_alias_override != "" : var.s3_kms_alias_override, "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/s3")
+  instance_kms_id                = "arn:aws:kms:${var.region}:${var.account_id}:key/${try(aws_kms_key.aurora_cluster_kms_key[0].key_id, aws_kms_key.rds_db_kms_key[0].key_id)}"
+  s3_kms_alias                   = try(var.s3_kms_alias_override ? var.s3_kms_alias_override != "" : var.s3_kms_alias_override, "arn:aws:kms:${var.region}:${var.account_id}:alias/aws/s3")
+  rds_instance_option_group_name = length(aws_db_option_group.this) > 0 ? aws_db_option_group.this[0].name : var.rds_instance_option_group_name
 
   ## aurora
   aurora_ssm_params = var.aurora_cluster_enabled == true ? [
@@ -48,13 +49,6 @@ locals {
   rds_instance_ssm_tags = var.rds_instance_enabled == true ? {
     RDSName = "${var.namespace}-${var.environment}-rds-instance-ssm-param"
   } : {}
-
-  ## option group
-  sql_db_management = {
-    option_name           = "SQLSERVER_BACKUP_RESTORE"
-    option_settings_name  = "IAM_ROLE_ARN"
-    option_settings_value = try(aws_iam_role.option_group[0].arn, "")
-  }
 
   ## concat locals
   ssm_params = concat(

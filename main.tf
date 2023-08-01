@@ -167,6 +167,8 @@ module "aurora_cluster" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
 
   storage_encrypted     = true
+  storage_type          = var.aurora_storage_type
+  iops                  = var.aurora_iops
   copy_tags_to_snapshot = true
   # enable monitoring every 30 seconds
   rds_monitoring_interval = 30

@@ -313,13 +313,10 @@ resource "aws_db_option_group" "this" {
 
     content {
       option_name                    = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? "SQLSERVER_BACKUP_RESTORE" : "S3_INTEGRATION"
-      db_security_group_memberships  = [] // TODO - make variable
-      vpc_security_group_memberships = [] // TODO - make variable
-      port                           = 0  // TODO - make variable
-      # version                        = "1.0" // TODO - make variable
-
-      // Only include the version attribute for S3_INTEGRATION
-      version = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? null : "1.0"
+      db_security_group_memberships  = []    // TODO - make variable
+      vpc_security_group_memberships = []    // TODO - make variable
+      port                           = 0     // TODO - make variable
+      version                        = "1.0" // TODO - make variable
 
       dynamic "option_settings" {
         for_each = length(regexall("sqlserver", var.rds_instance_engine)) > 0 ? [1] : []

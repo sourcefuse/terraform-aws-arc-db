@@ -5,7 +5,7 @@
 data "aws_vpc" "vpc" {
   filter {
     name   = "tag:Name"
-    values = ["*dev-vpc*"]
+    values = ["${var.namespace}-${var.environment}-vpc"]
   }
 }
 
@@ -14,8 +14,8 @@ data "aws_subnets" "private" {
   filter {
     name = "tag:Name"
     values = [
-      "*-${var.environment}-private-subnet-private-${var.region}a",
-      "*-${var.environment}-private-subnet-private-${var.region}b"
+      "${var.namespace}-${var.environment}-private-subnet-private-${var.region}a",
+      "${var.namespace}-${var.environment}-private-subnet-private-${var.region}b"
     ]
   }
 }

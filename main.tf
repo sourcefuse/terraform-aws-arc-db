@@ -43,7 +43,7 @@ resource "aws_kms_key" "rds_db_kms_key" {
 resource "aws_kms_alias" "rds_db_kms_key" {
   count = var.rds_instance_enabled == true ? 1 : 0
 
-  name          = "alias/${var.namespace}-${var.environment}-${var.rds_instance_name}"
+  name          = "alias/${local.rds_instance_name}"
   target_key_id = aws_kms_key.rds_db_kms_key[0].id
 }
 
@@ -142,9 +142,7 @@ module "aurora_cluster" {
   source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.3.2"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
-  name      = var.aurora_cluster_name
-  namespace = var.namespace
-  stage     = var.environment
+  name = local.aurora_cluster_name
 
   engine                      = var.aurora_engine
   engine_mode                 = var.aurora_engine_mode
@@ -188,7 +186,10 @@ module "aurora_cluster" {
   serverlessv2_scaling_configuration = var.aurora_serverlessv2_scaling_configuration
 
   tags = merge(var.tags, tomap({
-    Name = var.aurora_cluster_name
+    Name        = var.aurora_cluster_name
+    Namespace   = var.namespace
+    Environment = var.environment
+    Stage       = var.environment
   }))
 }
 
@@ -199,9 +200,7 @@ module "db_management" {
   source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
   count  = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name      = "${var.rds_instance_name}-db-management"
-  stage     = var.environment
-  namespace = var.namespace
+  name = "${local.rds_instance_name}-db-management"
 
   acl                = "private"
   enabled            = true
@@ -211,7 +210,11 @@ module "db_management" {
   kms_master_key_arn = "arn:${data.aws_partition.this.partition}:kms:${var.region}:${var.account_id}:alias/aws/s3"
   sse_algorithm      = "aws:kms"
 
-  tags = var.tags
+  tags = merge(var.tags, tomap({
+    Namespace   = var.namespace
+    Environment = var.environment
+    Stage       = var.environment
+  }))
 }
 
 ################################################################################
@@ -241,7 +244,7 @@ resource "aws_iam_role" "option_group" {
 resource "aws_iam_policy" "option_group" {
   count = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name_prefix = "${var.namespace}-${var.environment}-${var.rds_instance_name}-"
+  name_prefix = "${local.rds_instance_name}-"
 
   policy = jsonencode(
     {
@@ -302,8 +305,8 @@ resource "aws_iam_role_policy_attachment" "option_group" {
 resource "aws_db_option_group" "this" {
   count = var.rds_enable_custom_option_group == true ? 1 : 0
 
-  name                     = "${var.namespace}-${var.environment}-${var.rds_instance_name}-option-group"
-  option_group_description = "${var.namespace}-${var.environment}-${var.rds_instance_name} Custom Option Group"
+  name                     = "${local.rds_instance_name}-option-group"
+  option_group_description = "${local.rds_instance_name} Custom Option Group"
   engine_name              = var.rds_instance_engine
   major_engine_version     = var.rds_instance_major_engine_version
 
@@ -333,7 +336,7 @@ resource "aws_db_option_group" "this" {
   }
 
   tags = merge(var.tags, tomap({
-    Name = "${var.namespace}-${var.environment}-${var.rds_instance_name}-option-group"
+    Name = "${local.rds_instance_name}-option-group"
   }))
 }
 
@@ -352,9 +355,8 @@ module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
   source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.40.0"
 
-  stage               = var.environment
-  name                = var.rds_instance_name
-  namespace           = var.namespace
+  name = local.rds_instance_name
+
   dns_zone_id         = var.rds_instance_dns_zone_id
   host_name           = var.rds_instance_host_name
   vpc_id              = var.vpc_id
@@ -398,7 +400,11 @@ module "rds_instance" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   timeouts                            = var.timeouts
 
-  tags = var.tags
+  tags = merge(var.tags, tomap({
+    Namespace   = var.namespace
+    Environment = var.environment
+    Stage       = var.environment
+  }))
 }
 
 ################################################################################

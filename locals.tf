@@ -5,6 +5,7 @@ locals {
   rds_instance_option_group_name = length(aws_db_option_group.this) > 0 ? aws_db_option_group.this[0].name : var.rds_instance_option_group_name
 
   ## aurora
+  aurora_cluster_name = var.aurora_cluster_name_override == true ? var.aurora_cluster_name : "${var.namespace}-${var.environment}-${var.aurora_cluster_name}"
   aurora_ssm_params = var.aurora_cluster_enabled == true ? [
     {
       name  = "/${var.namespace}/${var.environment}/${var.aurora_cluster_name}/cluster_admin_db_password"
@@ -28,6 +29,7 @@ locals {
   } : {}
 
   ## rds
+  rds_instance_name = var.rds_instance_name_override == true ? var.rds_instance_name : "${var.namespace}-${var.environment}-${var.rds_instance_name}"
   rds_instance_ssm_params = var.rds_instance_enabled == true ? [
     {
       name  = "/${var.namespace}/${var.environment}/${var.rds_instance_name}/admin_db_password"

@@ -47,6 +47,15 @@ variable "aurora_cluster_enabled" {
   default     = false
 }
 
+variable "aurora_cluster_name_override" {
+  type        = bool
+  description = <<-EOT
+    If `true`, this will set a the Aurora Cluster name to what is defined in var.aurora_cluster_name.
+    If `false`, this will prepend $${var.namespace}-$${var.environment} to $${var.aurora_cluster_name}"
+  EOT
+  default     = false
+}
+
 variable "aurora_cluster_name" {
   type        = string
   description = "Database name (default is not to create a database)"
@@ -211,6 +220,15 @@ variable "rds_instance_iops" {
   type        = number
   description = "RDS instance IOPS"
   default     = 0
+}
+
+variable "rds_instance_name_override" {
+  type        = bool
+  description = <<-EOT
+    If `true`, this will set a the RDS Instance name to what is defined in var.rds_instance_name.
+    If `false`, this will prepend $${var.namespace}-$${var.environment} to $${var.rds_instance_name}"
+  EOT
+  default     = false
 }
 
 variable "rds_instance_name" {

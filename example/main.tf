@@ -2,12 +2,12 @@
 ## defaults
 ################################################################################
 terraform {
-  required_version = "~> 1.2"
+  required_version = "~> 1.3"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.44"
+      version = "~> 4.0"
     }
   }
 }
@@ -26,8 +26,8 @@ data "aws_caller_identity" "this" {}
 ################################################################################
 ## aurora cluster
 module "aurora" {
-  source = "../."
-
+  source      = "sourcefuse/arc-db/aws"
+  version     = "2.0.3"
   environment = var.environment
   namespace   = var.namespace
   region      = var.region
@@ -52,8 +52,8 @@ module "aurora" {
 
 ## sql server rds instance
 module "rds_sql_server" {
-  source = "../."
-
+  source      = "sourcefuse/arc-db/aws"
+  version     = "2.0.3"
   environment = var.environment
   namespace   = var.namespace
   region      = var.region

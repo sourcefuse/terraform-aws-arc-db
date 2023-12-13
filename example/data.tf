@@ -32,3 +32,7 @@ data "aws_security_groups" "db_sg" {
     values = [data.aws_vpc.vpc.id]
   }
 }
+
+data "aws_kms_alias" "aurora_cluster_kms_alias" {
+  name = "alias/arc-poc-aurora-cluster-kms-key" # Replace with your KMS alias name
+}

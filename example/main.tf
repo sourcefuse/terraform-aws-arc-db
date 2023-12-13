@@ -47,8 +47,8 @@ module "aurora" {
   aurora_allowed_cidr_blocks            = [data.aws_vpc.vpc.cidr_block]
   performance_insights_enabled          = true
   performance_insights_retention_period = 7
-  performance_insights_kms_key_id       = data.aws_kms_alias.aurora_cluster_kms_alias.target_key_arn
-  kms_key_arn                           = data.aws_kms_alias.aurora_cluster_kms_alias.target_key_arn
+  performance_insights_kms_key_id       = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
+  kms_key_arn                           = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
   iam_database_authentication_enabled   = true
 }
 

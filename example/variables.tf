@@ -18,3 +18,9 @@ variable "namespace" {
   default     = "arc"
   description = "ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique"
 }
+
+variable "kms_alias_name" {
+  type        = string
+  description = "Name of the KMS alias"
+  default     = "alias/arc-poc-aurora-cluster-kms-key"
+}

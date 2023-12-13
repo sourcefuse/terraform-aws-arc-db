@@ -34,5 +34,5 @@ data "aws_security_groups" "db_sg" {
 }
 
 data "aws_kms_alias" "aurora_cluster_kms_arn" {
-  name = "alias/arc-poc-aurora-cluster-kms-key" # Replace with your KMS alias name
+  name = var.kms_alias_name
 }

@@ -131,10 +131,6 @@ resource "random_password" "rds_db_admin_password" {
   }
 }
 
-data "aws_kms_alias" "rds" {
-  name = "alias/aws/rds"
-}
-
 ################################################################################
 ## aurora cluster
 ################################################################################
@@ -172,7 +168,7 @@ module "aurora_cluster" {
   rds_monitoring_interval = 30
 
   performance_insights_enabled          = var.performance_insights_enabled
-  performance_insights_kms_key_id       = var.performance_insights_enabled ? data.aws_kms_alias.rds.id : ""
+  performance_insights_kms_key_id       = var.performance_insights_enabled ? coalesce(var.performance_insights_kms_key_id, aws_kms_key.aurora_cluster_kms_key[0].arn) : ""
   performance_insights_retention_period = var.performance_insights_retention_period
 
   vpc_security_group_ids = var.vpc_security_group_ids

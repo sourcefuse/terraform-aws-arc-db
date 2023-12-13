@@ -485,6 +485,12 @@ variable "performance_insights_retention_period" {
   default     = null
 }
 
+variable "performance_insights_kms_key_id" {
+  type        = string
+  default     = ""
+  description = "The ARN for the KMS key to encrypt Performance Insights data. When specifying `performance_insights_kms_key_id`, `performance_insights_enabled` needs to be set to true"
+}
+
 variable "vpc_security_group_ids" {
   type        = list(string)
   description = "Additional security group IDs to apply to the cluster, in addition to the provisioned default security group with ingress traffic from existing CIDR blocks and existing security groups"

@@ -8,7 +8,7 @@ This document provides guidelines and instructions for users looking to implemen
 
 ### Module Overview
 
-The [terraform-aws-arc-db](https://github.com/sourcefuse/terraform-aws-arc-db) module provides a secure and modular foundation for managing Aurora cluster and SQL Server RDS instance.
+The [terraform-aws-arc-db](https://github.com/sourcefuse/terraform-aws-arc-db) module provides a secure and modular foundation for managing Aurora cluster and SQL Server RDS instances.
 
 ### Prerequisites
 

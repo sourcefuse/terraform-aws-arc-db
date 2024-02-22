@@ -111,6 +111,12 @@ variable "aurora_engine_version" {
   default     = "14.5" // "aurora-postgresql14.5"
 }
 
+variable "aurora_ca_cert_identifier" {
+  type        = string
+  description = "The identifier of the CA certificate for the Aurora DB instance"
+  default     = null
+}
+
 variable "aurora_allow_major_version_upgrade" {
   type        = bool
   default     = false

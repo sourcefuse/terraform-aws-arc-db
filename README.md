@@ -17,7 +17,7 @@ To see a full example, check out the [main.tf](https://github.com/sourcefuse/ter
 ```hcl
 module "aurora" {
   source  = "sourcefuse/arc-db/aws"
-  version = "2.0.3"
+  version = "3.0.0"
 
   environment              = "dev"
   namespace                = "arc"

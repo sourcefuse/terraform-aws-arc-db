@@ -174,6 +174,19 @@ variable "aurora_serverlessv2_scaling_configuration" {
   default = null
 }
 
+variable "additional_rules" {
+  description = "Additional security group rules"
+  type = list(object({
+    name        = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  #default = []
+}
+
 ################################################################################
 ## option group
 ################################################################################

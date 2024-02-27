@@ -174,10 +174,10 @@ variable "aurora_serverlessv2_scaling_configuration" {
   default = null
 }
 
-variable "additional_rules" {
+variable "additional_ingress_rules" {
   description = "Additional security group rules"
   type = list(object({
-    name        = string
+    description = string
     type        = string
     from_port   = number
     to_port     = number

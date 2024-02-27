@@ -50,7 +50,7 @@ module "aurora" {
   performance_insights_kms_key_id       = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
   kms_key_arn                           = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
   iam_database_authentication_enabled   = true
-  additional_rules                      = var.additional_rules
+  additional_ingress_rules              = var.additional_ingress_rules
 }
 
 ## sql server rds instance

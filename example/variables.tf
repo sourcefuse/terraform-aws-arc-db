@@ -25,10 +25,10 @@ variable "kms_alias_name" {
   default     = "alias/arc-poc-aurora-cluster-kms-key"
 }
 
-variable "additional_rules" {
+variable "additional_ingress_rules" {
   description = "Additional security group rules"
   type = list(object({
-    name        = string
+    description = string
     type        = string
     from_port   = number
     to_port     = number

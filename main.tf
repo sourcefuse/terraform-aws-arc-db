@@ -189,8 +189,8 @@ module "aurora_cluster" {
   }))
 }
 
-resource "aws_security_group_rule" "additional_ingress_rules" {
-  for_each = { for rule in var.additional_ingress_rules : rule.name => rule }
+resource "aws_security_group_rule" "additional_ingress_rules_aurora" {
+  for_each = { for rule in var.additional_ingress_rules_aurora : rule.name => rule }
 
   security_group_id = module.aurora_cluster[0].security_group_id
   type              = each.value.type
@@ -416,7 +416,7 @@ module "rds_instance" {
 
 
 resource "aws_security_group_rule" "additional_ingress_rules_rds" {
-  for_each = { for rule in var.additional_ingress_rules : rule.name => rule }
+  for_each = { for rule in var.additional_ingress_rules_rds : rule.name => rule }
 
   security_group_id = module.rds_instance[0].security_group_id
   type              = each.value.type

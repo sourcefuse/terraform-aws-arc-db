@@ -97,4 +97,5 @@ module "rds_sql_server" {
   rds_instance_security_group_ids          = data.aws_security_groups.db_sg.ids
   rds_instance_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
   rds_instance_subnet_ids                  = data.aws_subnets.private.ids
+  additional_ingress_rules                 = var.additional_ingress_rules
 }

@@ -414,6 +414,18 @@ module "rds_instance" {
   }))
 }
 
+
+resource "aws_security_group_rule" "additional_ingress_rules_rds" {
+  for_each = { for rule in var.additional_ingress_rules : rule.name => rule }
+
+  security_group_id = module.rds_instance[0].security_group_id
+  type              = each.value.type
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  protocol          = each.value.protocol
+  cidr_blocks       = each.value.cidr_blocks
+}
+
 ################################################################################
 ## ssm parameters
 ################################################################################

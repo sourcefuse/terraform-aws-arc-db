@@ -135,7 +135,7 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
-  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.3.2"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.7.0"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
   name = local.aurora_cluster_name
@@ -187,6 +187,17 @@ module "aurora_cluster" {
     Environment = var.environment
     Stage       = var.environment
   }))
+}
+
+resource "aws_security_group_rule" "additional_ingress_rules_aurora" {
+  for_each = { for rule in var.additional_ingress_rules_aurora : rule.name => rule }
+
+  security_group_id = module.aurora_cluster[0].security_group_id
+  type              = each.value.type
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  protocol          = each.value.protocol
+  cidr_blocks       = each.value.cidr_blocks
 }
 
 ################################################################################
@@ -401,6 +412,18 @@ module "rds_instance" {
     Environment = var.environment
     Stage       = var.environment
   }))
+}
+
+
+resource "aws_security_group_rule" "additional_ingress_rules_rds" {
+  for_each = { for rule in var.additional_ingress_rules_rds : rule.name => rule }
+
+  security_group_id = module.rds_instance[0].security_group_id
+  type              = each.value.type
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  protocol          = each.value.protocol
+  cidr_blocks       = each.value.cidr_blocks
 }
 
 ################################################################################

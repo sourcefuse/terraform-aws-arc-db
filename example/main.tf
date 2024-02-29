@@ -50,6 +50,7 @@ module "aurora" {
   performance_insights_kms_key_id       = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
   kms_key_arn                           = data.aws_kms_alias.aurora_cluster_kms_arn.target_key_arn
   iam_database_authentication_enabled   = true
+  additional_ingress_rules_aurora       = var.additional_ingress_rules_aurora
 }
 
 ## sql server rds instance
@@ -96,4 +97,5 @@ module "rds_sql_server" {
   rds_instance_security_group_ids          = data.aws_security_groups.db_sg.ids
   rds_instance_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
   rds_instance_subnet_ids                  = data.aws_subnets.private.ids
+  additional_ingress_rules_rds             = var.additional_ingress_rules_rds
 }

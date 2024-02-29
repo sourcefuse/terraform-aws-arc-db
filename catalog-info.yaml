@@ -15,7 +15,7 @@ metadata:
       icon: dashboard
     - url: https://sourcefuse.github.io/arc-docs/arc-iac-docs/modules/terraform-aws-ref-arch-db/
       title: ARC DB Docs
-      icon: dashboard  
+      icon: dashboard
 spec:
   type: service
   owner: sourcefuse

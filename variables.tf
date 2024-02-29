@@ -174,6 +174,19 @@ variable "aurora_serverlessv2_scaling_configuration" {
   default = null
 }
 
+variable "additional_ingress_rules_aurora" {
+  description = "Additional ingress rules for Aurora"
+  type = list(object({
+    description = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = []
+}
+
 ################################################################################
 ## option group
 ################################################################################
@@ -520,4 +533,17 @@ variable "aurora_iops" {
   type        = number
   description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1'. This setting is required to create a Multi-AZ DB cluster. Check TF docs for values based on db engine"
   default     = null
+}
+
+variable "additional_ingress_rules_rds" {
+  description = "Additional ingress rules for RDS"
+  type = list(object({
+    description = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = []
 }

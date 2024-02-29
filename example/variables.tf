@@ -24,3 +24,29 @@ variable "kms_alias_name" {
   description = "Name of the KMS alias"
   default     = "alias/arc-poc-aurora-cluster-kms-key"
 }
+
+variable "additional_ingress_rules_aurora" {
+  description = "Additional ingress rules for Aurora"
+  type = list(object({
+    description = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = []
+}
+
+variable "additional_ingress_rules_rds" {
+  description = "Additional ingress rules for RDS"
+  type = list(object({
+    description = string
+    type        = string
+    from_port   = number
+    to_port     = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  default = []
+}

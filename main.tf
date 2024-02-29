@@ -173,6 +173,7 @@ module "aurora_cluster" {
 
   vpc_security_group_ids = var.vpc_security_group_ids
   kms_key_arn            = var.kms_key_arn
+  ca_cert_identifier     = var.aurora_ca_cert_identifier
 
   # reference iam role created above
   rds_monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn

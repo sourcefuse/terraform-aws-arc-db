@@ -28,6 +28,7 @@ variable "kms_alias_name" {
 variable "additional_ingress_rules_aurora" {
   description = "Additional ingress rules for Aurora"
   type = list(object({
+    name        = string
     description = string
     type        = string
     from_port   = number
@@ -41,6 +42,7 @@ variable "additional_ingress_rules_aurora" {
 variable "additional_ingress_rules_rds" {
   description = "Additional ingress rules for RDS"
   type = list(object({
+    name        = string
     description = string
     type        = string
     from_port   = number

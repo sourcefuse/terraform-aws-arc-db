@@ -177,6 +177,7 @@ variable "aurora_serverlessv2_scaling_configuration" {
 variable "additional_ingress_rules_aurora" {
   description = "Additional ingress rules for Aurora"
   type = list(object({
+    name        = string
     description = string
     type        = string
     from_port   = number
@@ -538,6 +539,7 @@ variable "aurora_iops" {
 variable "additional_ingress_rules_rds" {
   description = "Additional ingress rules for RDS"
   type = list(object({
+    name        = string
     description = string
     type        = string
     from_port   = number

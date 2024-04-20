@@ -33,7 +33,8 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_additional_rules"></a> [additional\_rules](#input\_additional\_rules) | Additional security group rules | <pre>list(object({<br>    name        = string<br>    type        = string<br>    from_port   = number<br>    to_port     = number<br>    protocol    = string<br>    cidr_blocks = list(string)<br>  }))</pre> | `[]` | no |
+| <a name="input_additional_ingress_rules_aurora"></a> [additional\_ingress\_rules\_aurora](#input\_additional\_ingress\_rules\_aurora) | Additional ingress rules for Aurora | <pre>list(object({<br>    name        = string<br>    description = string<br>    type        = string<br>    from_port   = number<br>    to_port     = number<br>    protocol    = string<br>    cidr_blocks = list(string)<br>  }))</pre> | `[]` | no |
+| <a name="input_additional_ingress_rules_rds"></a> [additional\_ingress\_rules\_rds](#input\_additional\_ingress\_rules\_rds) | Additional ingress rules for RDS | <pre>list(object({<br>    name        = string<br>    description = string<br>    type        = string<br>    from_port   = number<br>    to_port     = number<br>    protocol    = string<br>    cidr_blocks = list(string)<br>  }))</pre> | `[]` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `"poc"` | no |
 | <a name="input_kms_alias_name"></a> [kms\_alias\_name](#input\_kms\_alias\_name) | Name of the KMS alias | `string` | `"alias/arc-poc-aurora-cluster-kms-key"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | `"arc"` | no |

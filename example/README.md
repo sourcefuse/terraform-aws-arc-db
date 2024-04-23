@@ -3,21 +3,22 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.45.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.46.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_aurora"></a> [aurora](#module\_aurora) | ../ | n/a |
-| <a name="module_rds_sql_server"></a> [rds\_sql\_server](#module\_rds\_sql\_server) | sourcefuse/arc-db/aws | 2.0.3 |
+| <a name="module_rds_postgresql"></a> [rds\_postgresql](#module\_rds\_postgresql) | ../ | n/a |
+| <a name="module_rds_sql_server"></a> [rds\_sql\_server](#module\_rds\_sql\_server) | ../ | n/a |
 
 ## Resources
 

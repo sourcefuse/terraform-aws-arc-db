@@ -379,7 +379,7 @@ module "rds_instance" {
   license_model       = var.rds_instance_license_model
   deletion_protection = var.deletion_protection
   iops                = var.rds_instance_iops
-  #  monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn  // TODO - make this conditional
+  monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn  // TODO - make this conditional
   enabled_cloudwatch_logs_exports       = var.rds_enabled_cloudwatch_logs_exports
   monitoring_interval                   = var.rds_monitoring_interval
   performance_insights_enabled          = var.performance_insights_enabled

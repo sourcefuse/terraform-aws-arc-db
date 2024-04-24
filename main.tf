@@ -135,7 +135,7 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
-  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.7.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.9.0"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
   name = local.aurora_cluster_name
@@ -164,12 +164,12 @@ module "aurora_cluster" {
   storage_type          = var.aurora_storage_type
   iops                  = var.aurora_iops
   copy_tags_to_snapshot = true
-  # enable monitoring every 30 seconds
-  rds_monitoring_interval = 30
 
+  rds_monitoring_interval               = var.rds_monitoring_interval
   performance_insights_enabled          = var.performance_insights_enabled
   performance_insights_kms_key_id       = var.performance_insights_enabled ? coalesce(var.performance_insights_kms_key_id, aws_kms_key.aurora_cluster_kms_key[0].arn) : ""
   performance_insights_retention_period = var.performance_insights_retention_period
+  enabled_cloudwatch_logs_exports       = var.aurora_enabled_cloudwatch_logs_exports
 
   vpc_security_group_ids = var.vpc_security_group_ids
   kms_key_arn            = var.kms_key_arn
@@ -205,7 +205,7 @@ resource "aws_security_group_rule" "additional_ingress_rules_aurora" {
 ## s3 db management
 ################################################################################
 module "db_management" {
-  source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=3.0.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=4.2.0"
   count  = var.rds_enable_custom_option_group == true ? 1 : 0
 
   name = "${local.rds_instance_name}-db-management"
@@ -361,7 +361,7 @@ resource "aws_db_instance_role_association" "this" {
 ################################################################################
 module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
-  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=0.40.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=1.1.1"
 
   name = local.rds_instance_name
 
@@ -380,6 +380,11 @@ module "rds_instance" {
   deletion_protection = var.deletion_protection
   iops                = var.rds_instance_iops
   #  monitoring_role_arn = aws_iam_role.enhanced_monitoring.arn  // TODO - make this conditional
+  enabled_cloudwatch_logs_exports       = var.rds_enabled_cloudwatch_logs_exports
+  monitoring_interval                   = var.rds_monitoring_interval
+  performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_kms_key_id       = var.performance_insights_kms_key_id
+  performance_insights_retention_period = var.performance_insights_retention_period
 
   kms_key_arn                         = var.rds_instance_storage_encrypted == false ? "" : var.rds_kms_key_arn_override != "" ? var.rds_kms_key_arn_override : aws_kms_key.rds_db_kms_key[0].arn
   database_name                       = var.rds_instance_database_name
@@ -389,7 +394,7 @@ module "rds_instance" {
   engine                              = var.rds_instance_engine
   engine_version                      = var.rds_instance_engine_version
   major_engine_version                = var.rds_instance_major_engine_version
-  parameter_group_name                = var.rds_instance_db_parameter_group
+  parameter_group_name                = var.rds_instance_db_parameter_group_name
   db_parameter_group                  = var.rds_instance_db_parameter_group
   db_parameter                        = var.rds_instance_db_parameter
   db_options                          = var.rds_instance_db_options

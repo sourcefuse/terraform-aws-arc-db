@@ -313,19 +313,25 @@ variable "rds_instance_engine" {
 variable "rds_instance_engine_version" {
   type        = string
   description = "Database engine version, depends on engine type. Required unless a snapshot_identifier or replicate_source_db is provided."
-  default     = "14.3"
+  default     = "16.2"
 }
 
 variable "rds_instance_major_engine_version" {
   type        = string
   description = "major_engine_version	Database MAJOR engine version, depends on engine type"
-  default     = "14"
+  default     = "16"
 }
 
 variable "rds_instance_db_parameter_group" {
   type        = string
-  description = "The DB parameter group family name. The value depends on DB engine used. See DBParameterGroupFamily for instructions on how to retrieve applicable value."
-  default     = "postgres14"
+  description = "The DB parameter group family name. The value depends on DB engine used. See [DBParameterGroupFamily](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html#API_CreateDBParameterGroup_RequestParameters) for instructions on how to retrieve applicable value"
+  default     = "postgres16"
+}
+
+variable "rds_instance_db_parameter_group_name" {
+  type        = string
+  description = "Name of the DB parameter group to associate."
+  default     = ""
 }
 
 variable "rds_kms_key_arn_override" {
@@ -391,16 +397,28 @@ variable "rds_instance_multi_az" {
   default     = false
 }
 
+variable "rds_enabled_cloudwatch_logs_exports" {
+  type        = list(string)
+  description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
+  default     = []
+}
+
+variable "rds_monitoring_interval" {
+  type        = number
+  description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. Valid Values are 0, 1, 5, 10, 15, 30, 60"
+  default     = 0
+}
+
 variable "rds_instance_storage_type" {
   type        = string
-  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
-  default     = "gp2"
+  description = "One of 'standard' (magnetic), 'gp2' / 'gp3' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
+  default     = "gp3"
 }
 
 variable "rds_instance_instance_class" {
   type        = string
   description = "Class of RDS instance"
-  default     = "db.t2.medium"
+  default     = "db.t3.medium"
 }
 
 variable "rds_instance_allocated_storage" {
@@ -493,6 +511,12 @@ variable "rds_instance_license_model" {
   default     = ""
 }
 
+variable "aurora_enabled_cloudwatch_logs_exports" {
+  type        = list(string)
+  description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
+  default     = []
+}
+
 variable "performance_insights_enabled" {
   type        = bool
   default     = false
@@ -532,7 +556,7 @@ variable "iam_database_authentication_enabled" {
 
 variable "aurora_storage_type" {
   type        = string
-  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD) or aurora-iopt1"
+  description = "One of 'standard' (magnetic), 'gp2' / 'gp3' (general purpose SSD), or 'io1' (provisioned IOPS SSD) or aurora-iopt1"
   default     = null
 }
 

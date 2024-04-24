@@ -2,12 +2,12 @@
 ## defaults
 ################################################################################
 terraform {
-  required_version = "~> 1.3"
+  required_version = ">= 1.3, < 2.0.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = ">= 4.0"
     }
   }
 }
@@ -27,7 +27,7 @@ data "aws_caller_identity" "this" {}
 ## aurora cluster
 module "aurora" {
   source = "../"
-  # version     = "2.0.3"
+
   environment = var.environment
   namespace   = var.namespace
   region      = var.region
@@ -55,8 +55,8 @@ module "aurora" {
 
 ## sql server rds instance
 module "rds_sql_server" {
-  source      = "sourcefuse/arc-db/aws"
-  version     = "2.0.3"
+  source = "../"
+
   environment = var.environment
   namespace   = var.namespace
   region      = var.region
@@ -72,16 +72,16 @@ module "rds_sql_server" {
   rds_instance_database_user               = "example_db_admin"
   rds_instance_database_port               = 1433
   rds_instance_engine                      = "sqlserver-ex" // express edition.
-  rds_instance_engine_version              = "15.00.4236.7.v1"
-  rds_instance_major_engine_version        = "15.00"
-  rds_instance_db_parameter_group          = "default.sqlserver-ex-15.0"
+  rds_instance_engine_version              = "16.00.4105.2.v1"
+  rds_instance_major_engine_version        = "16.00"
+  rds_instance_db_parameter_group          = "default.sqlserver-ex-16.0"
   rds_instance_db_parameter                = []
   rds_instance_db_options                  = []
   rds_enable_custom_option_group           = true
   rds_instance_ca_cert_identifier          = "rds-ca-2019"
   rds_instance_publicly_accessible         = false
   rds_instance_multi_az                    = false
-  rds_instance_storage_type                = "gp2"
+  rds_instance_storage_type                = "gp3"
   rds_instance_instance_class              = "db.t3.small"
   rds_instance_allocated_storage           = 25
   rds_instance_storage_encrypted           = false // sql server express doesn't support encryption at rest
@@ -98,4 +98,26 @@ module "rds_sql_server" {
   rds_instance_allowed_cidr_blocks         = [data.aws_vpc.vpc.cidr_block]
   rds_instance_subnet_ids                  = data.aws_subnets.private.ids
   additional_ingress_rules_rds             = var.additional_ingress_rules_rds
+}
+
+## sql server rds instance
+module "rds_postgresql" {
+  source = "../"
+
+  environment = var.environment
+  namespace   = var.namespace
+  region      = var.region
+  vpc_id      = data.aws_vpc.vpc.id
+
+  account_id                 = data.aws_caller_identity.this.id
+  rds_instance_enabled       = true
+  rds_instance_name          = "postgresql-example"
+  enhanced_monitoring_name   = "postgresql-example-enhanced-monitoring"
+  rds_instance_database_name = "arc"
+  rds_instance_database_user = "example_db_admin"
+
+  rds_instance_security_group_ids  = data.aws_security_groups.db_sg.ids
+  rds_instance_allowed_cidr_blocks = [data.aws_vpc.vpc.cidr_block]
+  rds_instance_subnet_ids          = data.aws_subnets.private.ids
+  additional_ingress_rules_rds     = var.additional_ingress_rules_rds
 }

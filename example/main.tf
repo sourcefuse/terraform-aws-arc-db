@@ -100,7 +100,7 @@ module "rds_sql_server" {
   additional_ingress_rules_rds             = var.additional_ingress_rules_rds
 }
 
-## sql server rds instance
+## postgresql rds instance
 module "rds_postgresql" {
   source = "../"
 
@@ -109,12 +109,14 @@ module "rds_postgresql" {
   region      = var.region
   vpc_id      = data.aws_vpc.vpc.id
 
-  account_id                 = data.aws_caller_identity.this.id
-  rds_instance_enabled       = true
-  rds_instance_name          = "postgresql-example"
-  enhanced_monitoring_name   = "postgresql-example-enhanced-monitoring"
-  rds_instance_database_name = "arc"
-  rds_instance_database_user = "example_db_admin"
+  account_id                   = data.aws_caller_identity.this.id
+  rds_instance_enabled         = true
+  rds_instance_name            = "postgresql-example"
+  performance_insights_enabled = true
+  enhanced_monitoring_name     = "postgresql-example-enhanced-monitoring"
+  enhanced_monitoring_arn      = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+  rds_instance_database_name   = "arc"
+  rds_instance_database_user   = "example_db_admin"
 
   rds_instance_security_group_ids  = data.aws_security_groups.db_sg.ids
   rds_instance_allowed_cidr_blocks = [data.aws_vpc.vpc.cidr_block]

@@ -171,6 +171,9 @@ module "aurora_cluster" {
   performance_insights_retention_period = var.performance_insights_retention_period
   enabled_cloudwatch_logs_exports       = var.aurora_enabled_cloudwatch_logs_exports
 
+  backup_window    = var.aurora_backup_window
+  retention_period = var.aurora_backup_retention_period
+
   vpc_security_group_ids = var.vpc_security_group_ids
   kms_key_arn            = var.kms_key_arn
   ca_cert_identifier     = var.aurora_ca_cert_identifier

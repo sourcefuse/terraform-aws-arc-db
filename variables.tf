@@ -135,6 +135,18 @@ variable "aurora_cluster_size" {
   description = "Number of DB instances to create in the cluster"
 }
 
+variable "aurora_backup_retention_period" {
+  type        = number
+  default     = 5
+  description = "Number of days to retain backups for"
+}
+
+variable "aurora_backup_window" {
+  type        = string
+  default     = "07:00-09:00"
+  description = "Daily time range during which the backups happen"
+}
+
 variable "aurora_instance_type" {
   type        = string
   default     = "db.serverless"

@@ -319,7 +319,7 @@ variable "rds_instance_database_port" {
 variable "rds_instance_engine" {
   type        = string
   description = "Database engine type. Required unless a snapshot_identifier or replicate_source_db is provided. For supported values, see the Engine parameter in API action CreateDBInstance."
-  default     = "postgres"
+  default     = "sqlserver-*"
 }
 
 variable "rds_instance_engine_version" {

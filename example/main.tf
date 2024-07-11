@@ -2,12 +2,12 @@
 ## defaults
 ################################################################################
 terraform {
-  required_version = ">= 1.3, < 2.0.0"
+  required_version = "~> 1.3, < 2.0.0"
 
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 4.0"
+      version = ">= 4.0, < 6.0"
     }
   }
 }
@@ -74,7 +74,7 @@ module "rds_sql_server" {
   rds_instance_engine                      = "sqlserver-ex" // express edition.
   rds_instance_engine_version              = "16.00.4105.2.v1"
   rds_instance_major_engine_version        = "16.00"
-  rds_instance_db_parameter_group          = "default.sqlserver-ex-16.0"
+  rds_instance_db_parameter_group          = "sqlserver-ex-16.0"
   rds_instance_db_parameter                = []
   rds_instance_db_options                  = []
   rds_enable_custom_option_group           = true
@@ -83,7 +83,7 @@ module "rds_sql_server" {
   rds_instance_multi_az                    = false
   rds_instance_storage_type                = "gp3"
   rds_instance_instance_class              = "db.t3.small"
-  rds_instance_allocated_storage           = 25
+  rds_instance_allocated_storage           = 400
   rds_instance_storage_encrypted           = false // sql server express doesn't support encryption at rest
   rds_instance_snapshot_identifier         = null
   rds_instance_auto_minor_version_upgrade  = true

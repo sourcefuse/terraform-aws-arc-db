@@ -1,18 +1,19 @@
 ---
 name: snyk
 
-on:                     # yamllint disable-line rule:truthy
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
-      - "**"            # matches every branch
-      - "!main"         # excludes main
+      - '**'     # matches every branch
+      - '!main'  # excludes main
   pull_request:
     branches:
       - main
 
 jobs:
   security:
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
     name: snyk
     steps:
       - name: checkout
@@ -22,13 +23,13 @@ jobs:
         with:
           command: monitor
           args: --severity-threshold=low
-      - name: Set up Node 18
+      - name: Set up Node 16
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 16
       - name: install Snyk CLI
         run: npm install -g snyk
       - name: snyk monitor
-        run: snyk iac test --report --severity-threshold=medium
+        run: snyk iac test --report
         env:
           SNYK_TOKEN: ${{ secrets.ARC_SNYK_TOKEN }}

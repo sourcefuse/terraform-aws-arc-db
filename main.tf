@@ -159,6 +159,7 @@ module "aurora_cluster" {
   allowed_cidr_blocks                 = var.aurora_allowed_cidr_blocks
   subnets                             = var.aurora_subnets
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
+  deletion_protection                 = var.deletion_protection
 
   storage_encrypted     = true
   storage_type          = var.aurora_storage_type

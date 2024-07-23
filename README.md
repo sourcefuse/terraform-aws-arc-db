@@ -1,3 +1,4 @@
+![Module Structure](./static/banner.png)
 # [terraform-aws-arc-db](https://github.com/sourcefuse/terraform-aws-arc-db)
 
 <a href="https://github.com/sourcefuse/terraform-aws-arc-db/releases/latest"><img src="https://img.shields.io/github/release/sourcefuse/terraform-aws-arc-db.svg?style=for-the-badge" alt="Latest Release"/></a> <a href="https://github.com/sourcefuse/terraform-aws-arc-db/commits"><img src="https://img.shields.io/github/last-commit/sourcefuse/terraform-aws-arc-db.svg?style=for-the-badge" alt="Last Updated"/></a> ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
@@ -21,8 +22,8 @@ To see a full example, check out the [main.tf](https://github.com/sourcefuse/ter
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3, < 2.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0, < 6.0 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.1.1 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.4.0 |
 
@@ -30,33 +31,8 @@ To see a full example, check out the [main.tf](https://github.com/sourcefuse/ter
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.57.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_aurora_cluster"></a> [aurora\_cluster](#module\_aurora\_cluster) | git::https://github.com/cloudposse/terraform-aws-rds-cluster.git | 1.9.0 |
-| <a name="module_db_management"></a> [db\_management](#module\_db\_management) | git::https://github.com/cloudposse/terraform-aws-s3-bucket | 4.2.0 |
-| <a name="module_rds_instance"></a> [rds\_instance](#module\_rds\_instance) | git::https://github.com/cloudposse/terraform-aws-rds | 1.1.1 |
-| <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
-
-## Resources
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3, < 2.0.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.0 |
-| <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.1.1 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.4.0 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.57.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.4.3 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.59.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.6.2 |
 
 ## Modules
 
@@ -168,7 +144,7 @@ To see a full example, check out the [main.tf](https://github.com/sourcefuse/ter
 | <a name="input_rds_instance_db_parameter_group_name"></a> [rds\_instance\_db\_parameter\_group\_name](#input\_rds\_instance\_db\_parameter\_group\_name) | Name of the DB parameter group to associate. | `string` | `""` | no |
 | <a name="input_rds_instance_dns_zone_id"></a> [rds\_instance\_dns\_zone\_id](#input\_rds\_instance\_dns\_zone\_id) | The ID of the DNS Zone in Route53 where a new DNS record will be created for the DB host name | `string` | `""` | no |
 | <a name="input_rds_instance_enabled"></a> [rds\_instance\_enabled](#input\_rds\_instance\_enabled) | Enable creation of an RDS instance | `bool` | `false` | no |
-| <a name="input_rds_instance_engine"></a> [rds\_instance\_engine](#input\_rds\_instance\_engine) | Database engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. For supported values, see the Engine parameter in API action CreateDBInstance. | `string` | `"postgres"` | no |
+| <a name="input_rds_instance_engine"></a> [rds\_instance\_engine](#input\_rds\_instance\_engine) | Database engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. For supported values, see the Engine parameter in API action CreateDBInstance. | `string` | `"sqlserver-*"` | no |
 | <a name="input_rds_instance_engine_version"></a> [rds\_instance\_engine\_version](#input\_rds\_instance\_engine\_version) | Database engine version, depends on engine type. Required unless a snapshot\_identifier or replicate\_source\_db is provided. | `string` | `"16.2"` | no |
 | <a name="input_rds_instance_host_name"></a> [rds\_instance\_host\_name](#input\_rds\_instance\_host\_name) | The DB host name created in Route53 | `string` | `"db"` | no |
 | <a name="input_rds_instance_instance_class"></a> [rds\_instance\_instance\_class](#input\_rds\_instance\_instance\_class) | Class of RDS instance | `string` | `"db.t3.medium"` | no |
@@ -273,4 +249,3 @@ go test
 This project is authored by:
 
 - SourceFuse ARC Team
-

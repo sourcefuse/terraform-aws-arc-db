@@ -160,6 +160,7 @@ module "aurora_cluster" {
   subnets                             = var.aurora_subnets
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   deletion_protection                 = var.deletion_protection
+  enable_http_endpoint                = var.enable_http_endpoint
 
   storage_encrypted     = true
   storage_type          = var.aurora_storage_type

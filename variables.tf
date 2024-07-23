@@ -591,3 +591,8 @@ variable "additional_ingress_rules_rds" {
   }))
   default = []
 }
+variable "enable_http_endpoint" {
+  type        = bool
+  description = "Enable HTTP endpoint (data API). Only valid when engine_mode is set to serverless"
+  default     = false
+}

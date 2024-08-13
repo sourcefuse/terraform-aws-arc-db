@@ -135,7 +135,7 @@ resource "random_password" "rds_db_admin_password" {
 ## aurora cluster
 ################################################################################
 module "aurora_cluster" {
-  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.9.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds-cluster.git?ref=1.11.0"
   count  = var.aurora_cluster_enabled == true ? 1 : 0
 
   name = local.aurora_cluster_name
@@ -210,7 +210,7 @@ resource "aws_security_group_rule" "additional_ingress_rules_aurora" {
 ## s3 db management
 ################################################################################
 module "db_management" {
-  source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=4.2.0"
+  source = "git::https://github.com/cloudposse/terraform-aws-s3-bucket?ref=4.5.0"
   count  = var.rds_enable_custom_option_group == true ? 1 : 0
 
   name = "${local.rds_instance_name}-db-management"
@@ -366,7 +366,7 @@ resource "aws_db_instance_role_association" "this" {
 ################################################################################
 module "rds_instance" {
   count  = var.rds_instance_enabled == true ? 1 : 0
-  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=1.1.1"
+  source = "git::https://github.com/cloudposse/terraform-aws-rds?ref=1.1.2"
 
   name = local.rds_instance_name
 

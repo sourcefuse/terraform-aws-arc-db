@@ -1,598 +1,555 @@
-################################################################################
-## shared
-################################################################################
+variable "environment" {
+  type        = string
+  description = "ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT'"
+}
+
+variable "namespace" {
+  type        = string
+  description = "Namespace for the resources."
+}
+
+
+variable "name" {
+  description = "The identifier for the RDS instance or cluster."
+  type        = string
+}
+
 variable "vpc_id" {
   type        = string
-  description = "vpc_id for the VPC to run the cluster."
+  description = "VPC Id for creating security group"
 }
 
-variable "enhanced_monitoring_name" {
-  type        = string
-  description = "Name to assign the enhanced monitoring resources."
-}
-
-variable "enhanced_monitoring_arn" {
-  type        = string
-  description = "ARN to the enhanced monitoring policy"
-  default     = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
-}
-
-variable "deletion_protection" {
-  description = "Protect the instance from being deleted"
-  type        = bool
-  default     = false
-}
-
-
-variable "timeouts" {
+variable "serverlessv2_scaling_config" {
   type = object({
-    create = string
-    update = string
-    delete = string
+    max_capacity = number
+    min_capacity = number
   })
-  description = "A list of DB timeouts to apply to the running code while creating, updating, or deleting the DB instance."
   default = {
-    create = "40m"
-    update = "80m"
-    delete = "60m"
+    max_capacity = 1.0
+    min_capacity = 0.5
+  }
+  description = <<EOT
+Configuration for Serverless V2 scaling:
+- max_capacity: (Required) The maximum ACU capacity for scaling (e.g., 256.0).
+- min_capacity: (Required) The minimum ACU capacity for scaling (e.g., 0.5).
+EOT
+}
+
+variable "engine_type" {
+  type        = string
+  description = "(optional) Engine type, valid values are 'rds' or 'aurora'"
+
+  validation {
+    condition     = contains(["rds", "aurora"], var.engine_type)
+    error_message = "The engine_type variable must be either 'rds' or 'aurora'."
   }
 }
 
-################################################################################
-## aurora
-################################################################################
-variable "aurora_cluster_enabled" {
-  type        = bool
-  description = "Enable creation of an Aurora Cluster"
-  default     = false
-}
-
-variable "aurora_cluster_name_override" {
-  type        = bool
-  description = <<-EOT
-    If `true`, this will set a the Aurora Cluster name to what is defined in var.aurora_cluster_name.
-    If `false`, this will prepend $${var.namespace}-$${var.environment} to $${var.aurora_cluster_name}"
-  EOT
-  default     = false
-}
-
-variable "aurora_cluster_name" {
-  type        = string
-  description = "Database name (default is not to create a database)"
-  default     = ""
-}
-
-variable "aurora_db_admin_username" {
-  type        = string
-  description = "Name of the default DB admin user role"
-  default     = ""
-}
-
-variable "aurora_db_admin_password" {
-  type        = string
-  description = "Password of the DB admin"
-  sensitive   = true
-  default     = ""
-}
-
-variable "aurora_db_name" {
-  type        = string
-  default     = "auroradb"
-  description = "Database name."
-}
-
-variable "aurora_db_port" {
-  type        = number
-  description = "Port for the Aurora DB instance to use."
-  default     = 5432
-}
-
-variable "aurora_cluster_family" {
-  type        = string
-  default     = "aurora-postgresql14"
-  description = "The family of the DB cluster parameter group"
-}
-
-variable "aurora_engine" {
+# Engine type (Aurora, Aurora MySQL, or Aurora PostgreSQL)
+variable "engine" {
+  description = "The database engine to use for the RDS cluster (e.g., aurora, aurora-mysql, aurora-postgresql)."
   type        = string
   default     = "aurora-postgresql"
-  description = "The name of the database engine to be used for this DB cluster. Valid values: `aurora`, `aurora-mysql`, `aurora-postgresql`"
 }
 
-variable "aurora_engine_mode" {
+# Engine version
+variable "engine_version" {
+  description = "The version of the database engine to use."
   type        = string
+}
+
+variable "engine_mode" {
+  type        = string
+  description = <<-EOT
+  (optional) Database engine mode. Valid values: global (only valid for Aurora MySQL 1.21 and earlier), parallelquery, provisioned, serverless. Defaults to: provisioned
+  Note :- For Serverless V2 , engine_mode should be "provisioned" but for simplecity  "serverless" is expected
+  Refer : https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/rds_cluster#rds-serverless-v2-cluster
+  EOT
   default     = "provisioned"
-  description = "The database engine mode. Valid values: `parallelquery`, `provisioned`, `serverless`"
 }
 
-variable "aurora_engine_version" {
-  description = "The version of the database engine tocl use. See `aws rds describe-db-engine-versions` "
+variable "engine_lifecycle_support" {
   type        = string
-  default     = "14.5" // "aurora-postgresql14.5"
+  description = "(optional) The life cycle type for this DB instance. This setting is valid for cluster types Aurora DB clusters and Multi-AZ DB clusters. Valid values are open-source-rds-extended-support, open-source-rds-extended-support-disabled. Default value is open-source-rds-extended-support"
+  default     = "open-source-rds-extended-support"
 }
 
-variable "aurora_ca_cert_identifier" {
+variable "skip_final_snapshot" {
   type        = string
-  description = "The identifier of the CA certificate for the Aurora DB instance"
+  description = "(optional) Determines whether a final DB snapshot is created before the DB cluster is deleted. If true is specified, no DB snapshot is created. If false is specified, a DB snapshot is created before the DB cluster is deleted, using the value from final_snapshot_identifier. Default is false."
+  default     = true
+}
+
+variable "final_snapshot_identifier" {
+  type        = string
+  description = "(optional) Name of your final DB snapshot when this DB cluster is deleted. If omitted, no final snapshot will be made."
   default     = null
 }
 
-variable "aurora_allow_major_version_upgrade" {
+variable "storage_type" {
+  type        = string
+  description = "(optional) Required for Multi-AZ DB cluster) (Forces new for Multi-AZ DB clusters) Specifies the storage type to be associated with the DB cluster. For Aurora DB clusters, storage_type modifications can be done in-place. For Multi-AZ DB Clusters, the iops argument must also be set. Valid values are: \"\", aurora-iopt1 (Aurora DB Clusters); io1, io2 (Multi-AZ DB Clusters). Default: \"\" (Aurora DB Clusters); io1 (Multi-AZ DB Clusters)."
+  default     = ""
+}
+
+variable "port" {
+  type        = number
+  description = "Port on which the DB accepts connections"
+}
+
+# Master username
+variable "username" {
+  description = "The master username for the database."
+  type        = string
+}
+
+# Master password
+variable "password" {
+  description = "The master password for the database."
+  type        = string
+  sensitive   = true
+  default     = null
+}
+
+variable "manage_user_password" {
   type        = bool
+  description = "(optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided."
   default     = false
-  description = "Enable to allow major engine version upgrades when changing engine versions. Defaults to false."
 }
 
-variable "aurora_auto_minor_version_upgrade" {
-  type        = bool
-  default     = true
-  description = "Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window"
+# Database name
+variable "database_name" {
+  description = "The name of the database to create when the cluster is created."
+  type        = string
+  default     = null
 }
 
-variable "aurora_cluster_size" {
+# DB subnet group name
+variable "db_subnet_group_data" {
+  type = object({
+    name        = string
+    create      = optional(bool, false)
+    description = optional(string, null)
+    subnet_ids  = optional(list(string), [])
+  })
+  description = "(optional) DB Subnet Group details"
+}
+
+# Backup retention period
+variable "backup_retention_period" {
+  description = "The number of days to retain backups for the DB cluster."
   type        = number
-  default     = 0
-  description = "Number of DB instances to create in the cluster"
+  default     = 7
 }
 
-variable "aurora_backup_retention_period" {
-  type        = number
-  default     = 5
-  description = "Number of days to retain backups for"
-}
-
-variable "aurora_backup_window" {
+# Preferred backup window
+variable "preferred_backup_window" {
+  description = "The daily time range during which backups are taken."
   type        = string
   default     = "07:00-09:00"
-  description = "Daily time range during which the backups happen"
 }
 
-variable "aurora_instance_type" {
+# Preferred maintenance window
+variable "preferred_maintenance_window" {
+  description = "The weekly time range during which maintenance can occur."
   type        = string
-  default     = "db.serverless"
-  description = "Instance type to use"
+  default     = "sun:06:00-sun:07:00"
 }
 
-variable "aurora_subnets" {
-  type        = list(string)
-  description = "Subnets for the cluster to run in."
-  default     = []
-}
-
-variable "aurora_security_groups" {
-  type        = list(string)
-  default     = []
-  description = "List of security group IDs to be allowed to connect to the DB instance"
-}
-
-variable "aurora_allowed_cidr_blocks" {
-  type        = list(string)
-  default     = []
-  description = "List of CIDR blocks allowed to access the cluster"
-}
-
-variable "aurora_scaling_configuration" {
-  description = "List of nested attributes with scaling properties. Only valid when engine_mode is set to serverless"
-  type = list(object({
-    auto_pause               = bool
-    max_capacity             = number
-    min_capacity             = number
-    seconds_until_auto_pause = number
-    timeout_action           = string
-  }))
-  default = []
-}
-
-variable "aurora_serverlessv2_scaling_configuration" {
-  description = "serverlessv2 scaling properties"
-  type = object({
-    min_capacity = number
-    max_capacity = number
-  })
-  default = null
-}
-
-variable "additional_ingress_rules_aurora" {
-  description = "Additional ingress rules for Aurora"
-  type = list(object({
-    name        = string
-    description = string
-    type        = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
-  }))
-  default = []
-}
-
-################################################################################
-## option group
-################################################################################
-variable "rds_enable_custom_option_group" {
-  description = "Enable the custom Option Group for restoring backups via S3"
+# Enable storage encryption
+variable "storage_encrypted" {
+  description = "Whether to enable storage encryption."
   type        = bool
-  default     = false
-}
-
-variable "region" {
-  description = "Region which the resource is deployed to"
-  type        = string
-  default     = "us-east-1"
-}
-
-variable "account_id" {
-  description = "Account ID where the resources will be deployed to. This is required if `enable_custom_option_group` is set to `true`."
-  type        = string
-  default     = ""
-}
-
-variable "s3_kms_alias_override" {
-  description = "Override the KMS key alias for the S3 bucket. Default is set to AWS Managed KMS alias."
-  type        = string
-  default     = ""
-}
-
-################################################################################
-## rds
-################################################################################
-variable "rds_random_admin_password_length" {
-  description = "Length of the generated random password."
-  type        = number
-  default     = 64
-}
-
-variable "rds_instance_enabled" {
-  type        = bool
-  description = "Enable creation of an RDS instance"
-  default     = false
-}
-
-variable "rds_instance_iops" {
-  type        = number
-  description = "RDS instance IOPS"
-  default     = 0
-}
-
-variable "rds_instance_name_override" {
-  type        = bool
-  description = <<-EOT
-    If `true`, this will set a the RDS Instance name to what is defined in var.rds_instance_name.
-    If `false`, this will prepend $${var.namespace}-$${var.environment} to $${var.rds_instance_name}"
-  EOT
-  default     = false
-}
-
-variable "rds_instance_name" {
-  type        = string
-  description = "RDS Instance name"
-  default     = ""
-}
-
-variable "rds_instance_dns_zone_id" {
-  type        = string
-  description = "The ID of the DNS Zone in Route53 where a new DNS record will be created for the DB host name"
-  default     = ""
-}
-
-variable "deletion_window_in_days" {
-  type    = number
-  default = 10
-}
-
-variable "enable_key_rotation" {
-  type    = bool
-  default = true
-}
-
-variable "rds_instance_host_name" {
-  type        = string
-  description = "The DB host name created in Route53"
-  default     = "db"
-}
-
-variable "rds_instance_database_name" {
-  type        = string
-  description = "The name of the database to create when the DB instance is created"
-  default     = null
-}
-
-variable "rds_instance_database_user" {
-  type        = string
-  description = "The name of the database to create when the DB instance is created"
-  default     = "admin"
-}
-
-variable "rds_instance_database_password" {
-  type        = string
-  description = "Password for the primary DB user. Required unless a snapshot_identifier or replicate_source_db is provided."
-  sensitive   = true
-  default     = ""
-}
-
-variable "rds_instance_database_port" {
-  type        = number
-  description = "Database port (_e.g._ 3306 for MySQL). Used in the DB Security Group to allow access to the DB instance from the provided security_group_ids"
-  default     = 5432
-}
-
-variable "rds_instance_engine" {
-  type        = string
-  description = "Database engine type. Required unless a snapshot_identifier or replicate_source_db is provided. For supported values, see the Engine parameter in API action CreateDBInstance."
-  default     = "sqlserver-*"
-}
-
-variable "rds_instance_engine_version" {
-  type        = string
-  description = "Database engine version, depends on engine type. Required unless a snapshot_identifier or replicate_source_db is provided."
-  default     = "16.2"
-}
-
-variable "rds_instance_major_engine_version" {
-  type        = string
-  description = "major_engine_version	Database MAJOR engine version, depends on engine type"
-  default     = "16"
-}
-
-variable "rds_instance_db_parameter_group" {
-  type        = string
-  description = "The DB parameter group family name. The value depends on DB engine used. See [DBParameterGroupFamily](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html#API_CreateDBParameterGroup_RequestParameters) for instructions on how to retrieve applicable value"
-  default     = "postgres16"
-}
-
-variable "rds_instance_db_parameter_group_name" {
-  type        = string
-  description = "Name of the DB parameter group to associate."
-  default     = ""
-}
-
-variable "rds_kms_key_arn_override" {
-  type        = string
-  description = "Override the default created KMS key to encrypt storage"
-  default     = ""
-}
-
-variable "rds_kms_key_id_override" {
-  type        = string
-  description = "Override the default created KMS key ID to encrypt storage"
-  default     = ""
-}
-
-variable "rds_instance_db_parameter" {
-  type = list(object({
-    apply_method = string
-    name         = string
-    value        = string
-  }))
-  description = "A list of DB parameters to apply. Note that parameters may differ from a DB family to another"
-  default     = []
-}
-
-variable "rds_instance_db_options" {
-  type = list(object({
-    db_security_group_memberships  = list(string)
-    option_name                    = string
-    port                           = number
-    version                        = string
-    vpc_security_group_memberships = list(string)
-
-    option_settings = list(object({
-      name  = string
-      value = string
-    }))
-  }))
-  description = "A list of DB options to apply with an option group. Depends on DB engine"
-  default     = []
-}
-
-variable "rds_instance_option_group_name" {
-  type        = string
-  description = "Name of the DB option group to associate"
-  default     = ""
-}
-
-variable "rds_instance_ca_cert_identifier" {
-  type        = string
-  description = "The identifier of the CA certificate for the DB instance"
-  default     = null
-}
-
-variable "rds_instance_publicly_accessible" {
-  type        = bool
-  description = "Determines if database can be publicly available (NOT recommended)"
-  default     = false
-}
-
-variable "rds_instance_multi_az" {
-  type        = bool
-  description = "Set to true if multi AZ deployment must be supported"
-  default     = false
-}
-
-variable "rds_enabled_cloudwatch_logs_exports" {
-  type        = list(string)
-  description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
-  default     = []
-}
-
-variable "rds_monitoring_interval" {
-  type        = number
-  description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. Valid Values are 0, 1, 5, 10, 15, 30, 60"
-  default     = 0
-}
-
-variable "rds_instance_storage_type" {
-  type        = string
-  description = "One of 'standard' (magnetic), 'gp2' / 'gp3' (general purpose SSD), or 'io1' (provisioned IOPS SSD)"
-  default     = "gp3"
-}
-
-variable "rds_instance_instance_class" {
-  type        = string
-  description = "Class of RDS instance"
-  default     = "db.t3.medium"
-}
-
-variable "rds_instance_allocated_storage" {
-  type        = number
-  description = "The allocated storage in GBs. Required unless a snapshot_identifier or replicate_source_db is provided."
-  default     = 20
-}
-
-variable "rds_instance_storage_encrypted" {
-  type        = bool
-  description = "Specifies whether the DB instance is encrypted. The default is false if not specified"
   default     = true
 }
 
-variable "rds_instance_snapshot_identifier" {
-  type        = string
-  description = "Snapshot identifier e.g: rds:production-2019-06-26-06-05. If specified, the module create cluster from the snapshot"
-  default     = null
-}
+# # KMS key identifier
+# variable "kms_key_id" {
+#   description = "The ARN of the KMS key to use for encryption."
+#   type        = string
+#   default     = "aws/rds"
+# }
 
-variable "rds_instance_auto_minor_version_upgrade" {
+# Enable IAM database authentication
+variable "iam_database_authentication_enabled" {
+  description = "Enable IAM database authentication for the RDS cluster."
   type        = bool
-  description = "Allow automated minor version upgrade (e.g. from Postgres 9.5.3 to Postgres 9.5.4)"
-  default     = true
-}
-
-variable "rds_instance_allow_major_version_upgrade" {
-  type        = bool
-  description = "Allow major version upgrade"
   default     = false
 }
 
-variable "rds_instance_apply_immediately" {
+# Enable deletion protection
+variable "deletion_protection" {
+  description = "Whether to enable deletion protection for the DB cluster."
   type        = bool
-  description = "Specifies whether any database modifications are applied immediately, or during the next maintenance window"
-  default     = true
-}
-
-variable "rds_instance_maintenance_window" {
-  type        = string
-  description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi' UTC"
-  default     = "Mon:03:00-Mon:04:00"
-}
-
-variable "rds_instance_skip_final_snapshot" {
-  type        = bool
-  description = "If true (default), no snapshot will be made before deleting DB"
-  default     = true
-}
-
-variable "rds_instance_copy_tags_to_snapshot" {
-  type        = bool
-  description = "Copy tags from DB to a snapshot"
-  default     = true
-}
-
-variable "rds_instance_backup_retention_period" {
-  type        = number
-  description = "Backup retention period in days. Must be > 0 to enable backups"
-  default     = 0
-}
-
-variable "rds_instance_backup_window" {
-  type        = string
-  description = "When AWS can perform DB snapshots, can't overlap with maintenance window"
-  default     = "22:00-03:00"
-}
-
-variable "rds_instance_security_group_ids" {
-  type        = list(string)
-  description = "The IDs of the security groups from which to allow ingress traffic to the DB instance"
-  default     = []
-}
-
-variable "rds_instance_allowed_cidr_blocks" {
-  type        = list(string)
-  description = "The whitelisted CIDRs which to allow ingress traffic to the DB instance"
-  default     = []
-}
-
-variable "rds_instance_subnet_ids" {
-  type        = list(string)
-  description = "List of subnet IDs for the DB. DB instance will be created in the VPC associated with the DB subnet group provisioned using the subnet IDs. Specify one of subnet_ids, db_subnet_group_name or availability_zone"
-  default     = []
-}
-
-variable "rds_instance_license_model" {
-  type        = string
-  description = "License model for this DB. Optional, but required for some DB Engines. Valid values: license-included | bring-your-own-license | general-public-license"
-  default     = ""
-}
-
-variable "aurora_enabled_cloudwatch_logs_exports" {
-  type        = list(string)
-  description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
-  default     = []
+  default     = false
 }
 
 variable "performance_insights_enabled" {
   type        = bool
+  description = "(optional) Valid only for Non-Aurora Multi-AZ DB Clusters. Enables Performance Insights for the RDS Cluster"
   default     = false
-  description = "Whether to enable Performance Insights"
-}
-
-variable "performance_insights_retention_period" {
-  description = "Amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)"
-  type        = number
-  default     = null
 }
 
 variable "performance_insights_kms_key_id" {
   type        = string
-  default     = ""
-  description = "The ARN for the KMS key to encrypt Performance Insights data. When specifying `performance_insights_kms_key_id`, `performance_insights_enabled` needs to be set to true"
+  description = "(optional) Valid only for Non-Aurora Multi-AZ DB Clusters. Specifies the KMS Key ID to encrypt Performance Insights data. If not specified, the default RDS KMS key will be used (aws/rds)."
+  default     = "aws/rds"
 }
 
-variable "vpc_security_group_ids" {
-  type        = list(string)
-  description = "Additional security group IDs to apply to the cluster, in addition to the provisioned default security group with ingress traffic from existing CIDR blocks and existing security groups"
-
-  default = []
-}
-
-variable "kms_key_arn" {
+variable "network_type" {
   type        = string
-  description = "The ARN for the KMS encryption key. When specifying `kms_key_arn`, `storage_encrypted` needs to be set to `true`"
-  default     = ""
+  description = "(optional) Network type of the cluster. Valid values: IPV4, DUAL."
+  default     = "IPV4"
 }
 
-variable "iam_database_authentication_enabled" {
+# Copy tags to snapshots
+variable "copy_tags_to_snapshot" {
+  description = "Whether to copy all tags to snapshots."
   type        = bool
-  description = "Specifies whether or mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled"
-  default     = false
+  default     = true
 }
 
-variable "aurora_storage_type" {
+variable "db_cluster_parameter_group_name" {
   type        = string
-  description = "One of 'standard' (magnetic), 'gp2' / 'gp3' (general purpose SSD), or 'io1' (provisioned IOPS SSD) or aurora-iopt1"
+  description = "(optional) A cluster parameter group to associate with the cluster."
   default     = null
 }
 
-variable "aurora_iops" {
-  type        = number
-  description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1'. This setting is required to create a Multi-AZ DB cluster. Check TF docs for values based on db engine"
+variable "db_instance_parameter_group_name" {
+  type        = string
+  description = "(optional) Instance parameter group to associate with all instances of the DB cluster. The db_instance_parameter_group_name parameter is only valid in combination with the allow_major_version_upgrade parameter."
   default     = null
 }
 
-variable "additional_ingress_rules_rds" {
-  description = "Additional ingress rules for RDS"
+variable "ca_certificate_identifier" {
+  type        = string
+  description = "(optional) The CA certificate identifier to use for the DB cluster's server certificate."
+  default     = null
+}
+
+variable "delete_automated_backups" {
+  type        = string
+  description = "(optional) Specifies whether to remove automated backups immediately after the DB cluster is deleted. Default is true."
+  default     = true
+}
+
+variable "rds_cluster_instances" {
   type = list(object({
-    name        = string
-    description = string
-    type        = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = list(string)
+    name                    = optional(string, null)
+    instance_class          = string
+    availability_zone       = optional(string, null)
+    publicly_accessible     = optional(bool, false)
+    db_parameter_group_name = optional(string, null)
+    # apply_immediately                     = optional(bool, false)
+    # preferred_maintenance_window          = optional(string, null)
+    # auto_minor_version_upgrade            = optional(bool, true)
+    # ca_cert_identifier                    = optional(string, null)
+    # monitoring_interval                   = optional(number, 0) // 0 - disabled
+    # monitoring_role_arn                   = optional(string, null)
+    # performance_insights_enabled          = optional(bool, false)
+    # performance_insights_kms_key_id       = optional(string, null)
+    # performance_insights_retention_period = optional(number, 7)
+    promotion_tier        = optional(number, 0)
+    copy_tags_to_snapshot = optional(bool, true)
   }))
-  default = []
+  description = <<-EOT
+  "(optional) A list of objects defining configurations for RDS Cluster instances. Each object represents a single RDS instance configuration within the cluster, including options for instance class, monitoring, performance insights, maintenance windows, and other instance-specific settings."
+      name: Optional. Name of the instance (default: null).
+      instance_class: The instance class for the RDS instance (e.g., db.r5.large).
+      availability_zone: Optional. Specifies the availability zone for the instance (default: null).
+      publicly_accessible: Optional. Whether the instance is publicly accessible (default: false).
+      db_parameter_group_name: Optional. The name of the DB parameter group to associate with the instance (default: null).
+      apply_immediately: Optional. Apply modifications immediately or during the next maintenance window (default: false).
+      preferred_maintenance_window: Optional. The weekly maintenance window for the instance (default: null).
+      auto_minor_version_upgrade: Optional. Automatically apply minor version upgrades (default: true).
+      ca_cert_identifier: Optional. Identifier for the CA certificate for the instance (default: null).
+      monitoring_interval: Optional. Monitoring interval for Enhanced Monitoring (default: 0 - disabled).
+      monitoring_role_arn: Optional. The ARN of the IAM role used for Enhanced Monitoring (default: null).
+      performance_insights_enabled: Optional. Whether to enable Performance Insights (default: false).
+      performance_insights_kms_key_id: Optional. KMS key ID for Performance Insights encryption (default: null).
+      performance_insights_retention_period: Optional. Retention period for Performance Insights data (default: 7 days).
+      promotion_tier: Optional. Promotion tier for the instance within the cluster (default: 0).
+      copy_tags_to_snapshot: Optional. Copy tags to snapshots (default: true).
+    EOT
+  default     = []
 }
-variable "enable_http_endpoint" {
+
+variable "tags" {
+  description = "A map of tags to assign to the DB Cluster."
+  type        = map(string)
+  default     = {}
+}
+
+variable "security_group_data" {
+  type = object({
+    security_group_ids_to_attach = optional(list(string), [])
+    create                       = optional(bool, true)
+    description                  = optional(string, null)
+    ingress_rules = optional(list(object({
+      description              = optional(string, null)
+      cidr_block               = optional(string, null)
+      source_security_group_id = optional(string, null)
+      from_port                = number
+      ip_protocol              = string
+      to_port                  = string
+    })), [])
+    egress_rules = optional(list(object({
+      description                   = optional(string, null)
+      cidr_block                    = optional(string, null)
+      destination_security_group_id = optional(string, null)
+      from_port                     = number
+      ip_protocol                   = string
+      to_port                       = string
+    })), [])
+  })
+  description = "(optional) Security Group data"
+  default = {
+    create = false
+  }
+}
+
+variable "proxy_config" {
+  type = object({
+    create                   = optional(bool, false)
+    name                     = optional(string, null)
+    engine_family            = string
+    vpc_subnet_ids           = list(string)
+    require_tls              = optional(bool, false)
+    debug_logging            = optional(bool, false)
+    idle_client_timeout_secs = optional(number, 30 * 60) // in seconds The minimum is 1 minute and the maximum is 8 hours.
+    role_arn                 = optional(string, null)    // null value will create new role
+    auth = object({
+      auth_scheme               = string
+      description               = optional(string, null)
+      iam_auth                  = optional(string, "DISABLED")
+      client_password_auth_type = string
+    })
+    additional_auth_list = optional(list(object({
+      auth_scheme               = string
+      secret_arn                = optional(string, null)
+      description               = optional(string, null)
+      iam_auth                  = optional(string, "DISABLED")
+      client_password_auth_type = string
+    })), [])
+    connection_pool_config = object({
+      connection_borrow_timeout    = optional(number, 5)
+      init_query                   = optional(string, null)
+      max_connections_percent      = optional(number, 100)
+      max_idle_connections_percent = optional(number, 50)
+      session_pinning_filters      = optional(list(string), [])
+    })
+    security_group_data = optional(object({
+      security_group_ids_to_attach = optional(list(string), [])
+      create                       = optional(bool, true)
+      description                  = optional(string, null)
+      ingress_rules = optional(list(object({
+        description              = optional(string, null)
+        cidr_block               = optional(string, null)
+        source_security_group_id = optional(string, null)
+        from_port                = number
+        ip_protocol              = string
+        to_port                  = string
+        self                     = optional(bool, false)
+      })), [])
+      egress_rules = optional(list(object({
+        description                   = optional(string, null)
+        cidr_block                    = optional(string, null)
+        destination_security_group_id = optional(string, null)
+        from_port                     = number
+        ip_protocol                   = string
+        to_port                       = string
+      })), [])
+    }))
+  })
+  description = <<EOD
+Configuration object for setting up an AWS RDS Proxy. It includes options for creating the proxy, connection pooling, authentication, and other proxy-specific settings.
+
+- **create** (optional): A boolean that determines whether to create the RDS Proxy resource. Defaults to false.
+- **name** (optional): The name of the RDS Proxy. If not specified, Terraform will create a default name.
+- **engine_family**: The database engine family for the proxy (e.g., "MYSQL", "POSTGRESQL").
+- **vpc_subnet_ids**: List of VPC subnet IDs in which the proxy will be deployed.
+- **security_group_data**: List of security groups to associate with the RDS Proxy.
+- **require_tls** (optional): Boolean flag to enforce the use of TLS for client connections to the proxy. Defaults to false.
+- **debug_logging** (optional): Boolean flag to enable debug logging for the proxy. Defaults to false.
+- **idle_client_timeout_secs** (optional): Number of seconds before the proxy closes idle client connections. The minimum is 60 seconds (1 minute), and the maximum is 28,800 seconds (8 hours). Defaults to 1,800 seconds (30 minutes).
+- **role_arn** (optional): The ARN of the IAM role used by the proxy for accessing database credentials in AWS Secrets Manager. If null, Terraform will create a new IAM role.
+
+Authentication settings:
+- **auth.auth_scheme**: The authentication scheme to use (e.g., "SECRETS").
+- **auth.description** (optional): A description of the authentication method. Defaults to null.
+- **auth.iam_auth** (optional): Specifies whether to use IAM authentication for the proxy. Defaults to "DISABLED".
+- **auth.secret_arn**: The ARN of the AWS Secrets Manager secret that contains the database credentials.
+- **auth.client_password_auth_type**: Specifies the password authentication type for the database.
+
+Connection pool configuration:
+- **connection_pool_config.connection_borrow_timeout** (optional): The amount of time (in seconds) a client connection can be held open before being returned to the pool. Defaults to 5 seconds.
+- **connection_pool_config.init_query** (optional): An optional initialization query executed when a connection is first established. Defaults to null.
+- **connection_pool_config.max_connections_percent** (optional): The maximum percentage of available database connections that the proxy can use. Defaults to 100%.
+- **connection_pool_config.max_idle_connections_percent** (optional): The maximum percentage of idle database connections that the proxy can keep open. Defaults to 50%.
+- **connection_pool_config.session_pinning_filters** (optional): List of filters for controlling session pinning behavior. Defaults to an empty list.
+
+EOD
+  default = {
+    create                 = false
+    engine_family          = "POSTGRESQL"
+    vpc_subnet_ids         = []
+    auth                   = null
+    connection_pool_config = null
+    security_group_data = {
+      create = false
+    }
+  }
+}
+
+
+variable "kms_data" {
+  type = object({
+    create                          = optional(bool, true)
+    kms_key_id                      = optional(string, null)
+    performance_insights_kms_key_id = optional(string, null)
+    name                            = optional(string, null)
+    description                     = optional(string, null)
+    policy                          = optional(string, null)
+    deletion_window_in_days         = optional(number, 7)
+    enable_key_rotation             = optional(bool, true)
+  })
+  description = <<EOT
+Configuration for KMS key settings for RDS encryption and performance insights:
+- create: (Optional) If true, a new KMS key is created.
+- kms_key_id: (Optional) The ID of an existing KMS key for RDS encryption. If null it used AWS managed keys
+- performance_insights_kms_key_id: (Optional) Key ID for Performance Insights. If null it used AWS managed keys
+- description: (Optional) description for the KMS key.
+- policy: (Optional) Specific policy for the KMS key.
+- deletion_window_in_days: (Optional) Number of days before deletion, default is 7.
+- enable_key_rotation: (Optional) Enables key rotation for security; defaults to true.
+EOT
+  default = {
+    create = false
+  }
+}
+
+
+variable "license_model" {
+  description = "The license model for the DB instance (e.g., license-included, bring-your-own-license, general-public-license)."
+  type        = string
+}
+
+variable "apply_immediately" {
+  description = "Whether to apply changes immediately or during the next maintenance window."
   type        = bool
-  description = "Enable HTTP endpoint (data API). Only valid when engine_mode is set to serverless"
   default     = false
+}
+
+variable "monitoring_interval" {
+  description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected. Valid values are 0, 1, 5, 10, 15, 30, 60."
+  type        = number
+  default     = 60
+}
+
+variable "enabled_cloudwatch_logs_exports" {
+  description = "List of log types to export to CloudWatch Logs. Valid values: audit, error, general, slowquery."
+  type        = list(string)
+  default     = []
+}
+
+variable "iops" {
+  description = "The amount of provisioned IOPS. Required if using io1 storage type."
+  type        = number
+  default     = 1000
+}
+
+variable "enable_multi_az" {
+  description = "Whether to enable Multi-AZ deployment for the RDS instance."
+  type        = bool
+  default     = false
+}
+
+variable "publicly_accessible" {
+  description = "Whether the RDS instance should be publicly accessible."
+  type        = bool
+  default     = false
+}
+
+variable "auto_minor_version_upgrade" {
+  description = "Whether minor engine upgrades are applied automatically during the maintenance window."
+  type        = bool
+  default     = true
+}
+
+variable "allow_major_version_upgrade" {
+  description = "Whether major version upgrades are allowed during maintenance windows."
+  type        = bool
+  default     = false
+}
+
+variable "ca_cert_identifier" {
+  description = "The identifier of the CA certificate for the DB instance. If not specified, the RDS default CA is used."
+  type        = string
+  default     = null
+}
+
+variable "instance_class" {
+  type        = string
+  description = "Instance class for RDS instance"
+}
+
+variable "allocated_storage" {
+  type        = string
+  description = "(optional) Storage for RDS instance"
+  default     = 20
+}
+
+variable "option_group_config" {
+  type = object({
+    create               = optional(bool, false)
+    name                 = optional(string, null)
+    engine_name          = optional(string)
+    major_engine_version = optional(string)
+    description          = optional(string, "Managed by Terraform")
+    options = map(object({
+      option_name = string
+      port        = number
+      version     = string
+      option_settings = map(object({
+        name  = string
+        value = string
+      }))
+    }))
+  })
+  description = "Configuration for RDS option group, with attributes to create or specify a group name, engine details, and database options including settings, ports, and versions."
+  default = {
+    name    = null
+    options = {}
+  }
+}
+
+variable "parameter_group_config" {
+  type = object({
+    create      = optional(bool, false)
+    name        = optional(string, null)
+    family      = optional(string)
+    description = optional(string, "Managed by Terraform")
+    parameters = map(object({
+      name         = string
+      value        = string
+      apply_method = optional(string, "immediate") # Options: "immediate" or "pending-reboot"
+    }))
+  })
+  description = "Configuration for RDS parameter group, with options to create or specify a group name, family, and a map of database parameters including settings and apply methods."
+  default = {
+    name       = null
+    parameters = {}
+  }
+}
+
+variable "performance_insights_retention_period" {
+  description = "The retention period (in days) for Performance Insights data. Valid values are 7, 731, or any value between 8 and 730."
+  type        = number
+  default     = 7
+}
+
+variable "monitoring_role_arn" {
+  description = "The ARN for the IAM role that allows RDS to send Enhanced Monitoring metrics to CloudWatch Logs."
+  type        = string
+  default     = null
 }

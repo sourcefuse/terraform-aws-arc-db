@@ -29,6 +29,8 @@ resource "aws_kms_key" "secret" {
       }
     ]
   })
+
+  tags = var.tags
 }
 
 resource "aws_secretsmanager_secret" "this" {
@@ -37,6 +39,8 @@ resource "aws_secretsmanager_secret" "this" {
   name        = "${local.prefix}-${var.name}-secret"
   description = "Credentials for RDS Proxy"
   kms_key_id  = var.kms_data.create ? aws_kms_key.secret.id : null
+
+  tags = var.tags
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_version" {

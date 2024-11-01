@@ -173,4 +173,5 @@ module "security_group" {
   vpc_id        = var.vpc_id
   egress_rules  = var.security_group_data.egress_rules
   ingress_rules = local.db_ingress_rules
+  tags          = var.tags
 }

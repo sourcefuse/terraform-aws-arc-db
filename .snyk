@@ -1,9 +1,33 @@
-issues:
-  - id: SNYK-CC-AWS-710
-    reason: "IAM authentication not required for this RDS cluster"
-    expires: "2027-12-31"
-    path: aurora-cluster.tf
-  - id: SNYK-CC-AWS-414
-    reason: "IAM authentication not required for this RDS instance"
-    expires: "2027-12-31"
-    path: main.tf
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-CC-TF-73:
+    - main.tf > resource > aws_security_group[db_sg] > egress:
+        reason: AWS Security Group allows open egress
+        expires: 2024-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+    - main.tf > resource > aws_security_group[standard_web_sg] > egress:
+        reason: AWS Security Group allows open egress
+        expires: 2024-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+    - main.tf > resource > aws_security_group[ecs_tasks_sg] > egress:
+        reason: AWS Security Group allows open egress
+        expires: 2024-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+    - main.tf > resource > aws_security_group[eks_sg] > egress:
+        reason: AWS Security Group allows open egress
+        expires: 2024-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+  SNYK-CC-AWS-710:
+    - aurora-cluster.tf > resource > aws_rds_cluster[this] > iam_database_authentication_enabled:
+        reason: IAM authentication is set by variable
+        expires: 2027-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+  SNYK-CC-AWS-414:
+    - main.tf > resource > aws_db_instance[this] > iam_database_authentication_enabled:
+        reason: IAM authentication is set by variable
+        expires: 2027-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+
+patch: {}

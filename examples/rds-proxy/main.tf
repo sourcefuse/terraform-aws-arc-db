@@ -87,7 +87,7 @@ module "rds" {
   namespace   = var.namespace
   vpc_id      = data.aws_vpc.vpc.id
 
-  name            = "${var.namespace}-${var.environment}-test-proxy-1"
+  name            = "${var.namespace}-${var.environment}-test-proxy-2"
   engine_type     = "rds"
   db_server_class = "db.t3.small"
   port            = 5432

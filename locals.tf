@@ -30,4 +30,5 @@ locals {
   kms_key_id                      = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.kms_key_id)
   performance_insights_kms_key_id = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.performance_insights_kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.performance_insights_kms_key_id)
   monitoring_role_arn             = var.monitoring_interval > 0 ? (var.monitoring_role_arn == null ? aws_iam_role.enhanced_monitoring[0].arn : var.monitoring_role_arn) : null
+  endpoint                        = var.engine_type == "rds" ? aws_db_instance.this[0].endpoint : aws_rds_cluster.this[0].endpoint
 }

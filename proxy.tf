@@ -1,8 +1,42 @@
+resource "aws_kms_key" "secret" {
+  description             = "KMS key for encrypting Secrets Manager secrets"
+  deletion_window_in_days = var.kms_data.deletion_window_in_days
+  enable_key_rotation     = var.kms_data.enable_key_rotation
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions",
+        Effect = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        },
+        Action   = "kms:*",
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow Secrets Manager to use the key",
+        Effect = "Allow",
+        Principal = {
+          Service = "secretsmanager.amazonaws.com"
+        },
+        Action = [
+          "kms:GenerateDataKey",
+          "kms:Decrypt"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_secretsmanager_secret" "this" {
   count = var.manage_user_password == null && var.proxy_config.create ? 1 : 0
 
   name        = "${local.prefix}-${var.name}-secret"
   description = "Credentials for RDS Proxy"
+  kms_key_id  = var.kms_data.create ? aws_kms_key.secret.id : null
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_version" {
@@ -10,8 +44,11 @@ resource "aws_secretsmanager_secret_version" "db_secret_version" {
 
   secret_id = aws_secretsmanager_secret.this[0].id
   secret_string = jsonencode({
-    username = var.engine_type == "rds" ? aws_db_instance.this[0].username : aws_rds_cluster.this[0].master_username,
-    password = var.engine_type == "rds" ? aws_db_instance.this[0].password : aws_rds_cluster.this[0].master_password
+    "username" = local.username
+    "password" = local.password
+    "database" = local.database
+    "endpoint" = local.endpoint
+    "port"     = local.port
   })
 }
 

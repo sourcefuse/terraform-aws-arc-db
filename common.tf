@@ -146,3 +146,31 @@ resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
   role       = aws_iam_role.enhanced_monitoring[0].name
   policy_arn = data.aws_iam_policy.enhanced_monitoring[0].arn
 }
+
+
+resource "aws_ssm_parameter" "database_creds" {
+  name        = "/${var.namespace}/${var.environment}/${var.engine_type}/${var.name}/database-credentials"
+  description = "Database credentials"
+  type        = "SecureString"
+  value = jsonencode({
+    "username" : local.username
+    "password" : local.password
+    "database" : local.database
+    "endpoint" : local.endpoint
+    "port" : local.port
+  })
+
+  tags = var.tags
+}
+
+module "security_group" {
+  source = "./modules/security-group"
+
+  count = var.security_group_data.create ? 1 : 0
+
+  name          = "${var.name}-security-group"
+  description   = var.security_group_data.description == null ? "Allow inbound traffic and outbound traffic" : var.security_group_data.description
+  vpc_id        = var.vpc_id
+  egress_rules  = var.security_group_data.egress_rules
+  ingress_rules = local.db_ingress_rules
+}

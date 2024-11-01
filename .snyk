@@ -1,0 +1,9 @@
+issues:
+  - id: SNYK-CC-AWS-710
+    reason: "IAM authentication not required for this RDS cluster"
+    expires: "2027-12-31"
+    path: aurora-cluster.tf
+  - id: SNYK-CC-AWS-414
+    reason: "IAM authentication not required for this RDS instance"
+    expires: "2027-12-31"
+    path: main.tf

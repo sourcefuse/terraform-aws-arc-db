@@ -37,7 +37,7 @@ module "aurora" {
 Integrate the module with your existing Terraform mono repo configuration, follow the steps below:
 
 1. Create a new folder in `terraform/` named `db`.
-2. Create the required files, see the [examples](https://github.com/sourcefuse/terraform-aws-arc-db/tree/main/examples/simple) to base off of.
+2. Create the required files, see the [examples](https://github.com/sourcefuse/terraform-aws-arc-db/tree/main/examples/rds) to base off of.
 3. Configure with your backend
   - Create the environment backend configuration file: `config.<environment>.hcl`
     - **region**: Where the backend resides
@@ -68,7 +68,7 @@ For basic usage, see the [example](https://github.com/sourcefuse/terraform-aws-a
 
 This example will create:
 
-1. RDS Instance Example
+- RDS Instance Example
 This example demonstrates deploying a single RDS instance using the module, configuring an Amazon RDS database with basic settings like instance class, storage, and connectivity. It showcases options for database engine, encryption, and CloudWatch monitoring for a standalone RDS database. Ideal for simple, production-ready RDS setups.
 
 ### RDS Proxy
@@ -82,14 +82,14 @@ This example configures an RDS Proxy for an RDS database, helping manage connect
 
 For Aurora Cluster, see the [example](https://github.com/sourcefuse/terraform-aws-arc-db/tree/main/examples/aurora) folder.
 
-3. Aurora Cluster Example
+- Aurora Cluster Example
 This example provisions an Amazon Aurora cluster, utilizing the module to set up a high-availability, high-performance database solution. The configuration includes multiple instances within a cluster, providing a resilient and cost-effective solution suitable for demanding applications.
 
 ### Aurora Cluster Serverless
 
 For Aurora Cluster Serverless, see the [example](https://github.com/sourcefuse/terraform-aws-arc-db/tree/main/examples/aurora-serverless) folder.
 
-4. Aurora Serverless Cluster Example
+- Aurora Serverless Cluster Example
 This example deploys an Aurora Serverless cluster autoscaling, making it ideal for applications with unpredictable or intermittent database usage. The module configures serverless capacity, connectivity, and database settings, automatically adjusting to workload needs without manual intervention.
 
 ### Tips and Recommendations

@@ -75,7 +75,7 @@ This example demonstrates deploying a single RDS instance using the module, conf
 
 For RDS Proxy, see the [example](https://github.com/sourcefuse/terraform-aws-arc-db/tree/main/examples/rds-proxy) folder.
 
-2. RDS Proxy Example
+- RDS Proxy Example
 This example configures an RDS Proxy for an RDS database, helping manage connection pooling for improved database performance and security. By integrating with RDS Proxy, it reduces connection management overhead and scales automatically with demand, useful for applications with variable database traffic and sensitive to scaling requirements.
 
 ### Aurora Cluster

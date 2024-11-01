@@ -1,0 +1,16 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-CC-AWS-710:
+    - aurora-cluster.tf > resource > aws_rds_cluster[this] > iam_database_authentication_enabled:
+        reason: IAM authentication is set by variable
+        expires: 2027-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+  SNYK-CC-AWS-414:
+    - main.tf > resource > aws_db_instance[this] > iam_database_authentication_enabled:
+        reason: IAM authentication is set by variable
+        expires: 2027-04-01T00:00:00.000Z
+        created: 2022-11-14T18:20:39.256Z
+
+patch: {}

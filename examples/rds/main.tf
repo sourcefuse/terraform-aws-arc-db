@@ -69,6 +69,7 @@ module "rds" {
 
   security_group_data          = local.rds_security_group_data
   performance_insights_enabled = true
+  monitoring_interval          = 5
 
   kms_data = {
     create                  = true

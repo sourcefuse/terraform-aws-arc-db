@@ -239,14 +239,7 @@ variable "rds_cluster_instances" {
       publicly_accessible: Optional. Whether the instance is publicly accessible (default: false).
       db_parameter_group_name: Optional. The name of the DB parameter group to associate with the instance (default: null).
       apply_immediately: Optional. Apply modifications immediately or during the next maintenance window (default: false).
-      preferred_maintenance_window: Optional. The weekly maintenance window for the instance (default: null).
-      auto_minor_version_upgrade: Optional. Automatically apply minor version upgrades (default: true).
       ca_cert_identifier: Optional. Identifier for the CA certificate for the instance (default: null).
-      monitoring_interval: Optional. Monitoring interval for Enhanced Monitoring (default: 0 - disabled).
-      monitoring_role_arn: Optional. The ARN of the IAM role used for Enhanced Monitoring (default: null).
-      performance_insights_enabled: Optional. Whether to enable Performance Insights (default: false).
-      performance_insights_kms_key_id: Optional. KMS key ID for Performance Insights encryption (default: null).
-      performance_insights_retention_period: Optional. Retention period for Performance Insights data (default: 7 days).
       promotion_tier: Optional. Promotion tier for the instance within the cluster (default: 0).
       copy_tags_to_snapshot: Optional. Copy tags to snapshots (default: true).
     EOT

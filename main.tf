@@ -2,6 +2,8 @@
 ## RDS instance
 ################################################################################
 resource "aws_db_instance" "this" {
+  count = var.engine_type == "rds" ? 1 : 0
+
   identifier               = var.name
   db_name                  = var.database_name
   allocated_storage        = var.allocated_storage
@@ -9,11 +11,11 @@ resource "aws_db_instance" "this" {
   engine_version           = var.engine_version
   engine_lifecycle_support = var.engine_lifecycle_support
   port                     = var.port
-  instance_class           = var.instance_class
+  instance_class           = var.db_server_class
 
 
   username                    = var.username
-  password                    = var.password == null && var.manage_user_password == false ? random_password.master[0].result : var.password
+  password                    = var.password == null && var.manage_user_password == null ? random_password.master[0].result : var.password
   manage_master_user_password = var.manage_user_password
 
   iops                                = var.iops
@@ -40,7 +42,7 @@ resource "aws_db_instance" "this" {
   storage_encrypted                     = var.storage_encrypted
   kms_key_id                            = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.kms_key_id)
   performance_insights_enabled          = var.performance_insights_enabled
-  performance_insights_kms_key_id       = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.performance_insights_kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.performance_insights_kms_key_id)
+  performance_insights_kms_key_id       = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.performance_insights_kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.performance_insights_kms_key_id)
   performance_insights_retention_period = var.performance_insights_retention_period
   enabled_cloudwatch_logs_exports       = var.enabled_cloudwatch_logs_exports
   monitoring_interval                   = var.monitoring_interval

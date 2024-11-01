@@ -50,7 +50,7 @@ resource "aws_db_parameter_group" "this" {
     content {
       name         = parameter.value.name
       value        = parameter.value.value
-      apply_method = parameter.value
+      apply_method = parameter.value.apply_method
     }
   }
 
@@ -62,7 +62,7 @@ resource "aws_db_parameter_group" "this" {
 ################################################################################
 
 resource "aws_kms_key" "this" {
-  count = var.kms_data.create ? 0 : 1
+  count = var.kms_data.create ? 1 : 0
 
   description             = var.kms_data.description == null ? "RDS KMS key" : var.kms_data.description
   deletion_window_in_days = var.kms_data.deletion_window_in_days
@@ -74,7 +74,7 @@ resource "aws_kms_key" "this" {
 }
 
 resource "aws_kms_alias" "this" {
-  count = var.kms_data.create ? 0 : 1
+  count = var.kms_data.create ? 1 : 0
 
   name          = var.kms_data.name == null ? "alias/${local.prefix}-${var.name}-kms-key" : "alias/${var.kms_data.name}"
   target_key_id = aws_kms_key.this[0].id
@@ -103,7 +103,7 @@ resource "aws_iam_role" "enhanced_monitoring" {
   tags = var.tags
 }
 
-resource "aws_iam_policy" "enhanced_monitoring" {
+resource "aws_iam_policy" "logs" {
   count = var.monitoring_interval > 0 && var.monitoring_role_arn == null ? 1 : 0
 
   name        = "${local.prefix}-${var.name}-policy"
@@ -129,5 +129,17 @@ resource "aws_iam_role_policy_attachment" "attach_policy" {
   count = var.monitoring_interval > 0 && var.monitoring_role_arn == null ? 1 : 0
 
   role       = aws_iam_role.enhanced_monitoring[0].name
-  policy_arn = aws_iam_policy.enhanced_monitoring[0].arn
+  policy_arn = aws_iam_policy.logs[0].arn
+}
+
+data "aws_iam_policy" "enhanced_monitoring" {
+  count = var.monitoring_interval > 0 && var.monitoring_role_arn == null ? 1 : 0
+  arn   = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
+resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
+  count = var.monitoring_interval > 0 && var.monitoring_role_arn == null ? 1 : 0
+
+  role       = aws_iam_role.enhanced_monitoring[0].name
+  policy_arn = data.aws_iam_policy.enhanced_monitoring[0].arn
 }

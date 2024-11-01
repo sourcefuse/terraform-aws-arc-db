@@ -37,19 +37,17 @@ EOT
 
 variable "engine_type" {
   type        = string
-  description = "(optional) Engine type, valid values are 'rds' or 'aurora'"
+  description = "(optional) Engine type, valid values are 'rds' or 'cluster'"
 
   validation {
-    condition     = contains(["rds", "aurora"], var.engine_type)
-    error_message = "The engine_type variable must be either 'rds' or 'aurora'."
+    condition     = contains(["rds", "cluster"], var.engine_type)
+    error_message = "The engine_type variable must be either 'rds' or 'cluster'."
   }
 }
 
-# Engine type (Aurora, Aurora MySQL, or Aurora PostgreSQL)
 variable "engine" {
   description = "The database engine to use for the RDS cluster (e.g., aurora, aurora-mysql, aurora-postgresql)."
   type        = string
-  default     = "aurora-postgresql"
 }
 
 # Engine version
@@ -99,13 +97,13 @@ variable "port" {
 
 # Master username
 variable "username" {
-  description = "The master username for the database."
+  description = "The username for the database."
   type        = string
 }
 
 # Master password
 variable "password" {
-  description = "The master password for the database."
+  description = "The password for the database."
   type        = string
   sensitive   = true
   default     = null
@@ -113,8 +111,11 @@ variable "password" {
 
 variable "manage_user_password" {
   type        = bool
-  description = "(optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided."
-  default     = false
+  description = <<-EOT
+    (optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided."
+    null - is equal to 'false', don't set it to false , known bug :  https://github.com/hashicorp/terraform-provider-aws/issues/31179
+  EOT
+  default     = null
 }
 
 # Database name
@@ -163,13 +164,6 @@ variable "storage_encrypted" {
   default     = true
 }
 
-# # KMS key identifier
-# variable "kms_key_id" {
-#   description = "The ARN of the KMS key to use for encryption."
-#   type        = string
-#   default     = "aws/rds"
-# }
-
 # Enable IAM database authentication
 variable "iam_database_authentication_enabled" {
   description = "Enable IAM database authentication for the RDS cluster."
@@ -188,12 +182,6 @@ variable "performance_insights_enabled" {
   type        = bool
   description = "(optional) Valid only for Non-Aurora Multi-AZ DB Clusters. Enables Performance Insights for the RDS Cluster"
   default     = false
-}
-
-variable "performance_insights_kms_key_id" {
-  type        = string
-  description = "(optional) Valid only for Non-Aurora Multi-AZ DB Clusters. Specifies the KMS Key ID to encrypt Performance Insights data. If not specified, the default RDS KMS key will be used (aws/rds)."
-  default     = "aws/rds"
 }
 
 variable "network_type" {
@@ -240,17 +228,8 @@ variable "rds_cluster_instances" {
     availability_zone       = optional(string, null)
     publicly_accessible     = optional(bool, false)
     db_parameter_group_name = optional(string, null)
-    # apply_immediately                     = optional(bool, false)
-    # preferred_maintenance_window          = optional(string, null)
-    # auto_minor_version_upgrade            = optional(bool, true)
-    # ca_cert_identifier                    = optional(string, null)
-    # monitoring_interval                   = optional(number, 0) // 0 - disabled
-    # monitoring_role_arn                   = optional(string, null)
-    # performance_insights_enabled          = optional(bool, false)
-    # performance_insights_kms_key_id       = optional(string, null)
-    # performance_insights_retention_period = optional(number, 7)
-    promotion_tier        = optional(number, 0)
-    copy_tags_to_snapshot = optional(bool, true)
+    promotion_tier          = optional(number, 0)
+    copy_tags_to_snapshot   = optional(bool, true)
   }))
   description = <<-EOT
   "(optional) A list of objects defining configurations for RDS Cluster instances. Each object represents a single RDS instance configuration within the cluster, including options for instance class, monitoring, performance insights, maintenance windows, and other instance-specific settings."
@@ -443,7 +422,7 @@ variable "apply_immediately" {
 variable "monitoring_interval" {
   description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected. Valid values are 0, 1, 5, 10, 15, 30, 60."
   type        = number
-  default     = 60
+  default     = 0
 }
 
 variable "enabled_cloudwatch_logs_exports" {
@@ -455,7 +434,7 @@ variable "enabled_cloudwatch_logs_exports" {
 variable "iops" {
   description = "The amount of provisioned IOPS. Required if using io1 storage type."
   type        = number
-  default     = 1000
+  default     = 0
 }
 
 variable "enable_multi_az" {
@@ -488,9 +467,10 @@ variable "ca_cert_identifier" {
   default     = null
 }
 
-variable "instance_class" {
+variable "db_server_class" {
   type        = string
   description = "Instance class for RDS instance"
+  default     = "db.t3.medium"
 }
 
 variable "allocated_storage" {

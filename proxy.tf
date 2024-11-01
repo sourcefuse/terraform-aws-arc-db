@@ -1,17 +1,17 @@
 resource "aws_secretsmanager_secret" "this" {
-  count = var.manage_user_password == false && var.proxy_config.create ? 1 : 0
+  count = var.manage_user_password == null && var.proxy_config.create ? 1 : 0
 
   name        = "${local.prefix}-${var.name}-secret"
   description = "Credentials for RDS Proxy"
 }
 
 resource "aws_secretsmanager_secret_version" "db_secret_version" {
-  count = var.manage_user_password == false && var.proxy_config.create ? 1 : 0
+  count = var.manage_user_password == null && var.proxy_config.create ? 1 : 0
 
   secret_id = aws_secretsmanager_secret.this[0].id
   secret_string = jsonencode({
-    username = aws_rds_cluster.this.master_username,
-    password = aws_rds_cluster.this.master_password
+    username = var.engine_type == "rds" ? aws_db_instance.this[0].username : aws_rds_cluster.this[0].master_username,
+    password = var.engine_type == "rds" ? aws_db_instance.this[0].password : aws_rds_cluster.this[0].master_password
   })
 }
 
@@ -32,8 +32,8 @@ resource "aws_db_proxy" "this" {
     auth_scheme               = var.proxy_config.auth.auth_scheme
     description               = var.proxy_config.auth.description == null ? "Auth for RDS Proxy" : var.proxy_config.auth.description
     iam_auth                  = var.proxy_config.auth.iam_auth
-    secret_arn                = var.manage_user_password ? aws_rds_cluster.this.master_user_secret[0].secret_arn : aws_secretsmanager_secret.this[0].arn
-    username                  = var.proxy_config.auth.auth_scheme == "SECRETS" ? null : aws_rds_cluster.this.master_username
+    secret_arn                = var.manage_user_password == true ? (var.engine_type == "rds" ? aws_db_instance.this[0].master_user_secret[0].secret_arn : aws_rds_cluster.this[0].master_user_secret[0].secret_arn) : aws_secretsmanager_secret.this[0].arn
+    username                  = var.proxy_config.auth.auth_scheme == "SECRETS" ? null : (var.engine_type == "rds" ? aws_db_instance.this[0].username : aws_rds_cluster.this[0].master_username)
     client_password_auth_type = var.proxy_config.auth.client_password_auth_type
   }
 
@@ -68,9 +68,11 @@ resource "aws_db_proxy_default_target_group" "this" {
 resource "aws_db_proxy_target" "this" {
   count = var.proxy_config.create ? 1 : 0
 
-  db_proxy_name         = aws_db_proxy.this[0].name
-  target_group_name     = aws_db_proxy_default_target_group.this[0].name
-  db_cluster_identifier = aws_rds_cluster.this.cluster_identifier
+  db_proxy_name          = aws_db_proxy.this[0].name
+  target_group_name      = aws_db_proxy_default_target_group.this[0].name
+  db_cluster_identifier  = var.engine_type == "cluster" ? aws_rds_cluster.this[0].cluster_identifier : null
+  db_instance_identifier = var.engine_type == "rds" ? aws_db_instance.this[0].identifier : null
+  depends_on             = [aws_db_instance.this, aws_rds_cluster.this]
 }
 
 
@@ -111,7 +113,7 @@ resource "aws_iam_policy" "read_secrets" {
     ]
   })
 
-  depends_on = [aws_rds_cluster.this, aws_secretsmanager_secret.this]
+  depends_on = [aws_rds_cluster.this, aws_db_instance.this, aws_secretsmanager_secret.this]
 }
 
 

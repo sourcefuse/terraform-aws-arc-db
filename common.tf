@@ -119,7 +119,10 @@ resource "aws_iam_policy" "logs" {
           "logs:PutLogEvents",
           "logs:CreateLogGroup",
         ],
-        Resource = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/rds/instance/*:log-stream:*",
+        Resource = [
+          "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/rds/instance/*:log-stream:*",
+          "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/rds/cluster/*:log-stream:*"
+        ]
       }
     ]
   })

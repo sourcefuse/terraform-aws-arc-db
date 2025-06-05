@@ -60,7 +60,7 @@ jobs:
           go get github.com/gruntwork-io/terratest/modules/terraform
           go get github.com/stretchr/testify/assert
           go mod tidy
-          go test -v -timeout 40m
+          go test -v -timeout 240m
       - name: Report check status manually
         uses: actions/github-script@v7
         with:

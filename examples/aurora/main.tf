@@ -21,7 +21,7 @@ module "aurora" {
 
   environment    = var.environment
   namespace      = var.namespace
-  vpc_id         = data.aws_vpc.vpc.id
+  vpc_id         = data.aws_vpc.this.id
   name           = "${var.namespace}-${var.environment}-test"
   engine_type    = "cluster"
   port           = 5432

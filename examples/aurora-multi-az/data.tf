@@ -5,7 +5,7 @@
 data "aws_vpc" "this" {
   filter {
     name   = "tag:Name"
-    values = ["${var.namespace}-${var.environment}-vpc"]
+    values = ["${var.namespace}-poc-vpc"]
   }
 }
 

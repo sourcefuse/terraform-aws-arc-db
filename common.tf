@@ -69,14 +69,14 @@ resource "aws_kms_key" "this" {
   enable_key_rotation     = var.kms_data.enable_key_rotation
 
   tags = merge(var.tags, {
-    Name = var.kms_data.name == null ? "${local.prefix}-${var.name}-kms-key" : var.kms_data.name
+    Name = var.kms_data.name == null ? "${var.name}-kms-key" : var.kms_data.name
   })
 }
 
 resource "aws_kms_alias" "this" {
   count = var.kms_data.create ? 1 : 0
 
-  name          = var.kms_data.name == null ? "alias/${local.prefix}-${var.name}-kms-key" : "alias/${var.kms_data.name}"
+  name          = var.kms_data.name == null ? "alias/${var.name}-kms-key" : "alias/${var.kms_data.name}"
   target_key_id = aws_kms_key.this[0].id
 }
 

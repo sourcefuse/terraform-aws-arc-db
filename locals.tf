@@ -1,8 +1,16 @@
 locals {
+  // Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided
+  // null - is equal to 'false', don't set it to false , known bug :  https://github.com/hashicorp/terraform-provider-aws/issues/31179
+  manage_user_password = var.manage_user_password ? true : null
+
   prefix                             = "${var.namespace}-${var.environment}"
   security_group_ids_to_attach       = var.security_group_data.create ? concat(var.security_group_data.security_group_ids_to_attach, [module.security_group[0].id]) : var.security_group_data.security_group_ids_to_attach
   proxy_security_group_ids_to_attach = var.proxy_config.security_group_data.create ? concat(var.proxy_config.security_group_data.security_group_ids_to_attach, [module.proxy_security_group[0].id]) : var.proxy_config.security_group_data.security_group_ids_to_attach
-  secret_arn                         = var.manage_user_password == true ? (var.engine_type == "rds" ? aws_db_instance.this[0].master_user_secret[0].secret_arn : aws_rds_cluster.this[0].master_user_secret[0].secret_arn) : (var.proxy_config.create ? aws_secretsmanager_secret.this[0].arn : null)
+  secret_arn = local.manage_user_password ? try(
+    aws_db_instance.this[0].master_user_secret[0].secret_arn, aws_rds_cluster.this[0].master_user_secret[0].secret_arn, null
+    ) : (
+    var.proxy_config.create ? aws_secretsmanager_secret.this[0].arn : null
+  )
 
   additional_secret_arn_list = [for auth in var.proxy_config.additional_auth_list : auth.secret_arn if auth.secret_arn != null]
 

@@ -1,5 +1,5 @@
 resource "random_password" "master" {
-  count = var.password == null && var.manage_user_password == null ? 1 : 0
+  count = var.password == null && local.manage_user_password == false ? 1 : 0
 
   length           = 41
   special          = true
@@ -29,7 +29,7 @@ resource "aws_rds_cluster" "this" {
   engine_mode                         = var.engine_mode == "serverless" ? "provisioned" : var.engine_mode
   port                                = var.port
   master_username                     = var.username
-  master_password                     = var.password == null && var.manage_user_password == null ? random_password.master[0].result : var.password
+  master_password                     = var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password
   manage_master_user_password         = var.manage_user_password
   database_name                       = var.database_name
   db_cluster_instance_class           = strcontains(var.engine, "aurora") ? null : var.db_server_class

@@ -15,7 +15,7 @@ resource "aws_db_instance" "this" {
 
 
   username                    = var.username
-  password                    = var.password == null && var.manage_user_password == null ? random_password.master[0].result : var.password
+  password                    = var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password
   manage_master_user_password = var.manage_user_password
 
   iops                                = var.iops

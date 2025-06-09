@@ -18,6 +18,12 @@ output "username" {
   description = "Username for the Database"
 }
 
+output "master_user_secret" {
+  value       = local.secret_arn
+  description = "Secret ARN"
+  depends_on  = [aws_db_instance.this, aws_rds_cluster.this]
+}
+
 output "database" {
   value       = local.database
   description = "database name"

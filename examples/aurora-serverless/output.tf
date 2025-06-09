@@ -18,11 +18,6 @@ output "username" {
   description = "Username for the Database"
 }
 
-output "database" {
-  value       = module.aurora.database
-  description = "Database name"
-}
-
 output "port" {
   value       = module.aurora.port
   description = "Database server port"

@@ -18,11 +18,6 @@ output "username" {
   description = "Username for the Database"
 }
 
-output "database" {
-  value       = module.rds.database
-  description = "Database name"
-}
-
 output "port" {
   value       = module.rds.port
   description = "Database server port"

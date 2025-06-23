@@ -42,7 +42,6 @@
 | <a name="output_id"></a> [id](#output\_id) | Instance or Cluster ID |
 | <a name="output_identifier"></a> [identifier](#output\_identifier) | Instance or Cluster Identifier |
 | <a name="output_kms_key_id"></a> [kms\_key\_id](#output\_kms\_key\_id) | Instance or Cluster KMS Key ID |
-| <a name="output_monitoring_role_arn"></a> [monitoring\_role\_arn](#output\_monitoring\_role\_arn) | Instance or Cluster Monitoring Role ARN |
 | <a name="output_performance_insights_kms_key_id"></a> [performance\_insights\_kms\_key\_id](#output\_performance\_insights\_kms\_key\_id) | Instance or Cluster Performance Insights KMS Key ID |
 | <a name="output_port"></a> [port](#output\_port) | Database server port |
 | <a name="output_username"></a> [username](#output\_username) | Username for the Database |

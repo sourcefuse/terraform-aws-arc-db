@@ -38,11 +38,6 @@ output "performance_insights_kms_key_id" {
   description = "Instance or Cluster Performance Insights KMS Key ID"
 }
 
-output "monitoring_role_arn" {
-  value       = module.aurora.monitoring_role_arn
-  description = "Instance or Cluster Monitoring Role ARN"
-}
-
 output "master_user_secret" {
   value       = module.aurora.master_user_secret
   description = "Secret ARN"

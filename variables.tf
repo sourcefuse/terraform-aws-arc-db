@@ -439,6 +439,12 @@ variable "rds_instance_allocated_storage" {
   default     = 20
 }
 
+variable "rds_instance_max_allocated_storage" {
+  type        = number
+  description = "The upper limit to which RDS can automatically scale the storage in GB."
+  default     = 0
+}
+
 variable "rds_instance_storage_encrypted" {
   type        = bool
   description = "Specifies whether the DB instance is encrypted. The default is false if not specified"

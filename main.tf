@@ -370,20 +370,21 @@ module "rds_instance" {
 
   name = local.rds_instance_name
 
-  dns_zone_id         = var.rds_instance_dns_zone_id
-  host_name           = var.rds_instance_host_name
-  vpc_id              = var.vpc_id
-  multi_az            = var.rds_instance_multi_az
-  storage_type        = var.rds_instance_storage_type
-  instance_class      = var.rds_instance_instance_class
-  allocated_storage   = var.rds_instance_allocated_storage
-  storage_encrypted   = var.rds_instance_storage_encrypted
-  security_group_ids  = var.rds_instance_security_group_ids
-  allowed_cidr_blocks = var.rds_instance_allowed_cidr_blocks
-  subnet_ids          = var.rds_instance_subnet_ids
-  license_model       = var.rds_instance_license_model
-  deletion_protection = var.deletion_protection
-  iops                = var.rds_instance_iops
+  dns_zone_id           = var.rds_instance_dns_zone_id
+  host_name             = var.rds_instance_host_name
+  vpc_id                = var.vpc_id
+  multi_az              = var.rds_instance_multi_az
+  storage_type          = var.rds_instance_storage_type
+  instance_class        = var.rds_instance_instance_class
+  allocated_storage     = var.rds_instance_allocated_storage
+  max_allocated_storage = var.rds_instance_max_allocated_storage
+  storage_encrypted     = var.rds_instance_storage_encrypted
+  security_group_ids    = var.rds_instance_security_group_ids
+  allowed_cidr_blocks   = var.rds_instance_allowed_cidr_blocks
+  subnet_ids            = var.rds_instance_subnet_ids
+  license_model         = var.rds_instance_license_model
+  deletion_protection   = var.deletion_protection
+  iops                  = var.rds_instance_iops
 
   enabled_cloudwatch_logs_exports       = var.rds_enabled_cloudwatch_logs_exports
   monitoring_interval                   = var.rds_monitoring_interval
@@ -448,7 +449,6 @@ resource "aws_ssm_parameter" "this" {
   value       = lookup(each.value, "value", null)
   description = lookup(each.value, "description", "Managed by Terraform")
   type        = lookup(each.value, "type", null)
-  overwrite   = lookup(each.value, "overwrite", true)
 
   tags = merge(var.tags, local.ssm_tags)
 }

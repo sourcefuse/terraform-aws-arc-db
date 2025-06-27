@@ -112,10 +112,9 @@ variable "password" {
 variable "manage_user_password" {
   type        = bool
   description = <<-EOT
-    (optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided."
-    null - is equal to 'false', don't set it to false , known bug :  https://github.com/hashicorp/terraform-provider-aws/issues/31179
+    (optional) Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided.
   EOT
-  default     = null
+  default     = true
 }
 
 # Database name

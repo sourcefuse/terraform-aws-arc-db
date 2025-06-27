@@ -24,7 +24,7 @@ locals {
     ingress_rules = [
       {
         description = "Allow traffic from local network"
-        cidr_block  = data.aws_vpc.vpc.cidr_block
+        cidr_block  = data.aws_vpc.this.cidr_block
         from_port   = 5432
         ip_protocol = "tcp"
         to_port     = 5432
@@ -48,7 +48,7 @@ module "rds" {
 
   environment = var.environment
   namespace   = var.namespace
-  vpc_id      = data.aws_vpc.vpc.id
+  vpc_id      = data.aws_vpc.this.id
 
   name                 = "${var.namespace}-${var.environment}-test"
   engine_type          = "rds"

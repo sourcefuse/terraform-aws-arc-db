@@ -29,7 +29,7 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `"dev"` | no |
+| <a name="input_environment"></a> [environment](#input\_environment) | ID element. Usually used for region e.g. 'uw2', 'us-west-2', OR role 'prod', 'staging', 'dev', 'UAT' | `string` | `"poc"` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | ID element. Usually an abbreviation of your organization name, e.g. 'eg' or 'cp', to help ensure generated IDs are globally unique | `string` | `"arc"` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
 
@@ -42,6 +42,7 @@
 | <a name="output_id"></a> [id](#output\_id) | Instance or Cluster ID |
 | <a name="output_identifier"></a> [identifier](#output\_identifier) | Instance or Cluster Identifier |
 | <a name="output_kms_key_id"></a> [kms\_key\_id](#output\_kms\_key\_id) | Instance or Cluster KMS Key ID |
+| <a name="output_master_user_secret"></a> [master\_user\_secret](#output\_master\_user\_secret) | Secret ARN |
 | <a name="output_performance_insights_kms_key_id"></a> [performance\_insights\_kms\_key\_id](#output\_performance\_insights\_kms\_key\_id) | Instance or Cluster Performance Insights KMS Key ID |
 | <a name="output_port"></a> [port](#output\_port) | Database server port |
 | <a name="output_username"></a> [username](#output\_username) | Username for the Database |

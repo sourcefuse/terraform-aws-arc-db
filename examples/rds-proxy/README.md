@@ -23,7 +23,7 @@
 | Name | Type |
 |------|------|
 | [aws_subnets.private](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnets) | data source |
-| [aws_vpc.vpc](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
+| [aws_vpc.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/vpc) | data source |
 
 ## Inputs
 
@@ -38,7 +38,6 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_arn"></a> [arn](#output\_arn) | Instance or Cluster ARN |
-| <a name="output_database"></a> [database](#output\_database) | Database name |
 | <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | Instance or Cluster Endpoint |
 | <a name="output_id"></a> [id](#output\_id) | Instance or Cluster ID |
 | <a name="output_identifier"></a> [identifier](#output\_identifier) | Instance or Cluster Identifier |

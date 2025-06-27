@@ -18,11 +18,6 @@ output "username" {
   description = "Username for the Database"
 }
 
-output "database" {
-  value       = module.aurora.database
-  description = "Database name"
-}
-
 output "port" {
   value       = module.aurora.port
   description = "Database server port"
@@ -41,9 +36,4 @@ output "kms_key_id" {
 output "performance_insights_kms_key_id" {
   value       = module.aurora.performance_insights_kms_key_id
   description = "Instance or Cluster Performance Insights KMS Key ID"
-}
-
-output "monitoring_role_arn" {
-  value       = module.aurora.monitoring_role_arn
-  description = "Instance or Cluster Monitoring Role ARN"
 }

@@ -16,34 +16,6 @@ provider "aws" {
   region = var.region
 }
 
-locals {
-  rds_security_group_data = {
-    create      = true
-    description = "Security Group for RDS Cluster"
-
-    ingress_rules = [
-      {
-        description = "Allow traffic from local network"
-        cidr_block  = data.aws_vpc.this.cidr_block
-        from_port   = 5432
-        ip_protocol = "tcp"
-        to_port     = 5432
-      }
-    ]
-
-    egress_rules = [
-      {
-        description = "Allow all outbound traffic"
-        cidr_block  = "0.0.0.0/0"
-        from_port   = -1
-        ip_protocol = "-1"
-        to_port     = -1
-      }
-    ]
-  }
-
-}
-
 module "aurora" {
   source = "../../"
 
@@ -51,28 +23,29 @@ module "aurora" {
   namespace   = var.namespace
   vpc_id      = data.aws_vpc.this.id
 
-  name           = "${var.namespace}-${var.environment}-aurora-serverless"
-  engine_type    = "cluster"
-  port           = 5432
-  username       = "postgres"
-  engine         = "aurora-postgresql"
-  engine_version = "16.2"
-  engine_mode    = "serverless"
+  name                = "${var.namespace}-${var.environment}-multi-az"
+  engine_type         = "cluster"
+  port                = 5432
+  username            = "postgres"
+  engine              = "aurora-postgresql"
+  engine_version      = "16.2"
+  security_group_data = local.security_group_data
 
   license_model = "postgresql-license"
   rds_cluster_instances = [
     {
-      instance_class          = "db.serverless"
+      instance_class          = "db.t3.medium"
       db_parameter_group_name = "default.aurora-postgresql16"
       apply_immediately       = true
       promotion_tier          = 1
+    },
+    {
+      instance_class          = "db.t3.medium"
+      db_parameter_group_name = "default.aurora-postgresql16"
+      apply_immediately       = true
+      promotion_tier          = 2
     }
   ]
-
-  serverlessv2_scaling_config = {
-    max_capacity = 1.0
-    min_capacity = 0.5
-  }
 
   db_subnet_group_data = {
     name        = "${var.namespace}-${var.environment}-subnet-group"
@@ -89,5 +62,4 @@ module "aurora" {
     deletion_window_in_days = 7
     enable_key_rotation     = true
   }
-  security_group_data = local.rds_security_group_data
 }

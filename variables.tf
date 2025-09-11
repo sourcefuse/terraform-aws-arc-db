@@ -19,6 +19,17 @@ variable "vpc_id" {
   description = "VPC Id for creating security group"
 }
 
+
+variable "snapshot_identifier" {
+  description = <<EOT
+The identifier for the DB snapshot or DB cluster snapshot to restore from.  
+If provided, the RDS instance will be created from this snapshot and engine/db_name/username/password will be ignored.  
+If null, a fresh RDS instance will be created.
+EOT
+  type        = string
+  default     = null
+}
+
 variable "serverlessv2_scaling_config" {
   type = object({
     max_capacity = number
@@ -225,7 +236,7 @@ variable "rds_cluster_instances" {
     name                    = optional(string, null)
     instance_class          = string
     availability_zone       = optional(string, null)
-    publicly_accessible     = optional(bool, false)
+    publicly_accessible     = optional(bool, true)
     db_parameter_group_name = optional(string, null)
     promotion_tier          = optional(number, 0)
     copy_tags_to_snapshot   = optional(bool, true)

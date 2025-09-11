@@ -236,7 +236,7 @@ variable "rds_cluster_instances" {
     name                    = optional(string, null)
     instance_class          = string
     availability_zone       = optional(string, null)
-    publicly_accessible     = optional(bool, true)
+    publicly_accessible     = optional(bool, false)
     db_parameter_group_name = optional(string, null)
     promotion_tier          = optional(number, 0)
     copy_tags_to_snapshot   = optional(bool, true)

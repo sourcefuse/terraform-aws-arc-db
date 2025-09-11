@@ -50,7 +50,7 @@ module "rds" {
   namespace   = var.namespace
   vpc_id      = data.aws_vpc.this.id
 
-  name                 = "${var.namespace}-${var.environment}-test"
+  name                 = "${var.namespace}-${var.environment}-test-01"
   engine_type          = "rds"
   db_server_class      = "db.t3.small"
   port                 = 5432
@@ -77,4 +77,10 @@ module "rds" {
     deletion_window_in_days = 7
     enable_key_rotation     = true
   }
+
+  #   kms_data = {
+  #   create      = false
+  #   kms_key_id  = data.aws_kms_key.by_alias.arn
+  # }
+
 }

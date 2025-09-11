@@ -1,7 +1,8 @@
 locals {
   // Set to true to allow RDS to manage the master user password in Secrets Manager. Cannot be set if master_password is provided
   // null - is equal to 'false', don't set it to false , known bug :  https://github.com/hashicorp/terraform-provider-aws/issues/31179
-  manage_user_password = var.manage_user_password ? true : null
+  # manage_user_password = var.manage_user_password ? true : null
+  manage_user_password = coalesce(var.manage_user_password, false)
 
   prefix                             = "${var.namespace}-${var.environment}"
   security_group_ids_to_attach       = var.security_group_data.create ? concat(var.security_group_data.security_group_ids_to_attach, [module.security_group[0].id]) : var.security_group_data.security_group_ids_to_attach

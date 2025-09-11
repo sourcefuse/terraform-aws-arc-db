@@ -4,20 +4,24 @@
 resource "aws_db_instance" "this" {
   count = var.engine_type == "rds" ? 1 : 0
 
-  identifier               = var.name
-  db_name                  = var.database_name
-  allocated_storage        = var.allocated_storage
-  engine                   = var.engine
-  engine_version           = var.engine_version
-  engine_lifecycle_support = var.engine_lifecycle_support
-  port                     = var.port
-  instance_class           = var.db_server_class
+  identifier = var.name
 
+  # ========= Dynamic logic for snapshot vs new =========
+  snapshot_identifier = var.snapshot_identifier != null ? var.snapshot_identifier : null
 
-  username                    = var.username
-  password                    = var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password
-  manage_master_user_password = var.manage_user_password
+  # Only set these if NOT restoring from snapshot
+  db_name                     = var.snapshot_identifier == null ? var.database_name : null
+  username                    = var.snapshot_identifier == null ? var.username : null
+  password                    = var.snapshot_identifier == null && local.manage_user_password == false ? random_password.master[0].result : (var.snapshot_identifier == null ? var.password : null)
+  manage_master_user_password = var.snapshot_identifier == null ? var.manage_user_password : null
+  engine                      = var.snapshot_identifier == null ? var.engine : null
+  engine_version              = var.snapshot_identifier == null ? var.engine_version : null
+  engine_lifecycle_support    = var.snapshot_identifier == null ? var.engine_lifecycle_support : null
+  port                        = var.snapshot_identifier == null ? var.port : null
+  # =====================================================
 
+  allocated_storage                   = var.allocated_storage
+  instance_class                      = var.db_server_class
   iops                                = var.iops
   db_subnet_group_name                = var.db_subnet_group_data.create ? aws_db_subnet_group.this[0].name : null
   vpc_security_group_ids              = local.security_group_ids_to_attach

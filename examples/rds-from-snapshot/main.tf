@@ -28,10 +28,10 @@ module "rds" {
   db_server_class = "db.t3.small"
   port            = 5432
 
-  # 🔹 Restore from snapshot
+  # Restore from snapshot
   snapshot_identifier = "manual-snaphost-test01" ### get this using Data block
 
-  # 🔹 Skip values that don’t apply when restoring from snapshot
+  # Skip values that don’t apply when restoring from snapshot
   engine               = null
   engine_version       = null
   username             = null

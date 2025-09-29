@@ -1,5 +1,5 @@
 resource "random_password" "master" {
-  count = var.password == null && local.manage_user_password == false ? 1 : 0
+  count = var.password == null && local.manage_user_password == false && var.snapshot_identifier == null ? 1 : 0
 
   length           = 41
   special          = true
@@ -24,14 +24,15 @@ resource "aws_rds_cluster" "this" {
   count = var.engine_type == "cluster" ? 1 : 0
 
   cluster_identifier                  = var.name
-  engine                              = var.engine
+  engine                              = var.snapshot_identifier != null ? null : var.engine
   engine_version                      = var.engine_version
   engine_mode                         = var.engine_mode == "serverless" ? "provisioned" : var.engine_mode
   port                                = var.port
-  master_username                     = var.username
-  master_password                     = var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password
-  manage_master_user_password         = var.manage_user_password
-  database_name                       = var.database_name
+  master_username                     = var.snapshot_identifier != null ? null : var.username
+  master_password                     = var.snapshot_identifier != null ? null : (var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password)
+  manage_master_user_password         = var.snapshot_identifier != null ? null : var.manage_user_password
+  database_name                       = var.snapshot_identifier != null ? null : var.database_name
+  snapshot_identifier                 = var.snapshot_identifier
   db_cluster_instance_class           = strcontains(var.engine, "aurora") ? null : var.db_server_class
   vpc_security_group_ids              = local.security_group_ids_to_attach
   db_subnet_group_name                = var.db_subnet_group_data.name

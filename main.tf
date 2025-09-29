@@ -5,18 +5,19 @@ resource "aws_db_instance" "this" {
   count = var.engine_type == "rds" ? 1 : 0
 
   identifier               = var.name
-  db_name                  = var.database_name
+  db_name                  = var.snapshot_identifier != null ? null : var.database_name
   allocated_storage        = var.allocated_storage
-  engine                   = var.engine
+  engine                   = var.snapshot_identifier != null ? null : var.engine
   engine_version           = var.engine_version
   engine_lifecycle_support = var.engine_lifecycle_support
   port                     = var.port
   instance_class           = var.db_server_class
 
+  snapshot_identifier = var.snapshot_identifier
 
-  username                    = var.username
-  password                    = var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password
-  manage_master_user_password = var.manage_user_password
+  username                    = var.snapshot_identifier != null ? null : var.username
+  password                    = var.snapshot_identifier != null ? null : (var.password == null && local.manage_user_password == false ? random_password.master[0].result : var.password)
+  manage_master_user_password = var.snapshot_identifier != null ? null : var.manage_user_password
 
   iops                                = var.iops
   db_subnet_group_name                = var.db_subnet_group_data.create ? aws_db_subnet_group.this[0].name : null

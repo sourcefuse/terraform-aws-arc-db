@@ -84,6 +84,12 @@ variable "final_snapshot_identifier" {
   default     = null
 }
 
+variable "snapshot_identifier" {
+  type        = string
+  description = "(optional) Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05."
+  default     = null
+}
+
 variable "storage_type" {
   type        = string
   description = "(optional) Required for Multi-AZ DB cluster) (Forces new for Multi-AZ DB clusters) Specifies the storage type to be associated with the DB cluster. For Aurora DB clusters, storage_type modifications can be done in-place. For Multi-AZ DB Clusters, the iops argument must also be set. Valid values are: \"\", aurora-iopt1 (Aurora DB Clusters); io1, io2 (Multi-AZ DB Clusters). Default: \"\" (Aurora DB Clusters); io1 (Multi-AZ DB Clusters)."

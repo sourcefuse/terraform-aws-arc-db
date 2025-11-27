@@ -5,8 +5,6 @@
 
 [![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=sourcefuse_terraform-aws-arc-db)](https://sonarcloud.io/summary/new_code?id=sourcefuse_terraform-aws-arc-db)
 
-[![Known Vulnerabilities](https://github.com/sourcefuse/terraform-aws-ref-arch-db/actions/workflows/snyk.yaml/badge.svg)](https://github.com/sourcefuse/terraform-aws-ref-arch-db/actions/workflows/snyk.yaml)
-
 ## Overview
 
 The SourceFuse AWS Reference Architecture (ARC) Terraform module offers a comprehensive solution for efficiently managing Aurora, RDS cluster, RDS proxy and RDS (Relational Database Service) instances within the Amazon Web Services (AWS) environment. This Terraform module is designed to streamline the provisioning, configuration, and management of these database instances, leveraging best practices.

@@ -42,7 +42,17 @@ resource "aws_db_instance" "this" {
   storage_encrypted                     = var.storage_encrypted
   kms_key_id                            = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.kms_key_id)
   performance_insights_enabled          = var.performance_insights_enabled
-  performance_insights_kms_key_id       = var.kms_data.create ? aws_kms_alias.this[0].target_key_arn : (var.kms_data.performance_insights_kms_key_id == null ? data.aws_kms_alias.rds.target_key_arn : var.kms_data.performance_insights_kms_key_id)
+  performance_insights_kms_key_id       = var.kms_data.create ? (
+                                          # If creating KMS key
+                                          var.performance_insights_enabled ? 
+                                            aws_kms_alias.this[0].target_key_arn : 
+                                            null
+                                        ) : (
+                                          # If using existing KMS key
+                                          var.kms_data.performance_insights_kms_key_id == null ? 
+                                            data.aws_kms_alias.rds.target_key_arn : 
+                                            var.kms_data.performance_insights_kms_key_id
+                                        )
   performance_insights_retention_period = var.performance_insights_retention_period
   enabled_cloudwatch_logs_exports       = var.enabled_cloudwatch_logs_exports
   monitoring_interval                   = var.monitoring_interval

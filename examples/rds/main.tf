@@ -57,7 +57,7 @@ module "rds" {
   username             = "postgres"
   manage_user_password = true
   engine               = "postgres"
-  engine_version       = "16.3"
+  engine_version       = "17.6"
 
   license_model = "postgresql-license"
   db_subnet_group_data = {

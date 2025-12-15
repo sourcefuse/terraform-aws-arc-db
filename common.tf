@@ -85,7 +85,7 @@ resource "aws_kms_alias" "this" {
 ################################################################################
 resource "aws_iam_role" "enhanced_monitoring" {
   count = var.monitoring_interval > 0 && var.monitoring_role_arn == null ? 1 : 0
-  name  = "${local.prefix}-${var.name}-enhanced-monitoring-role"
+  name  = "${var.name}-enhanced-monitoring-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

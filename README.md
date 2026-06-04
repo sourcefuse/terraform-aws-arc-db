@@ -4,8 +4,7 @@
 
 > **Module:** `sourcefuse/arc-db/aws`
 
-> **Registry:** [https://registry.terraform.io/modules/sourcefuse/arc-db/aws](https://registry.terraform.io/
-modules/sourcefuse/arc-db/aws)
+> **Registry:** [https://registry.terraform.io/modules/sourcefuse/arc-db/aws](https://registry.terraform.io/modules/sourcefuse/arc-db/aws)
 
 > **Category:** Database / Relational
 
